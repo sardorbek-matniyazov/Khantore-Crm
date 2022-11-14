@@ -1,7 +1,7 @@
 package khantorecrm.model;
 
 import khantorecrm.model.base.BaseEntity;
-import khantorecrm.model.enums.ProductType;
+import khantorecrm.model.enums.PaymentType;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,20 +12,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Entity(name = "product")
+@Entity(name = "payment")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product extends BaseEntity {
-    @Column(name = "product_name", length = NamingConstants.MODEL_NAME_LENGTH)
-    private String name;
-
-    @Column(name = "product_price")
-    private Double price = 0.0;
+public class Payment extends BaseEntity {
+    @Column(name = "payment_amount")
+    private Double amount = 0.0;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "product_type", length = NamingConstants.MODEL_ENUM_LENGTH)
-    private ProductType type;
+    @Column(name = "payment_type", length = NamingConstants.MODEL_ENUM_LENGTH)
+    private PaymentType type;
+
+    @ManyToOne(optional = false)
+    private Balance balance;
 }

@@ -22,7 +22,7 @@ import javax.persistence.ManyToOne;
 @Entity(name = "input")
 @NoArgsConstructor
 @AllArgsConstructor
-public class input extends BaseEntity {
+public class Input extends BaseEntity {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @ManyToOne(optional = false)
     private ProductItem productItem;

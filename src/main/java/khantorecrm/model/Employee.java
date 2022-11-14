@@ -7,14 +7,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "employee")
+@Table()
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee extends BaseEntity {

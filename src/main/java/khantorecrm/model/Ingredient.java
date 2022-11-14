@@ -8,30 +8,25 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Entity(name = "product_item")
+@Entity(name = "ingredients")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductItem extends BaseEntity {
+public class Ingredient extends BaseEntity {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @ManyToOne(optional = false)
-    private Product itemProduct;
+    private ProductItem material;
 
-    @Column(name = "item_amount")
+    @Column(name = "material_amount")
     private Double itemAmount = 0.0;
 
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @ManyToOne(optional = false)
-    private Warehouse warehouse;
-
-    @OneToMany(orphanRemoval = true, mappedBy = "productItem", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
-    private Set<Ingredient> ingredients;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private ProductItem productItem;
 }

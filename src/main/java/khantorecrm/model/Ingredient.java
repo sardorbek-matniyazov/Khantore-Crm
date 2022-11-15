@@ -21,12 +21,12 @@ import javax.persistence.ManyToOne;
 public class Ingredient extends BaseEntity {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @ManyToOne(optional = false)
-    private ProductItem material;
+    private ProductItem productItem;
 
-    @Column(name = "material_amount")
+    @Column(name = "ingredient_amount")
     private Double itemAmount = 0.0;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private ProductItem productItem;
+    private Product product;
 }

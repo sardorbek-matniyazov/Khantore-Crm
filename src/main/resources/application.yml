@@ -20,7 +20,15 @@ spring:
       ddl-auto: update
     show-sql: true
     properties:
+      javax:
+        persistence:
+          sharedCache:
+            mode: ENABLE_SELECTIVE
       hibernate:
+        cache:
+          use_second_level_cache: true
+          region:
+            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
         format_sql: true
         enable_lazy_load_no_trans: true

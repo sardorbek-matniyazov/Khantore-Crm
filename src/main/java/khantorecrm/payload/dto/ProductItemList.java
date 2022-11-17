@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductList {
-    @NotNull(message = "Product id must not be null")
-    private Long productId;
-    @NotNull(message = "Product amount must not be null")
+public class ProductItemList {
+    @NotNull(message = "Product item id must not be null")
+    private Long productItemId;
+    @NotNull(message = "Product item amount must not be null")
     private Double amount;
 }

@@ -29,6 +29,11 @@ public class ProductController {
         return OwnResponse.ALL_DATA.setData(service.getInstanceWithId(id)).handleResponse();
     }
 
+    @GetMapping(value = "{id}/ingredients")
+    public HttpEntity<?> getProductIngredientsWithId(@PathVariable Long id) {
+        return OwnResponse.ALL_DATA.setData(service.getIngredientsWithProductId(id)).handleResponse();
+    }
+
     @PostMapping(value = "create")
     public HttpEntity<?> createProduct(@RequestBody @Valid ProductDto dto) {
         return service.create(dto).handleResponse();

@@ -8,24 +8,26 @@ import khantorecrm.payload.dto.ProductDto;
 import khantorecrm.repository.IngredientRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.ProductRepository;
+import khantorecrm.service.IProductService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductService implements
         InstanceReturnable<Product, Long>,
         Creatable<ProductDto>,
-        Updatable<ProductDto, Long> {
+        Updatable<ProductDto, Long>,
+        IProductService {
 
     private final ProductRepository repository;
     private final IngredientRepository ingredientRepository;
@@ -49,6 +51,7 @@ public class ProductService implements
     }
 
     @Override
+    @Transactional
     public OwnResponse create(ProductDto dto) {
         if (repository.existsByName(dto.getName())) return OwnResponse.PRODUCT_ALREADY_EXISTS;
         Product product = dto.toEntity();
@@ -63,11 +66,10 @@ public class ProductService implements
                                             productItemRepository.findById(
                                                     ingredient.getProductItemId()
                                             ).orElseThrow(
-                                                    () ->  new ProductNotFoundException("Product item with id " + ingredient.getProductItemId() + " not found")
+                                                    () -> new ProductNotFoundException("Product item with id " + ingredient.getProductItemId() + " not found")
                                             )
                                     );
                                     ingredientProduct.setItemAmount(ingredient.getAmount());
-                                    ingredientProduct.setProduct(product);
                                     return ingredientProduct;
                                 }
                         ).collect(Collectors.toSet())
@@ -75,9 +77,9 @@ public class ProductService implements
             }
             repository.save(product);
         } catch (ProductNotFoundException e) {
-            return OwnResponse.INGREDIENTS_NOT_FOUND.setData(e.getMessage());
+            return OwnResponse.INGREDIENTS_NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
-            return OwnResponse.ERROR;
+            return OwnResponse.ERROR.setMessage(e.getMessage());
         }
 
 
@@ -94,6 +96,11 @@ public class ProductService implements
                     repository.save(product);
                     return OwnResponse.UPDATED_SUCCESSFULLY;
                 }).orElse(OwnResponse.PRODUCT_NOT_FOUND);
+    }
+
+    @Override
+    public Set<Ingredient> getIngredientsWithProductId(Long id) {
+        return repository.findById(id).map(Product::getIngredients).orElse(null);
     }
 
     // todo: add delete method

@@ -11,6 +11,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -31,8 +32,12 @@ public class Product extends BaseEntity {
     @Column(name = "product_type", length = NamingConstants.MODEL_ENUM_LENGTH)
     private ProductType type;
 
-    @OneToMany(orphanRemoval = true, mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    private Set<Ingredient> ingredients;
+    @OneToMany(orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "product_fk", referencedColumnName = "id")
+    private Set<Ingredient> ingredients = new HashSet<>();
 
     public Product(String name, Double price, ProductType type) {
         this.name = name;

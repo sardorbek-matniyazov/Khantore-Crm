@@ -5,17 +5,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "ingredients")
+//caching
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ingredient extends BaseEntity {
@@ -25,8 +28,4 @@ public class Ingredient extends BaseEntity {
 
     @Column(name = "ingredient_amount")
     private Double itemAmount = 0.0;
-
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Product product;
 }

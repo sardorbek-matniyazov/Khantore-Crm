@@ -1,5 +1,6 @@
 package khantorecrm.service.impl;
 
+import khantorecrm.model.Product;
 import khantorecrm.model.ProductItem;
 import khantorecrm.model.Warehouse;
 import khantorecrm.payload.dao.OwnResponse;
@@ -14,7 +15,7 @@ import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.ProductAlreadyInTheWarehouseException;
 import khantorecrm.utils.exceptions.ProductNotFoundException;
-import khantorecrm.utils.exceptions.WarehouseItemsTypeNotEqual;
+import khantorecrm.utils.exceptions.TypesNotEqual;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +57,7 @@ public class WarehouseService implements InstanceReturnable<Warehouse, Long>, Cr
             itemRepository.saveAll(dto.getProductList().stream().map(productList -> {
                 ProductItem productItem = new ProductItem(productRepository.findById(productList.getProductId()).orElseThrow(() -> new ProductNotFoundException("Product with id " + productList.getProductId() + " not found")), productList.getAmount());
                 if (!productItem.getItemProduct().getType().equals(warehouse.getType())) {
-                    throw new WarehouseItemsTypeNotEqual("Product with id " + productList.getProductId() + " type " + productItem.getItemProduct().getType() + " not equal with warehouse type " + warehouse.getType());
+                    throw new TypesNotEqual("Product with id " + productList.getProductId() + " type " + productItem.getItemProduct().getType() + " not equal with warehouse type " + warehouse.getType());
                 }
                 productItem.setWarehouse(warehouse);
                 return productItem;
@@ -64,7 +65,7 @@ public class WarehouseService implements InstanceReturnable<Warehouse, Long>, Cr
             repository.save(warehouse);
         } catch (ProductNotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
-        } catch (WarehouseItemsTypeNotEqual e) {
+        } catch (TypesNotEqual e) {
             return OwnResponse.WAREHOUSE_ITEMS_TYPE_NOT_EQUAL.setMessage(e.getMessage());
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
@@ -87,13 +88,31 @@ public class WarehouseService implements InstanceReturnable<Warehouse, Long>, Cr
     public OwnResponse addItemToWarehouse(Long id, ProductList dto) {
         Optional<Warehouse> byId = repository.findById(id);
         try {
-            byId.ifPresent(it -> {
-                if (itemRepository.existsByWarehouseId(id)) {
+            byId.ifPresent(warehouse -> {
+                if (itemRepository.existsByWarehouseIdAndItemProduct_Id(id, dto.getProductId())) {
                     throw new ProductAlreadyInTheWarehouseException("The product Already in the warehouse");
                 }
+                Product product = productRepository.findById(dto.getProductId()).orElseThrow(
+                        () -> new ProductNotFoundException("Product with id " + dto.getProductId() + " not found in the database !")
+                );
+                if (!product.getType().equals(warehouse.getType())) throw new TypesNotEqual("Warehouse type should equal product type");
+
+                itemRepository.save(
+                        new ProductItem(
+                                product,
+                                dto.getAmount(),
+                                warehouse
+                        )
+                );
             });
-        } catch (ProductNotFoundException e) {
+        } catch (ProductAlreadyInTheWarehouseException e) {
             return OwnResponse.PRODUCT_ALREADY_EXISTS_IN_THE_WAREHOUSE.setMessage(e.getMessage());
+        } catch (ProductNotFoundException e) {
+            return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
+        } catch (TypesNotEqual e) {
+            return OwnResponse.TYPES_NOT_EQUAL.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR.setMessage(e.getMessage());
         }
         return OwnResponse.UPDATED_SUCCESSFULLY;
     }

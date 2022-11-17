@@ -13,5 +13,5 @@ public interface ProductItemRepository extends JpaRepository<ProductItem, Long> 
 
     List<ProductItem> findAllByWarehouseId(Long id);
 
-    boolean existsByWarehouseId(Long id);
+    boolean existsByWarehouseIdAndItemProduct_Id(Long warehouseId, Long productId);
 }

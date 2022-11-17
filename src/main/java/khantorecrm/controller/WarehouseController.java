@@ -1,8 +1,6 @@
 package khantorecrm.controller;
 
-import khantorecrm.model.ProductItem;
 import khantorecrm.payload.dao.OwnResponse;
-import khantorecrm.payload.dto.ProductItemList;
 import khantorecrm.payload.dto.ProductList;
 import khantorecrm.payload.dto.WarehouseDto;
 import khantorecrm.service.impl.WarehouseService;
@@ -23,12 +21,12 @@ public class WarehouseController {
     }
 
     @GetMapping(value = "all")
-    public HttpEntity<?> getAllProducts() {
+    public HttpEntity<?> getAllWarehouses() {
         return OwnResponse.ALL_DATA.setData(service.getAllInstances()).handleResponse();
     }
 
     @GetMapping(value = "{id}")
-    public HttpEntity<?> getProductWithId(@PathVariable Long id) {
+    public HttpEntity<?> getWarehouseWithId(@PathVariable Long id) {
         return OwnResponse.ALL_DATA.setData(service.getInstanceWithId(id)).handleResponse();
     }
 
@@ -48,7 +46,7 @@ public class WarehouseController {
     }
 
     @PutMapping(value = "{id}")
-    public HttpEntity<?> updateProduct(@RequestBody @Valid WarehouseDto dto, @PathVariable Long id) {
+    public HttpEntity<?> updateWarehouse(@RequestBody @Valid WarehouseDto dto, @PathVariable Long id) {
         return service.update(dto, id).handleResponse();
     }
 }

@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "product-item")
-public class ProductItemRepository {
+public class ProductItemController {
     private final ProductItemService service;
 
     @Autowired
-    public ProductItemRepository(ProductItemService service) {
+    public ProductItemController(ProductItemService service) {
         this.service = service;
     }
 }

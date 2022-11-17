@@ -5,7 +5,6 @@ import khantorecrm.model.Product;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductDto;
-import khantorecrm.repository.IngredientRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.ProductRepository;
 import khantorecrm.service.IProductService;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,13 +28,11 @@ public class ProductService implements
         IProductService {
 
     private final ProductRepository repository;
-    private final IngredientRepository ingredientRepository;
     private final ProductItemRepository productItemRepository;
 
     @Autowired
-    public ProductService(ProductRepository repository, IngredientRepository ingredientRepository, ProductItemRepository productItemRepository) {
+    public ProductService(ProductRepository repository, ProductItemRepository productItemRepository) {
         this.repository = repository;
-        this.ingredientRepository = ingredientRepository;
         this.productItemRepository = productItemRepository;
     }
 

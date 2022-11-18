@@ -24,6 +24,7 @@ public class OwnResponse {
     public static final OwnResponse WAREHOUSE_NOT_FOUND = new OwnResponse("Warehouse not found", HttpStatus.NOT_FOUND.value(), false);
     public static final OwnResponse PRODUCT_ALREADY_EXISTS_IN_THE_WAREHOUSE = new OwnResponse("The item product already in the warehouse", HttpStatus.BAD_REQUEST.value(), false);
     public static final OwnResponse TYPES_NOT_EQUAL = new OwnResponse("The Types not equal", HttpStatus.BAD_REQUEST.value(), false);
+    public static final OwnResponse EMPLOYEE_ALREADY_EXISTS = new OwnResponse("The employee already exists in the database", HttpStatus.BAD_REQUEST.value(), false);
 
     private String message;
     @JsonIgnore

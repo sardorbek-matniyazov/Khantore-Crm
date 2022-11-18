@@ -41,6 +41,6 @@ public class Input extends BaseEntity {
     @Column(name = "input_cr_pr_price")
     private Double currentProductPrice = 0.0;
 
-    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Employee employee;
 }

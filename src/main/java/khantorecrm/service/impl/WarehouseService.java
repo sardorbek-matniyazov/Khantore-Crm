@@ -3,7 +3,9 @@ package khantorecrm.service.impl;
 import khantorecrm.model.Product;
 import khantorecrm.model.ProductItem;
 import khantorecrm.model.Warehouse;
+import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dto.MovingItemDto;
 import khantorecrm.payload.dto.ProductList;
 import khantorecrm.payload.dto.WarehouseDto;
 import khantorecrm.repository.ProductItemRepository;
@@ -15,16 +17,22 @@ import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.ProductAlreadyInTheWarehouseException;
 import khantorecrm.utils.exceptions.ProductNotFoundException;
+import khantorecrm.utils.exceptions.ProductsNotEqualException;
 import khantorecrm.utils.exceptions.TypesNotEqual;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class WarehouseService implements InstanceReturnable<Warehouse, Long>, Creatable<WarehouseDto>, Updatable<WarehouseDto, Long>, IWarehouseService {
+public class WarehouseService implements
+        InstanceReturnable<Warehouse, Long>,
+        Creatable<WarehouseDto>,
+        Updatable<WarehouseDto, Long>,
+        IWarehouseService {
 
     private final WarehouseRepository repository;
     private final ProductItemRepository itemRepository;
@@ -115,5 +123,52 @@ public class WarehouseService implements InstanceReturnable<Warehouse, Long>, Cr
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
         return OwnResponse.UPDATED_SUCCESSFULLY;
+    }
+
+    @Override
+    public OwnResponse moveItem(MovingItemDto dto) {
+        try {
+            ProductItem itemOne = itemRepository.findById(dto.getItemOneId()).orElseThrow(
+                    () -> new ProductNotFoundException("Product item with id " + dto.getItemOneId() + " not found in the database !")
+            );
+
+            ProductItem itemTwo = itemRepository.findById(dto.getItemTwoId()).orElseThrow(
+                    () -> new ProductNotFoundException("Product item with id " + dto.getItemTwoId() + " not found in the database !")
+            );
+
+            if (!Objects.equals(itemOne.getItemProduct().getId(), itemTwo.getItemProduct().getId())) {
+                throw new ProductsNotEqualException("Product items should be equal");
+            }
+
+            if (dto.getAmount() > itemOne.getItemAmount()) {
+                return OwnResponse.INPUT_TYPE_ERROR.setMessage("Amount should be less than item amount");
+            }
+
+            itemOne.setItemAmount(itemOne.getItemAmount() - dto.getAmount());
+            itemTwo.setItemAmount(itemTwo.getItemAmount() + dto.getAmount());
+
+            // repository.saveAll(List.of(itemOne.getWarehouse(), itemTwo.getWarehouse()));
+            itemRepository.save(itemOne);
+            itemRepository.save(itemTwo);
+
+            return OwnResponse.UPDATED_SUCCESSFULLY;
+
+        } catch (ProductNotFoundException e) {
+            return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
+        } catch (ProductsNotEqualException e) {
+            return OwnResponse.PRODUCT_NOT_EQUAL.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR.setMessage(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Warehouse> getAllProductWarehouses() {
+        return repository.findAllByType(ProductType.PRODUCT);
+    }
+
+    @Override
+    public List<Warehouse> getAllIngredientWarehouses() {
+        return repository.findAllByType(ProductType.INGREDIENT);
     }
 }

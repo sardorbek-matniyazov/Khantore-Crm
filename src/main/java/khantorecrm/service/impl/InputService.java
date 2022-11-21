@@ -1,11 +1,14 @@
 package khantorecrm.service.impl;
 
 import khantorecrm.model.Employee;
+import khantorecrm.model.Ingredient;
 import khantorecrm.model.Input;
 import khantorecrm.model.Product;
 import khantorecrm.model.ProductItem;
+import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
+import khantorecrm.payload.dto.ProductItemList;
 import khantorecrm.repository.BalanceRepository;
 import khantorecrm.repository.EmployeeRepository;
 import khantorecrm.repository.InputRepository;
@@ -17,7 +20,10 @@ import khantorecrm.utils.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Service
 public class InputService implements
@@ -73,7 +79,7 @@ public class InputService implements
                     new Input(
                             productItemRepository.save(productItem),
                             dto.getAmount(),
-                            product.getType(),
+                            ProductType.INGREDIENT,
                             dto.getPrice(),
                             employeeRepository.save(employee)
                     )
@@ -85,5 +91,89 @@ public class InputService implements
         }
 
         return OwnResponse.CREATED_SUCCESSFULLY;
+    }
+
+    @Override
+    public OwnResponse incomeProduct(ProductItemList dto) {
+        try {
+            ProductItem productItem = productItemRepository.findById(dto.getProductItemId()).orElseThrow(
+                    () -> new ProductNotFoundException("Product item with id " + dto.getProductItemId() + " not found")
+            );
+
+            Input save = repository.save(
+                    new Input(
+                            productItem,
+                            dto.getAmount(),
+                            ProductType.PRODUCT,
+                            productItem.getItemProduct().getPrice()
+                    )
+            );
+
+            return OwnResponse.CREATED_SUCCESSFULLY.setData(save);
+        } catch (ProductNotFoundException e) {
+            return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR.setMessage(e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public OwnResponse production(List<ProductItemList> dto) {
+        try {
+            dto.stream().map(
+                    item -> {
+                        ProductItem productItem = productItemRepository.findById(item.getProductItemId()).orElseThrow(
+                                () -> new ProductNotFoundException("Product item with id " + item.getProductItemId() + " not found")
+                        );
+
+                        productItem.setItemAmount(productItem.getItemAmount() + item.getAmount());
+
+                        return productItemRepository.save(productItem);
+                    }
+            ).forEach(
+                    productItem -> {
+                        boolean b = changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
+                        if (b) throw new ProductNotFoundException("There are something wrong with ingredients");
+                        Input save = repository.save(
+                                new Input(
+                                        productItem,
+                                        productItem.getItemAmount(),
+                                        ProductType.PRODUCT,
+                                        productItem.getItemProduct().getPrice()
+                                )
+                        );
+                    }
+            );
+
+            return OwnResponse.CREATED_SUCCESSFULLY;
+        } catch (ProductNotFoundException e) {
+            return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR.setMessage(e.getMessage());
+        }
+    }
+
+    private boolean changeIngredients(Set<Ingredient> ingredients, Double itemAmount, char ch) {
+        try {
+            Stream<ProductItem> productItemStream = ingredients.stream().map(
+                    ingredient -> {
+                        ProductItem productItem = productItemRepository.findById(ingredient.getProductItem().getId()).orElseThrow(
+                                () -> new ProductNotFoundException("Product item with id " + ingredient.getProductItem().getId() + " not found")
+                        );
+
+                        if (ch == '+') {
+                            productItem.setItemAmount(productItem.getItemAmount() - ingredient.getItemAmount() * itemAmount);
+                        } else {
+                            productItem.setItemAmount(productItem.getItemAmount() + ingredient.getItemAmount() * itemAmount);
+                        }
+
+                        return productItemRepository.save(productItem);
+                    }
+            );
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

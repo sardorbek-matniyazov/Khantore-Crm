@@ -43,4 +43,16 @@ public class Input extends BaseEntity {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     private Employee employee;
+
+    public Input(
+            ProductItem productItem,
+            Double amount,
+            ProductType type,
+            Double currentProductPrice
+    ) {
+        this.productItem = productItem;
+        this.amount = amount;
+        this.type = type;
+        this.currentProductPrice = currentProductPrice;
+    }
 }

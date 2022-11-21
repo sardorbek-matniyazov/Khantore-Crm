@@ -15,7 +15,6 @@ import javax.persistence.*;
 @Entity(name = "employee")
 //caching
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table()
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee extends BaseEntity {

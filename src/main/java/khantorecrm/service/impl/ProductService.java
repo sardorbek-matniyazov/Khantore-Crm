@@ -78,7 +78,6 @@ public class ProductService implements
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
 
-
         return OwnResponse.CREATED_SUCCESSFULLY;
     }
 
@@ -97,6 +96,16 @@ public class ProductService implements
     @Override
     public Set<Ingredient> getIngredientsWithProductId(Long id) {
         return repository.findById(id).map(Product::getIngredients).orElse(null);
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        return repository.findAllByType(ProductType.PRODUCT);
+    }
+
+    @Override
+    public List<Product> getAllIngredientProducts() {
+        return repository.findAllByType(ProductType.INGREDIENT);
     }
 
     // todo: add delete method

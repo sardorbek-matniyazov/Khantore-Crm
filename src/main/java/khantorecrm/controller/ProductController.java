@@ -24,6 +24,16 @@ public class ProductController {
         return OwnResponse.ALL_DATA.setData(service.getAllInstances()).handleResponse();
     }
 
+    @GetMapping(value = "ingredients")
+    public HttpEntity<?> getAllIngredientProducts() {
+        return OwnResponse.ALL_DATA.setData(service.getAllIngredientProducts()).handleResponse();
+    }
+
+    @GetMapping(value = "products")
+    public HttpEntity<?> getAllProductsTypeProduct() {
+        return OwnResponse.ALL_DATA.setData(service.getAllProducts()).handleResponse();
+    }
+
     @GetMapping(value = "{id}")
     public HttpEntity<?> getProductWithId(@PathVariable Long id) {
         return OwnResponse.ALL_DATA.setData(service.getInstanceWithId(id)).handleResponse();

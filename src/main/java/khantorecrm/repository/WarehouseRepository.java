@@ -1,13 +1,15 @@
 package khantorecrm.repository;
 
 import khantorecrm.model.Warehouse;
+import khantorecrm.model.enums.ProductType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
-    @Query("select case when count(c)> 0 then true else false end from khantorecrm.model.Warehouse c where c.name = ?1")
     boolean existsByName(String name);
 
-    @Query("select case when count(c)> 0 then true else false end from khantorecrm.model.Warehouse c where c.id = ?1")
     boolean existsById(Long id);
+
+    List<Warehouse> findAllByType(ProductType type);
 }

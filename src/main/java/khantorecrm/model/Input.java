@@ -66,9 +66,13 @@ public class Input extends BaseEntity {
         result.put("createdAt", super.getCreatedAt());
 
         result.put("amount", this.getAmount());
-        result.put("productItem", this.getProductItem());
+        result.put("product", this.getProductItem().getItemProduct().getName());
+        result.put("warehouse", this.getProductItem().getWarehouse().getName());
         result.put("productPrice", this.getCurrentProductPrice());
-        result.put("employee", this.getEmployee());
+
+        if (this.getEmployee() != null) {
+            result.put("employee", this.getEmployee().getName());
+        }
         return result;
     }
 }

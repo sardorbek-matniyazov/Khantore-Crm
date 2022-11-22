@@ -86,6 +86,8 @@ public class InputService implements
             );
         } catch (ProductNotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
+        }catch (NullPointerException e){
+            return OwnResponse.ERROR.setMessage("There is no such product item");
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }

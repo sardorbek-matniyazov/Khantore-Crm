@@ -33,7 +33,7 @@ public class WarehouseController {
 
     @GetMapping(value = "products")
     public HttpEntity<?> getAllProductWarehouses() {
-        return OwnResponse.ALL_DATA.setData(service.getAllIngredientWarehouses()).handleResponse();
+        return OwnResponse.ALL_DATA.setData(service.getAllProductWarehouses()).handleResponse();
     }
 
     @GetMapping(value = "{id}")

@@ -1,5 +1,6 @@
 package khantorecrm.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.utils.constants.NamingConstants;
@@ -14,6 +15,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.util.HashMap;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -29,4 +32,14 @@ public class Warehouse extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "warehouse_type", length = NamingConstants.MODEL_ENUM_LENGTH)
     private ProductType type;
+
+    @JsonValue
+    public Map<String, Object> toJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("warehouseId", super.getId());
+
+        result.put("name", this.getName());
+        result.put("type", this.getType());
+        return result;
+    }
 }

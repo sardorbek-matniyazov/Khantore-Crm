@@ -16,9 +16,9 @@ import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.ProductAlreadyInTheWarehouseException;
-import khantorecrm.utils.exceptions.ProductNotFoundException;
+import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.ProductsNotEqualException;
-import khantorecrm.utils.exceptions.TypesNotEqual;
+import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,17 +63,17 @@ public class WarehouseService implements
         Warehouse warehouse = new Warehouse(dto.getName(), dto.getType());
         try {
             itemRepository.saveAll(dto.getProductList().stream().map(productList -> {
-                ProductItem productItem = new ProductItem(productRepository.findById(productList.getProductId()).orElseThrow(() -> new ProductNotFoundException("Product with id " + productList.getProductId() + " not found")), productList.getAmount());
+                ProductItem productItem = new ProductItem(productRepository.findById(productList.getProductId()).orElseThrow(() -> new NotFoundException("Product with id " + productList.getProductId() + " not found")), productList.getAmount());
                 if (!productItem.getItemProduct().getType().equals(warehouse.getType())) {
-                    throw new TypesNotEqual("Product with id " + productList.getProductId() + " type " + productItem.getItemProduct().getType() + " not equal with warehouse type " + warehouse.getType());
+                    throw new TypesInError("Product with id " + productList.getProductId() + " type " + productItem.getItemProduct().getType() + " not equal with warehouse type " + warehouse.getType());
                 }
                 productItem.setWarehouse(warehouse);
                 return productItem;
             }).collect(Collectors.toSet()));
             repository.save(warehouse);
-        } catch (ProductNotFoundException e) {
+        } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
-        } catch (TypesNotEqual e) {
+        } catch (TypesInError e) {
             return OwnResponse.WAREHOUSE_ITEMS_TYPE_NOT_EQUAL.setMessage(e.getMessage());
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
@@ -101,9 +101,9 @@ public class WarehouseService implements
                     throw new ProductAlreadyInTheWarehouseException("The product Already in the warehouse");
                 }
                 Product product = productRepository.findById(dto.getProductId()).orElseThrow(
-                        () -> new ProductNotFoundException("Product with id " + dto.getProductId() + " not found in the database !")
+                        () -> new NotFoundException("Product with id " + dto.getProductId() + " not found in the database !")
                 );
-                if (!product.getType().equals(warehouse.getType())) throw new TypesNotEqual("Warehouse type should equal product type");
+                if (!product.getType().equals(warehouse.getType())) throw new TypesInError("Warehouse type should equal product type");
 
                 itemRepository.save(
                         new ProductItem(
@@ -115,9 +115,9 @@ public class WarehouseService implements
             });
         } catch (ProductAlreadyInTheWarehouseException e) {
             return OwnResponse.PRODUCT_ALREADY_EXISTS_IN_THE_WAREHOUSE.setMessage(e.getMessage());
-        } catch (ProductNotFoundException e) {
+        } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
-        } catch (TypesNotEqual e) {
+        } catch (TypesInError e) {
             return OwnResponse.TYPES_NOT_EQUAL.setMessage(e.getMessage());
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
@@ -129,11 +129,11 @@ public class WarehouseService implements
     public OwnResponse moveItem(MovingItemDto dto) {
         try {
             ProductItem itemOne = itemRepository.findById(dto.getItemOneId()).orElseThrow(
-                    () -> new ProductNotFoundException("Product item with id " + dto.getItemOneId() + " not found in the database !")
+                    () -> new NotFoundException("Product item with id " + dto.getItemOneId() + " not found in the database !")
             );
 
             ProductItem itemTwo = itemRepository.findById(dto.getItemTwoId()).orElseThrow(
-                    () -> new ProductNotFoundException("Product item with id " + dto.getItemTwoId() + " not found in the database !")
+                    () -> new NotFoundException("Product item with id " + dto.getItemTwoId() + " not found in the database !")
             );
 
             if (!Objects.equals(itemOne.getItemProduct().getId(), itemTwo.getItemProduct().getId())) {
@@ -153,7 +153,7 @@ public class WarehouseService implements
 
             return OwnResponse.UPDATED_SUCCESSFULLY;
 
-        } catch (ProductNotFoundException e) {
+        } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
         } catch (ProductsNotEqualException e) {
             return OwnResponse.PRODUCT_NOT_EQUAL.setMessage(e.getMessage());

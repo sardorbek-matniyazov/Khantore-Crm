@@ -2,7 +2,6 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
-import khantorecrm.model.enums.ProductType;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,33 +12,34 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.util.HashMap;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Entity(name = "warehouse")
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Entity(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Warehouse extends BaseEntity {
-    @Column(name = "wr_name", length = NamingConstants.MODEL_NAME_LENGTH, unique = true)
+//caching
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class User extends BaseEntity {
+    @Column(name = "user_name", nullable = false, length = NamingConstants.MODEL_NAME_LENGTH)
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "warehouse_type", length = NamingConstants.MODEL_ENUM_LENGTH)
-    private ProductType type;
+    @Column(name = "user_phone_number", nullable = false, unique = true, length = NamingConstants.MODEL_NAME_LENGTH)
+    private String phoneNumber;
+    @Column(name = "user_password", nullable = false, length = NamingConstants.PASSWORD_LENGTH)
+    private String password;
 
     @JsonValue
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();
-        result.put("warehouseId", super.getId());
+        result.put("userId", super.getId());
+        result.put("createdAt", super.getCreatedAt());
 
-        result.put("name", this.getName());
-        result.put("type", this.getType());
+        result.put("name", this.name);
+        result.put("phoneNumber", this.phoneNumber);
+
+        // todo: role settings should be here
         return result;
     }
 }

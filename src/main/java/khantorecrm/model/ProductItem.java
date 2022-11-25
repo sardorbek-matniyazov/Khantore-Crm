@@ -1,5 +1,6 @@
 package khantorecrm.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.util.HashMap;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -37,5 +40,16 @@ public class ProductItem extends BaseEntity {
     public ProductItem(Product itemProduct, Double itemAmount) {
         this.itemProduct = itemProduct;
         this.itemAmount = itemAmount;
+    }
+
+    @JsonValue
+    public Map<String, Object> toJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("productItemId", super.getId());
+
+        result.put("product", this.getItemProduct());
+        result.put("productAmount", this.getItemAmount());
+        result.put("warehouse", this.getWarehouse());
+        return result;
     }
 }

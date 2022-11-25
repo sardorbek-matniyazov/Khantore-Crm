@@ -1,11 +1,13 @@
 package khantorecrm.controller;
 
+import khantorecrm.model.enums.ActionType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
 import khantorecrm.payload.dto.ProductItemList;
 import khantorecrm.service.impl.InputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -44,5 +46,14 @@ public class InputController {
     @PostMapping(value = "production")
     public HttpEntity<?> production(@RequestBody @Valid List<ProductItemList> dto) {
         return service.production(dto).handleResponse();
+    }
+
+    @GetMapping(value = "all-wait")
+    public HttpEntity<?> getAllWaitingInputs() {
+        return ResponseEntity.ok(
+                OwnResponse.ALL_DATA.setData(
+                        service.getAllInputsByStatus(ActionType.WAIT)
+                )
+        );
     }
 }

@@ -6,15 +6,14 @@
 
 
 
-
-                        | Product |                               | ProductItem |             | Warehouse |
-                            Un(price=1000)                                                          Sklad_1(ingredientlar uchin)
-                            May                                                                     Sklad_2
-                            Vitamin                                                                 Buxanki_sklad
-                            Buxanki(400)                                                            Sklad_3
-                            Buxanki(500)
-                            Sarmay
-                            Shakar
+                       | Product |                               | ProductItem |             | Warehouse |
+                           Un(price=1000)                                                          Sklad_1(ingredientlar uchin)
+                           May                                                                     Sklad_2
+                           Vitamin                                                                 Buxanki_sklad
+                           Buxanki(400)                                                            Sklad_3
+                           Buxanki(500)
+                           Sarmay
+                           Shakar
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,4 +27,4 @@
                       warehouse                         warehouse
 
                         productItem(may)                     productItem(may)
-                        amount= 0.9                            amount=
+                        amount = 0.9                            amount =

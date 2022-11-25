@@ -1,5 +1,6 @@
 package khantorecrm.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.utils.constants.NamingConstants;
@@ -15,6 +16,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import java.util.HashMap;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -33,4 +36,16 @@ public class Payment extends BaseEntity {
 
     @ManyToOne(optional = false)
     private Balance balance;
+
+    @JsonValue
+    public Map<String, Object> toJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("paymentId", super.getId());
+        result.put("createdAt", super.getCreatedAt());
+
+        result.put("amount", this.getAmount());
+        result.put("type", this.getType());
+        result.put("balance", this.getBalance());
+        return result;
+    }
 }

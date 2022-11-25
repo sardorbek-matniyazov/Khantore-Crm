@@ -7,8 +7,6 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-  profiles:
-    active: spring.profiles.active
   jackson:
     date-format: dd MMMM yyyy HH:mm
     time-zone: Asia/Tashkent

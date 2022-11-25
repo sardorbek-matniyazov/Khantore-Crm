@@ -1,5 +1,7 @@
 package khantorecrm.service;
 
+import khantorecrm.model.Input;
+import khantorecrm.model.enums.ActionType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
 import khantorecrm.payload.dto.ProductItemList;
@@ -12,4 +14,6 @@ public interface IInputService {
     OwnResponse incomeProduct(ProductItemList dto);
 
     OwnResponse production(List<ProductItemList> dto);
+
+    List<Input> getAllInputsByStatus(ActionType wait);
 }

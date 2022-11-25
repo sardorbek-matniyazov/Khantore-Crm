@@ -5,4 +5,5 @@ public interface NamingConstants {
     int MODEL_ENUM_LENGTH = 15;
     int MODEL_NUMBER_LENGTH = 20;
     int MODEL_COMMENT_LENGTH = 200;
+    int PASSWORD_LENGTH = 150;
 }

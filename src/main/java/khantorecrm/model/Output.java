@@ -34,4 +34,13 @@ public class Output extends BaseEntity {
 
     @Column(name = "output_type", length = 10, nullable = false)
     private OutputType type;
+
+    @ManyToOne
+    private Delivery delivery;
+
+    public Output(ProductItem productItem, Double amount, OutputType sale) {
+        this.productItem = productItem;
+        this.amount = amount;
+        this.type = sale;
+    }
 }

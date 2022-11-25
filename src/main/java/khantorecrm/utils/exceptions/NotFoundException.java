@@ -3,8 +3,8 @@ package khantorecrm.utils.exceptions;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class ProductNotFoundException extends RuntimeException {
-    public ProductNotFoundException(String message) {
+public class NotFoundException extends RuntimeException {
+    public NotFoundException(String message) {
         super(message);
     }
 }

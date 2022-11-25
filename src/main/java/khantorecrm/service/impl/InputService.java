@@ -5,6 +5,7 @@ import khantorecrm.model.Ingredient;
 import khantorecrm.model.Input;
 import khantorecrm.model.Product;
 import khantorecrm.model.ProductItem;
+import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
@@ -16,7 +17,7 @@ import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.ProductRepository;
 import khantorecrm.service.IInputService;
 import khantorecrm.service.functionality.InstanceReturnable;
-import khantorecrm.utils.exceptions.ProductNotFoundException;
+import khantorecrm.utils.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,13 +60,13 @@ public class InputService implements
     public OwnResponse incomeIngredient(InputDto dto) {
         try {
             ProductItem productItem = productItemRepository.findById(dto.getProductItemId()).orElseThrow(
-                    () -> new ProductNotFoundException("Product item with id " + dto.getProductItemId() + " not found")
+                    () -> new NotFoundException("Product item with id " + dto.getProductItemId() + " not found")
             );
 
             Product product = productItem.getItemProduct();
 
             Employee employee = employeeRepository.findById(dto.getEmployerId()).orElseThrow(
-                    () -> new ProductNotFoundException("Employee with id " + dto.getEmployerId() + " not found")
+                    () -> new NotFoundException("Employee with id " + dto.getEmployerId() + " not found")
             );
 
             // save product item
@@ -81,10 +82,11 @@ public class InputService implements
                             dto.getAmount(),
                             ProductType.INGREDIENT,
                             dto.getPrice(),
-                            employeeRepository.save(employee)
+                            employeeRepository.save(employee),
+                            ActionType.ACCEPTED
                     )
             );
-        } catch (ProductNotFoundException e) {
+        } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
         }catch (NullPointerException e){
             return OwnResponse.ERROR.setMessage("There is no such product item");
@@ -99,7 +101,7 @@ public class InputService implements
     public OwnResponse incomeProduct(ProductItemList dto) {
         try {
             ProductItem productItem = productItemRepository.findById(dto.getProductItemId()).orElseThrow(
-                    () -> new ProductNotFoundException("Product item with id " + dto.getProductItemId() + " not found")
+                    () -> new NotFoundException("Product item with id " + dto.getProductItemId() + " not found")
             );
 
             Input save = repository.save(
@@ -107,12 +109,13 @@ public class InputService implements
                             productItem,
                             dto.getAmount(),
                             ProductType.PRODUCT,
-                            productItem.getItemProduct().getPrice()
+                            productItem.getItemProduct().getPrice(),
+                            ActionType.ACCEPTED
                     )
             );
 
             return OwnResponse.CREATED_SUCCESSFULLY.setData(save);
-        } catch (ProductNotFoundException e) {
+        } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
@@ -126,7 +129,7 @@ public class InputService implements
             dto.stream().map(
                     item -> {
                         ProductItem productItem = productItemRepository.findById(item.getProductItemId()).orElseThrow(
-                                () -> new ProductNotFoundException("Product item with id " + item.getProductItemId() + " not found")
+                                () -> new NotFoundException("Product item with id " + item.getProductItemId() + " not found")
                         );
 
                         productItem.setItemAmount(productItem.getItemAmount() + item.getAmount());
@@ -136,24 +139,30 @@ public class InputService implements
             ).forEach(
                     productItem -> {
                         boolean b = changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
-                        if (b) throw new ProductNotFoundException("There are something wrong with ingredients");
+                        if (b) throw new NotFoundException("There are something wrong with ingredients");
                         Input save = repository.save(
                                 new Input(
                                         productItem,
                                         productItem.getItemAmount(),
                                         ProductType.PRODUCT,
-                                        productItem.getItemProduct().getPrice()
+                                        productItem.getItemProduct().getPrice(),
+                                        ActionType.WAIT
                                 )
                         );
                     }
             );
 
             return OwnResponse.CREATED_SUCCESSFULLY;
-        } catch (ProductNotFoundException e) {
+        } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
+    }
+
+    @Override
+    public List<Input> getAllInputsByStatus(ActionType wait) {
+        return repository.findAllByStatus(wait);
     }
 
     private boolean changeIngredients(Set<Ingredient> ingredients, Double itemAmount, char ch) {
@@ -161,7 +170,7 @@ public class InputService implements
             Stream<ProductItem> productItemStream = ingredients.stream().map(
                     ingredient -> {
                         ProductItem productItem = productItemRepository.findById(ingredient.getProductItem().getId()).orElseThrow(
-                                () -> new ProductNotFoundException("Product item with id " + ingredient.getProductItem().getId() + " not found")
+                                () -> new NotFoundException("Product item with id " + ingredient.getProductItem().getId() + " not found")
                         );
 
                         if (ch == '+') {

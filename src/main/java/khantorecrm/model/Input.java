@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class Input extends BaseEntity {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     private ProductItem productItem;
 
     @Column(name = "input_amount")
@@ -47,15 +48,20 @@ public class Input extends BaseEntity {
     @ManyToOne(cascade = CascadeType.MERGE)
     private Employee employee;
 
+    @Column(name = "input_status")
+    private ActionType status = ActionType.WAIT;
+
     public Input(
             ProductItem productItem,
             Double amount,
             ProductType type,
-            Double currentProductPrice
+            Double currentProductPrice,
+            ActionType actionType
     ) {
         this.productItem = productItem;
         this.amount = amount;
         this.type = type;
+        this.status = actionType;
         this.currentProductPrice = currentProductPrice;
     }
 

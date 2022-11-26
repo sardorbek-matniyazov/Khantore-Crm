@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 
 @Service
 public class InputService implements
-        InstanceReturnable<Input, Long>,
         IInputService {
 
     private final InputRepository repository;
@@ -44,16 +43,6 @@ public class InputService implements
         this.productRepository = productRepository;
         this.employeeRepository = employeeRepository;
         this.balanceRepository = balanceRepository;
-    }
-
-    @Override
-    public List<Input> getAllInstances() {
-        return repository.findAll();
-    }
-
-    @Override
-    public Input getInstanceWithId(Long id) {
-        return repository.findById(id).orElse(null);
     }
 
     @Override
@@ -186,5 +175,10 @@ public class InputService implements
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public List<Input> getAllByType(ProductType type) {
+        return repository.findAllByType(type);
     }
 }

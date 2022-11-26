@@ -1,6 +1,7 @@
 package khantorecrm.controller;
 
 import khantorecrm.model.enums.ActionType;
+import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
 import khantorecrm.payload.dto.ProductItemList;
@@ -23,14 +24,14 @@ public class InputController {
         this.service = service;
     }
 
-    @GetMapping(value = "all")
-    public HttpEntity<?> getAllInputs() {
-        return OwnResponse.ALL_DATA.setData(service.getAllInstances()).handleResponse();
+    @GetMapping(value = "ingredients")
+    public HttpEntity<?> getAllIngredients() {
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.INGREDIENT)).handleResponse();
     }
 
-    @GetMapping(value = "{id}")
-    public HttpEntity<?> getInputWithId(@PathVariable Long id) {
-        return OwnResponse.ALL_DATA.setData(service.getInstanceWithId(id)).handleResponse();
+    @GetMapping(value = "products")
+    public HttpEntity<?> getAllProducts() {
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.PRODUCT)).handleResponse();
     }
 
     @PostMapping(value = "income-ingredient")

@@ -163,12 +163,7 @@ public class WarehouseService implements
     }
 
     @Override
-    public List<Warehouse> getAllProductWarehouses() {
-        return repository.findAllByType(ProductType.PRODUCT);
-    }
-
-    @Override
-    public List<Warehouse> getAllIngredientWarehouses() {
-        return repository.findAllByType(ProductType.INGREDIENT);
+    public List<Warehouse> getAllByType(ProductType type) {
+        return repository.findAllByType(type);
     }
 }

@@ -108,16 +108,6 @@ public class ProductService implements
         return repository.findById(id).map(Product::getIngredients).orElse(null);
     }
 
-    @Override
-    public List<Product> getAllProducts() {
-        return repository.findAllByType(ProductType.PRODUCT);
-    }
-
-    @Override
-    public List<Product> getAllIngredientProducts() {
-        return repository.findAllByType(ProductType.INGREDIENT);
-    }
-
     // todo: add delete method
 
     private Set<Ingredient> makeIngredients(List<ProductItemList> ingredients) {
@@ -135,5 +125,10 @@ public class ProductService implements
                     return ingredientProduct;
                 }
         ).collect(Collectors.toSet());
+    }
+
+    @Override
+    public List<Product> getAllByType(ProductType type) {
+        return repository.findAllByType(type);
     }
 }

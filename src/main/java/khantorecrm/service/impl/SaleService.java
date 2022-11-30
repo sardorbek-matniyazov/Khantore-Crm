@@ -1,17 +1,16 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Client;
-import khantorecrm.model.Output;
-import khantorecrm.model.ProductItem;
-import khantorecrm.model.Sale;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.OutputType;
+import khantorecrm.model.enums.PaymentType;
+import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dto.ProductItemList;
 import khantorecrm.payload.dto.SaleDto;
 import khantorecrm.repository.ClientRepository;
-import khantorecrm.repository.PaymentRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.SaleRepository;
-import khantorecrm.service.functionality.Creatable;
+import khantorecrm.service.ISaleService;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
@@ -21,20 +20,21 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
-public class SaleService implements InstanceReturnable<Sale, Long>, Creatable<SaleDto> {
+public class SaleService implements InstanceReturnable<Sale, Long>, ISaleService {
     private final SaleRepository repository;
     private final ProductItemRepository itemRepository;
     private final ClientRepository clientRepository;
-    private final PaymentRepository paymentRepository;
 
     @Autowired
-    public SaleService(SaleRepository repository, ProductItemRepository itemRepository, ClientRepository clientRepository, PaymentRepository paymentRepository) {
+    public SaleService(SaleRepository repository, ProductItemRepository itemRepository, ClientRepository clientRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.clientRepository = clientRepository;
-        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -47,42 +47,61 @@ public class SaleService implements InstanceReturnable<Sale, Long>, Creatable<Sa
         return repository.findById(id).orElse(null);
     }
 
-    @Transactional
     @Override
-    public OwnResponse create(SaleDto dto) {
+    @Transactional
+    public OwnResponse sell(SaleDto dto) {
         try {
-            ProductItem productItem = itemRepository.findById(dto.getClientId()).orElseThrow(
-                    () -> new NotFoundException("Product item with id " + dto.getProductItemId() + " not found")
-            );
+            AtomicReference<Double> atomicWholePrice = new AtomicReference<>(0.0);
+            Set<ItemForCollection> collect = dto.getProductItemsList().stream().filter(ProductItemList::isItemCreatableId).map(
+                    dItem -> {
+                        ProductItem item = itemRepository.findById(
+                                dItem.getProductItemId()).orElseThrow(
+                                () -> new NotFoundException("Product item with id " + dItem.getProductItemId() + " not found")
+                        );
+
+                        if (item.getItemProduct().getType().equals(ProductType.INGREDIENT))
+                            throw new TypesInError("Product item with id " + dItem.getProductItemId() + " is ingredient");
+
+                        if (item.getItemAmount() < dItem.getAmount())
+                            throw new TypesInError("There aren't enough product in the warehouse !");
+
+                        atomicWholePrice.updateAndGet(v -> (v + item.getItemProduct().getPrice() * dItem.getAmount()));
+
+                        item.setItemAmount(item.getItemAmount() - dItem.getAmount());
+
+                        return new ItemForCollection(
+                                item,
+                                dItem.getAmount(),
+                                item.getItemProduct().getPrice()
+                        );
+                    }
+            ).collect(Collectors.toSet());
 
             Client client = clientRepository.findById(dto.getClientId()).orElseThrow(
                     () -> new NotFoundException("Client with id " + dto.getClientId() + " not found")
             );
 
-            if (productItem.getItemAmount() < dto.getAmount())
-                throw new TypesInError("There arent enough product in the warehouse !");
-
-            productItem.setItemAmount(productItem.getItemAmount() - dto.getAmount());
-
-            Double wholePrice = dto.getAmount() * productItem.getItemProduct().getPrice();
-
+            final Double wholePrice = atomicWholePrice.get();
             if (wholePrice < dto.getPaymentAmount())
-                throw new TypesInError(wholePrice + " sale price is less than " + dto.getPaymentAmount());
+                throw new TypesInError("Sale Whole price should be less than payment price");
 
-            Sale save = repository.save(
+            // creating sale
+            repository.save(
                     new Sale(
                             new Output(
-                                    productItem,
-                                    dto.getAmount(),
+                                    collect,
                                     OutputType.SALE
                             ),
                             client,
                             wholePrice,
                             wholePrice - dto.getPaymentAmount(),
-                            dto.getPaymentAmount(),
-                            productItem.getItemProduct().getPrice()
+                            new Payment(
+                                    dto.getPaymentAmount(),
+                                    PaymentType.CASH
+                            )
                     )
             );
+
 
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {

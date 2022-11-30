@@ -1,5 +1,6 @@
 package khantorecrm.payload.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,4 +16,9 @@ public class ProductItemList {
 
     @NotNull(message = "Product item amount must not be null")
     private Double amount;
+
+    @JsonIgnore
+    public boolean isItemCreatableId() {
+        return productItemId != null && productItemId > 0;
+    }
 }

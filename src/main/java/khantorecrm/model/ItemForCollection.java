@@ -13,24 +13,28 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.util.HashMap;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Entity(name = "ingredients")
+@Entity(name = "items_for_collection")
 //caching
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ingredient extends BaseEntity {
+public class ItemForCollection extends BaseEntity {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @ManyToOne(optional = false)
     private ProductItem productItem;
 
-    @Column(name = "ingredient_amount")
+    @Column(name = "item_for_collection_amount")
     private Double itemAmount = 0.0;
+
+    @Column(name = "item_for_collection_cr_pr_price")
+    private Double currentProductPrice = 0.0;
 
     @JsonValue
     public Map<String, Object> toJson() {

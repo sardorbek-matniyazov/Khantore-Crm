@@ -9,12 +9,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -24,23 +20,25 @@ import javax.persistence.ManyToOne;
 //caching
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Output extends BaseEntity {
-    @ManyToOne(optional = false, cascade = {CascadeType.MERGE})
-    private ProductItem productItem;
-
-    @Column(name = "output_amount", nullable = false)
-    private Double amount;
+    @OneToMany(orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "output_fk", referencedColumnName = "id")
+    private Set<ItemForCollection> productItems;
 
     @Enumerated(EnumType.STRING)
-
     @Column(name = "output_type", length = 10, nullable = false)
     private OutputType type;
 
     @ManyToOne
     private Delivery delivery;
 
-    public Output(ProductItem productItem, Double amount, OutputType sale) {
-        this.productItem = productItem;
-        this.amount = amount;
+    public Output(
+            Set<ItemForCollection> productItems,
+            OutputType sale
+    ) {
+        this.productItems = productItems;
         this.type = sale;
     }
 }

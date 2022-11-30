@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,16 +28,17 @@ public class Sale extends BaseEntity {
     private Client client;
 
     @Column(name = "sale_whole_price", nullable = false)
-    private Double price;
+    private Double wholePrice;
 
     @Column(name = "sale_debt_price", nullable = false)
     private Double debtPrice;
 
-    @Column(name = "sale_paid_price", nullable = false)
-    private Double paidPrice;
-
-    @Column(name = "sale_cr_product_price", nullable = false)
-    private Double productPrice;
+    @OneToOne(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "sale_fk", referencedColumnName = "id")
+    private Payment payment;
 
     @JsonValue
     public Map<String, Object> toJson() {
@@ -49,12 +46,12 @@ public class Sale extends BaseEntity {
         result.put("saleId", super.getId());
         result.put("createdAt", super.getCreatedAt());
 
-        result.put("product", this.getOutput().getProductItem().getItemProduct().getName());
-        result.put("amount", this.output.getAmount());
+        result.put("products", this.getOutput().getProductItems());
         result.put("client", this.client.getName());
-        result.put("wholePrice", this.price);
         result.put("debtPrice", this.debtPrice);
-        result.put("paidPrice", this.paidPrice);
+        result.put("payment", this.payment);
+        result.put("wholePrice", this.wholePrice);
+        result.put("paidPrice", this.wholePrice - this.debtPrice);
         return result;
     }
 }

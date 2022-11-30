@@ -34,9 +34,6 @@ public class Payment extends BaseEntity {
     @Column(name = "payment_type", length = NamingConstants.MODEL_ENUM_LENGTH)
     private PaymentType type;
 
-    @ManyToOne(optional = false)
-    private Balance balance;
-
     @JsonValue
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();
@@ -45,7 +42,6 @@ public class Payment extends BaseEntity {
 
         result.put("amount", this.getAmount());
         result.put("type", this.getType());
-        result.put("balance", this.getBalance());
         return result;
     }
 }

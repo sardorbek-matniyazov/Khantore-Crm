@@ -1,15 +1,15 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Delivery;
-import khantorecrm.model.Input;
-import khantorecrm.model.ProductItem;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
+import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.DeliveryDto;
 import khantorecrm.payload.dto.ReturnProductDto;
 import khantorecrm.repository.DeliveryRepository;
 import khantorecrm.repository.InputRepository;
+import khantorecrm.repository.OutputRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.service.IDeliveryService;
 import khantorecrm.service.functionality.Creatable;
@@ -19,9 +19,9 @@ import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import javax.transaction.Transactional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DeliveryService implements
@@ -31,12 +31,14 @@ public class DeliveryService implements
     private final DeliveryRepository repository;
     private final ProductItemRepository itemRepository;
     private final InputRepository inputRepository;
+    private final OutputRepository outputRepository;
 
     @Autowired
-    public DeliveryService(DeliveryRepository repository, ProductItemRepository itemRepository, InputRepository inputRepository) {
+    public DeliveryService(DeliveryRepository repository, ProductItemRepository itemRepository, InputRepository inputRepository, OutputRepository outputRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.inputRepository = inputRepository;
+        this.outputRepository = outputRepository;
     }
 
     @Override
@@ -50,6 +52,7 @@ public class DeliveryService implements
     }
 
     @Override
+    @Transactional()
     public OwnResponse create(DeliveryDto dto) {
         try {
             Delivery delivery = repository.findById(dto.getDeliveryId()).orElseThrow(
@@ -60,7 +63,9 @@ public class DeliveryService implements
                     () -> new NotFoundException("Product item with id " + dto.getProductItemId() + " not found")
             );
 
-            if (productItem.getItemAmount() < dto.getAmount()) throw new TypesInError("Not enough items in stock");
+            // check product item amount enough delivery amount
+            if (productItem.getItemAmount() < dto.getAmount())
+                throw new TypesInError("Not enough items in stock");
 
             // delivery baggage items
             List<ProductItem> allByWarehouseId = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId());
@@ -84,6 +89,23 @@ public class DeliveryService implements
             // save changes of product item
             productItem.setItemAmount(productItem.getItemAmount() - dto.getAmount());
             itemRepository.save(productItem);
+
+            // creating output, output may be changed
+            outputRepository.save(
+                    new Output(
+                            new HashSet<>(
+                                    Collections.singletonList(
+                                            new ItemForCollection(
+                                                    productItem,
+                                                    dto.getAmount(),
+                                                    productItem.getItemProduct().getPrice()
+                                            )
+                                    )
+                            ),
+                            OutputType.DELIVERY,
+                            delivery
+                    )
+            );
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.DELIVERY_NOT_FOUND.setMessage(e.getMessage());

@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReturnProductDto {
-
     @NotNull(message = "Returned Product item id must not be null")
     private Long returnedProductItemId;
 

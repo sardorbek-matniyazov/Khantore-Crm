@@ -1,22 +1,13 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Employee;
-import khantorecrm.model.Ingredient;
-import khantorecrm.model.Input;
-import khantorecrm.model.Product;
-import khantorecrm.model.ProductItem;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
-import khantorecrm.payload.dto.ProductItemList;
-import khantorecrm.repository.BalanceRepository;
-import khantorecrm.repository.EmployeeRepository;
-import khantorecrm.repository.InputRepository;
-import khantorecrm.repository.ProductItemRepository;
-import khantorecrm.repository.ProductRepository;
+import khantorecrm.payload.dto.ProductItemWrapper;
+import khantorecrm.repository.*;
 import khantorecrm.service.IInputService;
-import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +19,6 @@ import java.util.stream.Stream;
 
 @Service
 public class InputService implements
-        InstanceReturnable<Input, Long>,
         IInputService {
 
     private final InputRepository repository;
@@ -44,16 +34,6 @@ public class InputService implements
         this.productRepository = productRepository;
         this.employeeRepository = employeeRepository;
         this.balanceRepository = balanceRepository;
-    }
-
-    @Override
-    public List<Input> getAllInstances() {
-        return repository.findAll();
-    }
-
-    @Override
-    public Input getInstanceWithId(Long id) {
-        return repository.findById(id).orElse(null);
     }
 
     @Override
@@ -88,7 +68,7 @@ public class InputService implements
             );
         } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return OwnResponse.ERROR.setMessage("There is no such product item");
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
@@ -98,35 +78,10 @@ public class InputService implements
     }
 
     @Override
-    public OwnResponse incomeProduct(ProductItemList dto) {
-        try {
-            ProductItem productItem = productItemRepository.findById(dto.getProductItemId()).orElseThrow(
-                    () -> new NotFoundException("Product item with id " + dto.getProductItemId() + " not found")
-            );
-
-            Input save = repository.save(
-                    new Input(
-                            productItem,
-                            dto.getAmount(),
-                            ProductType.PRODUCT,
-                            productItem.getItemProduct().getPrice(),
-                            ActionType.ACCEPTED
-                    )
-            );
-
-            return OwnResponse.CREATED_SUCCESSFULLY.setData(save);
-        } catch (NotFoundException e) {
-            return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
-        } catch (Exception e) {
-            return OwnResponse.ERROR.setMessage(e.getMessage());
-        }
-    }
-
-    @Override
     @Transactional
-    public OwnResponse production(List<ProductItemList> dto) {
+    public OwnResponse production(ProductItemWrapper dto) {
         try {
-            dto.stream().map(
+            dto.getItems().stream().map(
                     item -> {
                         ProductItem productItem = productItemRepository.findById(item.getProductItemId()).orElseThrow(
                                 () -> new NotFoundException("Product item with id " + item.getProductItemId() + " not found")
@@ -139,14 +94,14 @@ public class InputService implements
             ).forEach(
                     productItem -> {
                         boolean b = changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
-                        if (b) throw new NotFoundException("There are something wrong with ingredients");
+                        if (!b) throw new NotFoundException("There are something wrong with ingredients");
                         Input save = repository.save(
                                 new Input(
                                         productItem,
                                         productItem.getItemAmount(),
                                         ProductType.PRODUCT,
                                         productItem.getItemProduct().getPrice(),
-                                        ActionType.WAIT
+                                        ActionType.ACCEPTED
                                 )
                         );
                     }
@@ -165,7 +120,7 @@ public class InputService implements
         return repository.findAllByStatus(wait);
     }
 
-    private boolean changeIngredients(Set<Ingredient> ingredients, Double itemAmount, char ch) {
+    private boolean changeIngredients(Set<ItemForCollection> ingredients, Double itemAmount, char ch) {
         try {
             Stream<ProductItem> productItemStream = ingredients.stream().map(
                     ingredient -> {
@@ -186,5 +141,10 @@ public class InputService implements
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public List<Input> getAllByType(ProductType type) {
+        return repository.findAllByType(type);
     }
 }

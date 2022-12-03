@@ -1,9 +1,11 @@
 package khantorecrm.controller;
 
 import khantorecrm.model.enums.ActionType;
+import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
 import khantorecrm.payload.dto.ProductItemList;
+import khantorecrm.payload.dto.ProductItemWrapper;
 import khantorecrm.service.impl.InputService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -23,14 +25,14 @@ public class InputController {
         this.service = service;
     }
 
-    @GetMapping(value = "all")
-    public HttpEntity<?> getAllInputs() {
-        return OwnResponse.ALL_DATA.setData(service.getAllInstances()).handleResponse();
+    @GetMapping(value = "ingredients")
+    public HttpEntity<?> getAllIngredients() {
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.INGREDIENT)).handleResponse();
     }
 
-    @GetMapping(value = "{id}")
-    public HttpEntity<?> getInputWithId(@PathVariable Long id) {
-        return OwnResponse.ALL_DATA.setData(service.getInstanceWithId(id)).handleResponse();
+    @GetMapping(value = "products")
+    public HttpEntity<?> getAllProducts() {
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.PRODUCT)).handleResponse();
     }
 
     @PostMapping(value = "income-ingredient")
@@ -38,13 +40,8 @@ public class InputController {
         return service.incomeIngredient(dto).handleResponse();
     }
 
-    @PostMapping(value = "income-product")
-    public HttpEntity<?> incomeProducts(@RequestBody ProductItemList dto) {
-        return service.incomeProduct(dto).handleResponse();
-    }
-
     @PostMapping(value = "production")
-    public HttpEntity<?> production(@RequestBody @Valid List<ProductItemList> dto) {
+    public HttpEntity<?> production(@RequestBody @Valid ProductItemWrapper dto) {
         return service.production(dto).handleResponse();
     }
 

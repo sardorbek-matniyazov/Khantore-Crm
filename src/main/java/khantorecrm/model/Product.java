@@ -11,14 +11,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,7 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 //caching
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Product extends BaseEntity {
+public class Product extends BaseEntity implements Serializable {
     @Column(name = "product_name", length = NamingConstants.MODEL_NAME_LENGTH, unique = true)
     private String name;
 
@@ -42,12 +36,12 @@ public class Product extends BaseEntity {
     @Column(name = "product_type", length = NamingConstants.MODEL_ENUM_LENGTH)
     private ProductType type;
 
-    @OneToMany(orphanRemoval = true,
+    @OneToMany(
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
             fetch = FetchType.LAZY
     )
     @JoinColumn(name = "product_fk", referencedColumnName = "id")
-    private Set<Ingredient> ingredients = new HashSet<>();
+    private Set<ItemForCollection> ingredients = new HashSet<>();
 
     public Product(String name, Double price, ProductType type) {
         this.name = name;

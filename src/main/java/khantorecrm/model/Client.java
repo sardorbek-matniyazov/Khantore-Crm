@@ -9,16 +9,14 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "client")
+@Table(name = "client", uniqueConstraints = @UniqueConstraint(
+        columnNames = {"client_name", "client_phone"}
+))
 @NoArgsConstructor
 @AllArgsConstructor
 //caching
@@ -38,6 +36,6 @@ public class Client extends BaseEntity {
     @Column(name = "client_type", length = 10, nullable = false)
     private ClientType type;
 
-    @OneToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     private Balance balance;
 }

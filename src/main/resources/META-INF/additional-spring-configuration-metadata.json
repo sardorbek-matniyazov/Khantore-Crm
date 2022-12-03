@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "secret-key.value",
+      "type": "java.lang.String",
+      "description": "Description for secret-key.value."
+    },
+    {
+      "name": "secret-key.encrypted",
+      "type": "java.lang.String",
+      "description": "Description for secret-key.encrypted."
+    }
+  ] }

@@ -30,6 +30,9 @@ public class OwnResponse {
     public static final OwnResponse DELIVERY_NOT_FOUND = new OwnResponse("Delivery not found", HttpStatus.NOT_FOUND.value(), false);
     public static final OwnResponse ACTION_PROCESS_IS_WAITING = new OwnResponse("Action process is waiting", HttpStatus.CREATED.value(), true);
     public static final OwnResponse NOT_FOUND = new OwnResponse("Not found", HttpStatus.NOT_FOUND.value(), false);
+    public static final OwnResponse CLIENT_ALREADY_EXISTS = new OwnResponse("The client already exists in the database", HttpStatus.BAD_REQUEST.value(), false);
+    public static final OwnResponse PASSWORD_WRONG = new OwnResponse("The passwords doesn't match", HttpStatus.BAD_REQUEST.value(), false);
+    public static final OwnResponse LOGIN_SUCCESSFULLY = new OwnResponse("Login successfully");
 
     private String message;
     @JsonIgnore

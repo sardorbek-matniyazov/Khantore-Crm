@@ -1,5 +1,6 @@
 package khantorecrm.controller;
 
+import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductDto;
 import khantorecrm.service.impl.ProductService;
@@ -26,12 +27,12 @@ public class ProductController {
 
     @GetMapping(value = "ingredients")
     public HttpEntity<?> getAllIngredientProducts() {
-        return OwnResponse.ALL_DATA.setData(service.getAllIngredientProducts()).handleResponse();
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.INGREDIENT)).handleResponse();
     }
 
     @GetMapping(value = "products")
     public HttpEntity<?> getAllProductsTypeProduct() {
-        return OwnResponse.ALL_DATA.setData(service.getAllProducts()).handleResponse();
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.PRODUCT)).handleResponse();
     }
 
     @GetMapping(value = "{id}")

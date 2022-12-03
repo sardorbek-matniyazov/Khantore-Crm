@@ -1,8 +1,17 @@
 package khantorecrm.repository;
 
-import khantorecrm.model.Ingredient;
+import khantorecrm.model.ItemForCollection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
+import java.util.Set;
+
+public interface IngredientRepository extends JpaRepository<ItemForCollection, Long> {
     boolean existsById(Long id);
+
+    @Query(
+            value = "delete from items_for_collection where product_fk = ?1",
+            nativeQuery = true
+    )
+    Integer deleteAllByProductId(Long id);
 }

@@ -1,6 +1,6 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Ingredient;
+import khantorecrm.model.ItemForCollection;
 import khantorecrm.model.Product;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
@@ -56,15 +56,17 @@ public class ProductService implements
     @Override
     @Transactional
     public OwnResponse create(ProductDto dto) {
-        if (repository.existsByName(dto.getName())) return OwnResponse.PRODUCT_ALREADY_EXISTS;
-        Product product = dto.toEntity();
         try {
+            if (repository.existsByName(dto.getName())) return OwnResponse.PRODUCT_ALREADY_EXISTS;
+            Product product = dto.toEntity();
+
+            // if product type is 'Product', it will require some props
             if (product.getType() == ProductType.PRODUCT) {
                 if (dto.getIngredients() == null) return OwnResponse.INGREDIENTS_NOT_FOUND;
 
                 // making ingredients set
                 product.setIngredients(makeIngredients(dto.getIngredients()));
-                Optional<Ingredient> first = product.getIngredients().stream().findFirst();
+                Optional<ItemForCollection> first = product.getIngredients().stream().findFirst();
                 if (first.isPresent()) {
                     boolean b = product.getIngredients().stream().noneMatch(
                             item -> Objects.equals(item.getProductItem().getWarehouse().getId(), first.get().getProductItem().getWarehouse().getId())
@@ -72,6 +74,8 @@ public class ProductService implements
                     if (b) throw new TypesInError("Ingredients must be in one warehouse");
                 }
             }
+
+            // saving product
             repository.save(product);
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
@@ -85,6 +89,7 @@ public class ProductService implements
     }
 
     @Override
+    @Transactional
     public OwnResponse update(ProductDto dto, Long id) {
         if (repository.existsByNameAndIdIsNot(dto.getName(), id)) return OwnResponse.PRODUCT_ALREADY_EXISTS;
         return repository.findById(id).map(
@@ -104,26 +109,16 @@ public class ProductService implements
     }
 
     @Override
-    public Set<Ingredient> getIngredientsWithProductId(Long id) {
+    public Set<ItemForCollection> getIngredientsWithProductId(Long id) {
         return repository.findById(id).map(Product::getIngredients).orElse(null);
-    }
-
-    @Override
-    public List<Product> getAllProducts() {
-        return repository.findAllByType(ProductType.PRODUCT);
-    }
-
-    @Override
-    public List<Product> getAllIngredientProducts() {
-        return repository.findAllByType(ProductType.INGREDIENT);
     }
 
     // todo: add delete method
 
-    private Set<Ingredient> makeIngredients(List<ProductItemList> ingredients) {
+    private Set<ItemForCollection> makeIngredients(List<ProductItemList> ingredients) {
         return ingredients.stream().map(
                 ingredient -> {
-                    Ingredient ingredientProduct = new Ingredient();
+                    ItemForCollection ingredientProduct = new ItemForCollection();
                     ingredientProduct.setProductItem(
                             productItemRepository.findById(
                                     ingredient.getProductItemId()
@@ -135,5 +130,10 @@ public class ProductService implements
                     return ingredientProduct;
                 }
         ).collect(Collectors.toSet());
+    }
+
+    @Override
+    public List<Product> getAllByType(ProductType type) {
+        return repository.findAllByType(type);
     }
 }

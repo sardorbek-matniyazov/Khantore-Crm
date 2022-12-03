@@ -17,11 +17,11 @@ import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DeliveryService implements
@@ -134,14 +134,16 @@ public class DeliveryService implements
     public OwnResponse returnSelectedProduct(ReturnProductDto dto) {
 
         try {
-            // if user is deliverer, user is input's createdBy
-            Delivery delivery = new Delivery();
+            // if user is deliverer
+            Delivery delivery = repository.findById(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getId()).orElseThrow(
+                    () -> new NotFoundException("You arent deliverer")
+            );
 
             List<ProductItem> allByWarehouseId = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId());
 
             // if returns product exists in the database
             ProductItem realBaggageItem = itemRepository.findById(dto.getReturnedProductItemId()).orElseThrow(
-                    () -> new NotFoundException("Product item with id " + dto.getReturnedProductItemId() + " not found in the database !")
+                    () -> new NotFoundException("Product item with id " + dto.getReturnedProductItemId() + " not found in the baggage !")
             );
 
             // if recipient product exists in the database
@@ -152,8 +154,7 @@ public class DeliveryService implements
             // check if product is in the baggage
             if (allByWarehouseId.stream().noneMatch(
                     item -> Objects.equals(dto.getReturnedProductItemId(), item.getId()))
-            )
-                throw new NotFoundException("Product item with " + dto.getReturnedProductItemId() + " not found in the baggage !");
+            ) throw new NotFoundException("Product item with " + dto.getReturnedProductItemId() + " not found in the baggage !");
 
             // amount should be less than real product amount
             if (realBaggageItem.getItemAmount() < dto.getAmount())
@@ -208,11 +209,16 @@ public class DeliveryService implements
     @Override
     public OwnResponse rejectReturnedProduct(Long inputId) {
 
-        Input input = inputRepository.findById(inputId).orElseThrow(
-                () -> new NotFoundException("Input with id " + inputId + " not found !")
-        );
+        try {
+            Input input = inputRepository.findById(inputId).orElseThrow(
+                    () -> new NotFoundException("Input with id " + inputId + " not found !")
+            );
 
-        // user is input's createdBy
+            System.out.println(input);
+            // user is input's createdBy
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        }
 
         // TODO: 25/11/22 item should be rejected
         return OwnResponse.ERROR;

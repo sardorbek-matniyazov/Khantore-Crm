@@ -8,7 +8,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import java.util.HashMap;
@@ -22,10 +25,11 @@ import java.util.Map;
 //caching
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Delivery extends BaseEntity {
-    @OneToOne(optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private User deliverer;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Warehouse baggage;
 
     @JsonValue

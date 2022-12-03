@@ -1,6 +1,7 @@
 package khantorecrm.model.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import khantorecrm.model.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -35,7 +36,8 @@ public abstract class BaseEntity {
     private Timestamp updatedAt;
 
     @CreatedBy
-    private String createdBy;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    private User createdBy;
 
     public BaseEntity(long id) {
         this.id = id;

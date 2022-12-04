@@ -6,12 +6,14 @@ import khantorecrm.payload.dto.ReturnProductDto;
 import khantorecrm.service.impl.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "delivery")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
 public class DeliveryController {
     private final DeliveryService service;
 

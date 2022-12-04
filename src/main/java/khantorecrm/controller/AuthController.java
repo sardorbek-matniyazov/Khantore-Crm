@@ -5,6 +5,7 @@ import khantorecrm.payload.dto.RegisterDto;
 import khantorecrm.service.impl.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "auth")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
 public class AuthController {
     private final AuthService service;
 

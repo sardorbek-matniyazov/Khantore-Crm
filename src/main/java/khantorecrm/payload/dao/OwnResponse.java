@@ -33,6 +33,7 @@ public class OwnResponse {
     public static final OwnResponse CLIENT_ALREADY_EXISTS = new OwnResponse("The client already exists in the database", HttpStatus.BAD_REQUEST.value(), false);
     public static final OwnResponse PASSWORD_WRONG = new OwnResponse("The passwords doesn't match", HttpStatus.BAD_REQUEST.value(), false);
     public static final OwnResponse LOGIN_SUCCESSFULLY = new OwnResponse("Login successfully");
+    public static final OwnResponse REJECTED_SUCCESSFULLY = new OwnResponse("Rejected successfully");
 
     private String message;
     @JsonIgnore

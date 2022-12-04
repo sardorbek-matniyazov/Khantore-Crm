@@ -37,6 +37,16 @@ public class WarehouseController {
         return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.PRODUCT)).handleResponse();
     }
 
+    @GetMapping(value = "ingredient/items")
+    public HttpEntity<?> getAllIngredientItemsWarehouses() {
+        return OwnResponse.ALL_DATA.setData(service.getAllItemsByType(ProductType.INGREDIENT)).handleResponse();
+    }
+
+    @GetMapping(value = "products/items")
+    public HttpEntity<?> getAllProductItemsWarehouses() {
+        return OwnResponse.ALL_DATA.setData(service.getAllItemsByType(ProductType.PRODUCT)).handleResponse();
+    }
+
     @GetMapping(value = "{id}")
     public HttpEntity<?> getWarehouseWithId(@PathVariable Long id) {
         return OwnResponse.ALL_DATA.setData(service.getInstanceWithId(id)).handleResponse();

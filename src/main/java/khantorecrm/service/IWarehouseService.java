@@ -2,6 +2,7 @@ package khantorecrm.service;
 
 import khantorecrm.model.ProductItem;
 import khantorecrm.model.Warehouse;
+import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.MovingItemDto;
 import khantorecrm.payload.dto.ProductList;
@@ -15,4 +16,8 @@ public interface IWarehouseService extends FindableByProductType<Warehouse> {
     OwnResponse addItemToWarehouse(Long id, ProductList dto);
 
     OwnResponse moveItem(MovingItemDto dto);
+
+    List<ProductItem> getAllItemsByType(ProductType type);
+
+    List<Warehouse> getAllByType(ProductType type);
 }

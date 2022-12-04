@@ -7,10 +7,7 @@ import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.DeliveryDto;
 import khantorecrm.payload.dto.ReturnProductDto;
-import khantorecrm.repository.DeliveryRepository;
-import khantorecrm.repository.InputRepository;
-import khantorecrm.repository.OutputRepository;
-import khantorecrm.repository.ProductItemRepository;
+import khantorecrm.repository.*;
 import khantorecrm.service.IDeliveryService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
@@ -31,13 +28,15 @@ public class DeliveryService implements
     private final DeliveryRepository repository;
     private final ProductItemRepository itemRepository;
     private final InputRepository inputRepository;
+    private final UserRepository userRepository;
     private final OutputRepository outputRepository;
 
     @Autowired
-    public DeliveryService(DeliveryRepository repository, ProductItemRepository itemRepository, InputRepository inputRepository, OutputRepository outputRepository) {
+    public DeliveryService(DeliveryRepository repository, ProductItemRepository itemRepository, InputRepository inputRepository, UserRepository userRepository, OutputRepository outputRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.inputRepository = inputRepository;
+        this.userRepository = userRepository;
         this.outputRepository = outputRepository;
     }
 
@@ -136,7 +135,7 @@ public class DeliveryService implements
         try {
             // if user is deliverer
             Delivery delivery = repository.findById(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getId()).orElseThrow(
-                    () -> new NotFoundException("You arent deliverer")
+                    () -> new NotFoundException("You aren't a deliverer")
             );
 
             List<ProductItem> allByWarehouseId = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId());
@@ -214,13 +213,34 @@ public class DeliveryService implements
                     () -> new NotFoundException("Input with id " + inputId + " not found !")
             );
 
-            System.out.println(input);
-            // user is input's createdBy
+            if (input.getStatus().equals(ActionType.ACCEPTED))
+                throw new TypesInError("The input is already accepted");
+
+            final Delivery delivery = repository.findById(
+                    userRepository.findById(
+                            input.getCreatedBy().getId()
+                    ).orElseThrow(
+                            () -> new NotFoundException("User with id " + input.getCreatedBy().getId() + " not found !")
+                    ).getId()
+            ).orElseThrow(
+                    () -> new NotFoundException("Delivery with id " + input.getCreatedBy().getId() + " not found !")
+            );
+
+            ProductItem productItem = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId()).stream().filter(
+                    item -> Objects.equals(item.getId(), input.getProductItem().getId())
+            ).findFirst().orElseThrow(
+                    () -> new NotFoundException("Product item with id " + input.getProductItem().getId() + " not found in the baggage !")
+            );
+
+            productItem.setItemAmount(productItem.getItemAmount() + input.getAmount());
+            itemRepository.save(productItem);
+            inputRepository.delete(input);
+
+            return OwnResponse.REJECTED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
         }
-
-        // TODO: 25/11/22 item should be rejected
-        return OwnResponse.ERROR;
     }
 }

@@ -6,12 +6,14 @@ import khantorecrm.payload.dto.ProductDto;
 import khantorecrm.service.impl.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "employee")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
 public class EmployeeController {
 
     private final EmployeeService service;

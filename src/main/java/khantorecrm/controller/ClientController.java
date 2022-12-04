@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "client")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER')")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
 public class ClientController {
     private final ClientService service;
 

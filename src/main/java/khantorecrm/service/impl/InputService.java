@@ -3,6 +3,7 @@ package khantorecrm.service.impl;
 import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
+import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
 import khantorecrm.payload.dto.ProductItemWrapper;
@@ -81,7 +82,7 @@ public class InputService implements
     @Transactional
     public OwnResponse production(ProductItemWrapper dto) {
         try {
-            dto.getItems().stream().map(
+            dto.getItems().forEach(
                     item -> {
                         ProductItem productItem = productItemRepository.findById(item.getProductItemId()).orElseThrow(
                                 () -> new NotFoundException("Product item with id " + item.getProductItemId() + " not found")
@@ -89,16 +90,16 @@ public class InputService implements
 
                         productItem.setItemAmount(productItem.getItemAmount() + item.getAmount());
 
-                        return productItemRepository.save(productItem);
-                    }
-            ).forEach(
-                    productItem -> {
+                        final ProductItem save = productItemRepository.save(productItem);
                         boolean b = changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
+
                         if (!b) throw new NotFoundException("There are something wrong with ingredients");
-                        Input save = repository.save(
+
+                        // saving input
+                        repository.save(
                                 new Input(
                                         productItem,
-                                        productItem.getItemAmount(),
+                                        item.getAmount(),
                                         ProductType.PRODUCT,
                                         productItem.getItemProduct().getPrice(),
                                         ActionType.ACCEPTED
@@ -117,7 +118,7 @@ public class InputService implements
 
     @Override
     public List<Input> getAllInputsByStatus(ActionType wait) {
-        return repository.findAllByStatus(wait);
+        return repository.findAllByStatusAndCreatedBy_Role_RoleName(wait, RoleName.DRIVER);
     }
 
     private boolean changeIngredients(Set<ItemForCollection> ingredients, Double itemAmount, char ch) {

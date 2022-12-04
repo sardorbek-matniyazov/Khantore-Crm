@@ -243,4 +243,19 @@ public class DeliveryService implements
             return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
         }
     }
+
+    @Override
+    public List<Output> getAllOrders() {
+        return outputRepository.findAllByType(OutputType.DELIVERY);
+    }
+
+    @Override
+    public List<Input> getAllWaitReturnsWithId(Long id) {
+        return inputRepository.findAllByStatusAndCreatedBy_Id(ActionType.WAIT, id);
+    }
+
+    @Override
+    public List<Output> getAllOrdersByDriverId(Long id) {
+        return outputRepository.findAllByCreatedBy_Id(id);
+    }
 }

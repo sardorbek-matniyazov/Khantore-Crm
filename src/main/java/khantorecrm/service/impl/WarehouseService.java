@@ -164,7 +164,7 @@ public class WarehouseService implements
 
     @Override
     public List<ProductItem> getAllItemsByType(ProductType type) {
-        return itemRepository.findAllByItemProduct_Type(type);
+        return itemRepository.findAllByItemProduct_TypeAndWarehouse_Type(type, type);
     }
 
     @Override

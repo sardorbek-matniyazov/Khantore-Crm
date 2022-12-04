@@ -32,6 +32,21 @@ public class DeliveryController {
         return OwnResponse.ALL_DATA.setData(service.getInstanceWithId(id)).handleResponse();
     }
 
+    @GetMapping(value = "orders")
+    public HttpEntity<?> getAllOrders() {
+        return OwnResponse.ALL_DATA.setData(service.getAllOrders()).handleResponse();
+    }
+
+    @GetMapping(value = "{id}/wait-returns")
+    public HttpEntity<?> getAllWaitReturns(@PathVariable Long id) {
+        return OwnResponse.ALL_DATA.setData(service.getAllWaitReturnsWithId(id)).handleResponse();
+    }
+
+    @GetMapping(value = "{id}/orders")
+    public HttpEntity<?> getAllOrdersWithDriverId(@PathVariable Long id) {
+        return OwnResponse.ALL_DATA.setData(service.getAllOrdersByDriverId(id)).handleResponse();
+    }
+
     @PostMapping(value = "order")
     public HttpEntity<?> createDelivery(@RequestBody DeliveryDto dto) {
         return service.create(dto).handleResponse();

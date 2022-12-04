@@ -15,7 +15,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "auth")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
 public class AuthController {
     private final AuthService service;
 

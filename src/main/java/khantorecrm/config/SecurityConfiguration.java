@@ -5,6 +5,7 @@ import khantorecrm.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -41,7 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable().cors().disable()
                 .authorizeRequests()
-                .antMatchers("/api/auth/log-in").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/log-in").permitAll()
                 .antMatchers(
                         "/api/v3/api-docs/**",
                         "/swagger-ui/**",

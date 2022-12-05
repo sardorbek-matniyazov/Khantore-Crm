@@ -10,12 +10,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReturnProductDto {
-    // todo: skladqa otkeriw problemasi
     @NotNull(message = "Returned Product item id must not be null")
     private Long returnedProductItemId;
 
     @NotNull(message = "Recipient Product item id must not be null")
-    private Long recipientProductItemId;
+    private Long recipientWarehouseId;
 
     @NotNull(message = "Product item amount must not be null")
     private Double amount;

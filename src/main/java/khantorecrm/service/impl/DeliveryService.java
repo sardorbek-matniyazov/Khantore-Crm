@@ -146,9 +146,14 @@ public class DeliveryService implements
             );
 
             // if recipient product exists in the database
-            ProductItem realWarehouseItem = itemRepository.findById(dto.getRecipientProductItemId()).orElseThrow(
-                    () -> new NotFoundException("Product item with id " + dto.getRecipientProductItemId() + " not found in the database !")
-            );
+            final Optional<ProductItem> first = itemRepository.findAllByWarehouseId(dto.getRecipientWarehouseId()).stream()
+                    .filter(item -> item.getItemProduct().getId().equals(realBaggageItem.getItemProduct().getId()))
+                    .findFirst();
+            ProductItem realWarehouseItem;
+            if (first.isPresent()) {
+                realWarehouseItem = first.get();
+            } else
+                throw new NotFoundException("Product item with id " + dto.getReturnedProductItemId() + " not found in the recipient warehouse !");
 
             // check if product is in the baggage
             if (allByWarehouseId.stream().noneMatch(

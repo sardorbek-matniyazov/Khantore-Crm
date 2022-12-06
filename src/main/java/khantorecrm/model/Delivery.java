@@ -39,9 +39,8 @@ public class Delivery extends BaseEntity {
         result.put("createdAt", super.getCreatedAt());
 
         result.put("name", this.deliverer.getName());
-        result.put("baggage", this.baggage);
-
-        // todo: role settings should be here
+        result.put("baggage", this.baggage.getName());
+        result.put("createdBy", this.getCreatedBy().getName());
         return result;
     }
 }

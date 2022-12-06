@@ -45,6 +45,7 @@ public class Sale extends BaseEntity {
         Map<String, Object> result = new HashMap<>();
         result.put("saleId", super.getId());
         result.put("createdAt", super.getCreatedAt());
+        result.put("createdBy", super.getCreatedBy().getName());
 
         result.put("products", this.getOutput().getProductItems());
         result.put("client", this.client.getName());

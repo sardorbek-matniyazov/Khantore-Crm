@@ -40,7 +40,6 @@ public class ItemForCollection extends BaseEntity {
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();
         result.put("ingredientId", super.getId());
-        result.put("createdAt", super.getCreatedAt());
 
         result.put("itemAmount", this.getItemAmount());
         result.put("productItem", this.getProductItem());

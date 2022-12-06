@@ -55,8 +55,9 @@ public class User extends BaseEntity implements UserDetails {
 
         result.put("name", this.name);
         result.put("phoneNumber", this.phoneNumber);
-
-        // todo: role settings should be here
+        result.put("role", this.role.getRoleName());
+        result.put("createdBy", this.getCreatedBy().getName());
+        result.put("currentToken", this.currentToken);
         return result;
     }
 

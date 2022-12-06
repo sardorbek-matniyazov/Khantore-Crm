@@ -1,5 +1,6 @@
 package khantorecrm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.enums.ProductType;
@@ -29,6 +30,7 @@ public class Warehouse extends BaseEntity {
     @Column(name = "wr_name", length = NamingConstants.MODEL_NAME_LENGTH, unique = true)
     private String name;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     @Column(name = "warehouse_type", length = NamingConstants.MODEL_ENUM_LENGTH)
     private ProductType type;

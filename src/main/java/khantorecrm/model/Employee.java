@@ -45,7 +45,8 @@ public class Employee extends BaseEntity {
         result.put("name", this.getName());
         result.put("phoneNumber", this.getPhoneNumber());
         result.put("comment", this.getComment());
-        result.put("balance", this.getBalance());
+        result.put("balance", this.getBalance().getAmount());
+        result.put("createdBy", this.getCreatedBy().getName());
         return result;
     }
 }

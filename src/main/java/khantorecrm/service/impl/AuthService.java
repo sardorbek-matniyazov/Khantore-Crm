@@ -13,6 +13,7 @@ import khantorecrm.repository.RoleRepository;
 import khantorecrm.repository.UserRepository;
 import khantorecrm.repository.WarehouseRepository;
 import khantorecrm.security.JwtProvider;
+import khantorecrm.service.IUserService;
 import khantorecrm.utils.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,8 +22,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class AuthService {
+public class AuthService implements IUserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -45,6 +48,7 @@ public class AuthService {
         this.warehouseRepository = warehouseRepository;
     }
 
+    @Override
     public OwnResponse login(LoginDto dto) {
         try {
             User user = repository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
@@ -57,7 +61,7 @@ public class AuthService {
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                return OwnResponse.LOGIN_SUCCESSFULLY.setData(user.getCurrentToken());
+                return OwnResponse.LOGIN_SUCCESSFULLY.setData(user);
             }
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
@@ -65,7 +69,7 @@ public class AuthService {
         return OwnResponse.PASSWORD_WRONG.setMessage("Password is incorrect");
     }
 
-    @PreAuthorize(value = "hasAnyRole('ADMIN')")
+    @Override
     public OwnResponse register(RegisterDto dto) {
         try {
             switch (dto.getRoleName()) {
@@ -113,5 +117,10 @@ public class AuthService {
                         )
                 )
         );
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return repository.findAll();
     }
 }

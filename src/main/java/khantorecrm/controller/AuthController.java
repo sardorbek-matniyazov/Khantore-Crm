@@ -1,14 +1,13 @@
 package khantorecrm.controller;
 
+import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.LoginDto;
 import khantorecrm.payload.dto.RegisterDto;
 import khantorecrm.service.impl.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -27,8 +26,14 @@ public class AuthController {
         return service.login(dto).handleResponse();
     }
 
+    @PreAuthorize(value = "hasAnyRole('ADMIN')")
     @PostMapping(value = "register-user")
     public HttpEntity<?> register(@RequestBody @Valid RegisterDto dto) {
         return service.register(dto).handleResponse();
+    }
+
+    @GetMapping(value = "all-users")
+    public HttpEntity<?> getAllUsers() {
+        return OwnResponse.ALL_DATA.setData(service.getAllUsers()).handleResponse();
     }
 }

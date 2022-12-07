@@ -38,13 +38,18 @@ public class DeliveryController {
     }
 
     @GetMapping(value = "{id}/wait-returns")
-    public HttpEntity<?> getAllWaitReturns(@PathVariable Long id) {
+    public HttpEntity<?> getAllWaitReturnsWithDelivererId(@PathVariable Long id) {
         return OwnResponse.ALL_DATA.setData(service.getAllWaitReturnsWithId(id)).handleResponse();
     }
 
     @GetMapping(value = "{id}/orders")
     public HttpEntity<?> getAllOrdersWithDriverId(@PathVariable Long id) {
         return OwnResponse.ALL_DATA.setData(service.getAllOrdersByDriverId(id)).handleResponse();
+    }
+
+    @GetMapping(value = "wait-returns")
+    public HttpEntity<?> getAllWaitReturns() {
+        return OwnResponse.ALL_DATA.setData(service.getAllWaitReturns()).handleResponse();
     }
 
     @PostMapping(value = "order")

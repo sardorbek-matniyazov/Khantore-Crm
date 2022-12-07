@@ -4,6 +4,7 @@ import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.ProductType;
+import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.DeliveryDto;
 import khantorecrm.payload.dto.ReturnProductDto;
@@ -18,7 +19,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class DeliveryService implements
@@ -262,5 +267,10 @@ public class DeliveryService implements
     @Override
     public List<Output> getAllOrdersByDriverId(Long id) {
         return outputRepository.findAllByCreatedBy_Id(id);
+    }
+
+    @Override
+    public List<Input> getAllWaitReturns() {
+        return inputRepository.findAllByStatusAndCreatedBy_Role_RoleName(ActionType.WAIT, RoleName.DRIVER);
     }
 }

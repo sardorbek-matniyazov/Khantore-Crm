@@ -21,4 +21,6 @@ public interface IDeliveryService {
     List<Input> getAllWaitReturnsWithId(Long id);
 
     List<Output> getAllOrdersByDriverId(Long id);
+
+    List<Input> getAllWaitReturns();
 }

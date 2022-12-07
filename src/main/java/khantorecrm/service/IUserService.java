@@ -11,4 +11,6 @@ public interface IUserService {
     OwnResponse login(LoginDto dto);
     OwnResponse register(RegisterDto dto);
     List<User> getAllUsers();
+
+    User getCurrentUser();
 }

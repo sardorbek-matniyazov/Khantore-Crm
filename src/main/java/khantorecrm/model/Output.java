@@ -1,5 +1,6 @@
 package khantorecrm.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.enums.OutputType;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,8 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -40,5 +43,17 @@ public class Output extends BaseEntity {
     ) {
         this.productItems = productItems;
         this.type = sale;
+    }
+
+    @JsonValue
+    public Map<String, Object> toJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("outputId", super.getId());
+        result.put("createdAt", super.getCreatedAt());
+        result.put("createdBy", this.getCreatedBy().getName());
+
+        result.put("outputType", this.type);
+        result.put("productItems", this.productItems);
+        return result;
     }
 }

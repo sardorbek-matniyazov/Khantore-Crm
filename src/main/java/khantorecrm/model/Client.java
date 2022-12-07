@@ -1,5 +1,6 @@
 package khantorecrm.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.enums.ClientType;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,8 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -38,4 +41,19 @@ public class Client extends BaseEntity {
 
     @OneToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     private Balance balance;
+
+    @JsonValue
+    public Map<String, Object> toJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("outputId", super.getId());
+        result.put("createdAt", super.getCreatedAt());
+        result.put("createdBy", this.getCreatedBy().getName());
+
+        result.put("clientType", this.type);
+        result.put("comment", this.comment);
+        result.put("phone", this.phone);
+        result.put("name", this.name);
+        result.put("balance", this.balance.getAmount());
+        return result;
+    }
 }

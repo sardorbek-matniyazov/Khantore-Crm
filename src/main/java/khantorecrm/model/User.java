@@ -59,7 +59,6 @@ public class User extends BaseEntity implements UserDetails {
         if (this.getCreatedBy() != null) {
             result.put("createdBy", this.getCreatedBy().getPhoneNumber());
         }
-        result.put("currentToken", this.currentToken);
         return result;
     }
 

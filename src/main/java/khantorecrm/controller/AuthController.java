@@ -36,4 +36,9 @@ public class AuthController {
     public HttpEntity<?> getAllUsers() {
         return OwnResponse.ALL_DATA.setData(service.getAllUsers()).handleResponse();
     }
+
+    @GetMapping(value = "me")
+    public HttpEntity<?> getCurrentUser() {
+        return OwnResponse.ALL_DATA.setData(service.getCurrentUser()).handleResponse();
+    }
 }

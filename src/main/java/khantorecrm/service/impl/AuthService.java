@@ -61,7 +61,7 @@ public class AuthService implements IUserService {
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                return OwnResponse.LOGIN_SUCCESSFULLY.setData(user);
+                return OwnResponse.LOGIN_SUCCESSFULLY.setData(user.getCurrentToken());
             }
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
@@ -122,5 +122,10 @@ public class AuthService implements IUserService {
     @Override
     public List<User> getAllUsers() {
         return repository.findAll();
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

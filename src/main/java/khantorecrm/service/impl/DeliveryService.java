@@ -119,13 +119,13 @@ public class DeliveryService implements
     }
 
     @Override
-    public OwnResponse getBaggageWithDeliveryId(Long id) {
+    public OwnResponse getBaggageWithUserId(Long id) {
         // if user is deliverer
         try {
             return OwnResponse.ALL_DATA.setData(
                     itemRepository.findAllByWarehouseId(
-                            repository.findById(id).orElseThrow(
-                                    () -> new NotFoundException("Delivery with id " + id + " Not found !")
+                            repository.findByDeliverer_Id(id).orElseThrow(
+                                    () -> new NotFoundException("Delivery with user id " + id + " not found")
                             ).getBaggage().getId()
                     )
             );
@@ -139,7 +139,7 @@ public class DeliveryService implements
 
         try {
             // if user is deliverer
-            Delivery delivery = repository.findById(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getId()).orElseThrow(
+            Delivery delivery = repository.findByDeliverer_Id(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getId()).orElseThrow(
                     () -> new NotFoundException("You aren't a deliverer")
             );
 

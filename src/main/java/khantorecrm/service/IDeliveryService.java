@@ -8,7 +8,7 @@ import khantorecrm.payload.dto.ReturnProductDto;
 import java.util.List;
 
 public interface IDeliveryService {
-    OwnResponse getBaggageWithDeliveryId(Long id);
+    OwnResponse getBaggageWithUserId(Long id);
 
     OwnResponse returnSelectedProduct(ReturnProductDto dto);
 

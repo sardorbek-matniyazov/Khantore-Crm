@@ -59,7 +59,7 @@ public class DeliveryController {
 
     @GetMapping(value = "{id}/baggage")
     public HttpEntity<?> getBaggageItemsWithDeliveryId(@PathVariable Long id) {
-        return service.getBaggageWithDeliveryId(id).handleResponse();
+        return service.getBaggageWithUserId(id).handleResponse();
     }
 
     @PostMapping(value = "return-product")

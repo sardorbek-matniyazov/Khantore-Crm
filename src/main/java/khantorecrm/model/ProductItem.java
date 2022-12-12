@@ -46,8 +46,6 @@ public class ProductItem extends BaseEntity {
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();
         result.put("productItemId", super.getId());
-        result.put("createdAt", super.getCreatedAt());
-        result.put("createdBy", super.getCreatedBy().getName());
 
         result.put("product", this.getItemProduct().getName());
         result.put("productPrice", this.getItemProduct().getPrice());

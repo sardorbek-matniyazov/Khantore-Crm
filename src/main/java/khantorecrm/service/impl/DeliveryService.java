@@ -19,11 +19,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DeliveryService implements
@@ -63,49 +63,50 @@ public class DeliveryService implements
                     () -> new NotFoundException("Delivery with id " + dto.getDeliveryId() + " already exists")
             );
 
-            ProductItem productItem = itemRepository.findById(dto.getProductItemId()).orElseThrow(
-                    () -> new NotFoundException("Product item with id " + dto.getProductItemId() + " not found")
-            );
+            final Set<ItemForCollection> orderedItems = dto.getItems().stream().map(
+                    itemDto -> {
+                        ProductItem productItem = itemRepository.findById(itemDto.getProductItemId()).orElseThrow(
+                                () -> new NotFoundException("Product item with id " + itemDto.getProductItemId() + " not found")
+                        );
 
-            // check product item amount enough delivery amount
-            if (productItem.getItemAmount() < dto.getAmount())
-                throw new TypesInError("Not enough items in stock");
+                        // check product item amount enough delivery amount
+                        if (productItem.getItemAmount() < itemDto.getAmount())
+                            throw new TypesInError("Not enough items in stock");
 
-            // delivery baggage items
-            List<ProductItem> allByWarehouseId = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId());
+                        // delivery baggage items
+                        List<ProductItem> allByWarehouseId = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId());
 
-            Optional<ProductItem> doHave = allByWarehouseId.stream().filter(item -> item.getItemProduct().getId().equals(productItem.getItemProduct().getId())).findFirst();
+                        // save changes of product item
+                        productItem.setItemAmount(productItem.getItemAmount() - itemDto.getAmount());
 
-            if (doHave.isPresent()) {
-                ProductItem baggageItem = doHave.get();
-                baggageItem.setItemAmount(baggageItem.getItemAmount() + dto.getAmount());
-                itemRepository.save(baggageItem);
-            } else {
-                itemRepository.save(
-                        new ProductItem(
-                                productItem.getItemProduct(),
-                                dto.getAmount(),
-                                delivery.getBaggage()
-                        )
-                );
-            }
+                        Optional<ProductItem> doHave = allByWarehouseId.stream().filter(
+                                item -> item.getItemProduct().getId().equals(productItem.getItemProduct().getId())).findFirst();
 
-            // save changes of product item
-            productItem.setItemAmount(productItem.getItemAmount() - dto.getAmount());
-            itemRepository.save(productItem);
+                        if (doHave.isPresent()) {
+                            ProductItem baggageItem = doHave.get();
+                            baggageItem.setItemAmount(baggageItem.getItemAmount() + itemDto.getAmount());
+                            return new ItemForCollection(
+                                    baggageItem,
+                                    itemDto.getAmount(),
+                                    baggageItem.getItemProduct().getPrice()
+                            );
+                        } else {
+                            return new ItemForCollection(
+                                    new ProductItem(
+                                            productItem.getItemProduct(),
+                                            itemDto.getAmount(),
+                                            delivery.getBaggage()
+                                    ),
+                                    itemDto.getAmount(),
+                                    productItem.getItemProduct().getPrice()
+                            );
+                        }
+                    }).collect(Collectors.toSet());
 
             // creating output, output may be changed
             outputRepository.save(
                     new Output(
-                            new HashSet<>(
-                                    Collections.singletonList(
-                                            new ItemForCollection(
-                                                    productItem,
-                                                    dto.getAmount(),
-                                                    productItem.getItemProduct().getPrice()
-                                            )
-                                    )
-                            ),
+                            orderedItems,
                             OutputType.DELIVERY,
                             delivery
                     )
@@ -113,6 +114,8 @@ public class DeliveryService implements
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.DELIVERY_NOT_FOUND.setMessage(e.getMessage());
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
         } catch (RuntimeException e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
@@ -124,7 +127,7 @@ public class DeliveryService implements
         try {
             return OwnResponse.ALL_DATA.setData(
                     itemRepository.findAllByWarehouseId(
-                            repository.findByDeliverer_Id(id).orElseThrow(
+                            repository.findById(id).orElseThrow(
                                     () -> new NotFoundException("Delivery with user id " + id + " not found")
                             ).getBaggage().getId()
                     )
@@ -136,7 +139,6 @@ public class DeliveryService implements
 
     @Override
     public OwnResponse returnSelectedProduct(ReturnProductDto dto) {
-
         try {
             // if user is deliverer
             Delivery delivery = repository.findByDeliverer_Id(((User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal())).getId()).orElseThrow(
@@ -163,7 +165,8 @@ public class DeliveryService implements
             // check if product is in the baggage
             if (allByWarehouseId.stream().noneMatch(
                     item -> Objects.equals(dto.getReturnedProductItemId(), item.getId()))
-            ) throw new NotFoundException("Product item with " + dto.getReturnedProductItemId() + " not found in the baggage !");
+            )
+                throw new NotFoundException("Product item with " + dto.getReturnedProductItemId() + " not found in the baggage !");
 
             // amount should be less than real product amount
             if (realBaggageItem.getItemAmount() < dto.getAmount())

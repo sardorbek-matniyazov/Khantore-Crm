@@ -3,6 +3,7 @@ package khantorecrm.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ import java.util.Map;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Warehouse extends BaseEntity {
+public class Warehouse extends BaseWithCreatedBy {
     @Column(name = "wr_name", length = NamingConstants.MODEL_NAME_LENGTH, unique = true)
     private String name;
 

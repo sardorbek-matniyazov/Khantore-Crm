@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.utils.constants.NamingConstants;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Input extends BaseEntity {
+public class Input extends BaseWithCreatedBy {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     private ProductItem productItem;
@@ -70,6 +71,7 @@ public class Input extends BaseEntity {
         Map<String, Object> result = new HashMap<>();
         result.put("inputId", super.getId());
         result.put("createdAt", super.getCreatedAt());
+        result.put("createdBy", super.getCreatedBy().getName());
 
         result.put("amount", this.getAmount());
         result.put("product", this.getProductItem().getItemProduct().getName());

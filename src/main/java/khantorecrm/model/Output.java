@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.OutputType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +23,9 @@ import java.util.Set;
 @AllArgsConstructor
 //caching
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Output extends BaseEntity {
-    @OneToMany(orphanRemoval = true,
+public class Output extends BaseWithCreatedBy {
+    @OneToMany(
+            orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
             fetch = FetchType.LAZY
     )

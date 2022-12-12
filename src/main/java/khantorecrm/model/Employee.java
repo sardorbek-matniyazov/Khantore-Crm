@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,7 @@ import java.util.Map;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee extends BaseEntity {
+public class Employee extends BaseWithCreatedBy {
     @Column(name = "employee_name", length = NamingConstants.MODEL_NAME_LENGTH)
     private String name;
 

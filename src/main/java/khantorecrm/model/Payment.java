@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ import java.util.Map;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Payment extends BaseEntity {
+public class Payment extends BaseWithCreatedBy {
     @Column(name = "payment_amount")
     private Double amount = 0.0;
 

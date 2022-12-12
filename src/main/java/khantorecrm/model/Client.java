@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.ClientType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +25,7 @@ import java.util.Map;
 @AllArgsConstructor
 //caching
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Client extends BaseEntity {
+public class Client extends BaseWithCreatedBy {
 
     @Column(name = "client_name", nullable = false)
     private String name;

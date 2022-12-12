@@ -36,11 +36,11 @@ public class Delivery extends BaseEntity {
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();
         result.put("deliveryId", super.getId());
-        result.put("createdAt", super.getCreatedAt());
+        result.put("createdAt", this.deliverer.getCreatedAt());
 
         result.put("name", this.deliverer.getName());
         result.put("baggage", this.baggage.getName());
-        result.put("createdBy", this.getCreatedBy().getName());
+        result.put("createdBy", this.deliverer.getCreatedBy());
         return result;
     }
 }

@@ -22,9 +22,7 @@ import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +37,11 @@ public class WarehouseService implements
     private final ProductRepository productRepository;
 
     @Autowired
-    public WarehouseService(WarehouseRepository repository, ProductItemRepository itemRepository, ProductRepository productRepository) {
+    public WarehouseService(
+            WarehouseRepository repository,
+            ProductItemRepository itemRepository,
+            ProductRepository productRepository
+    ) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.productRepository = productRepository;
@@ -62,7 +64,14 @@ public class WarehouseService implements
         }
         Warehouse warehouse = new Warehouse(dto.getName(), dto.getType());
         try {
+            Map<Long, Character> uniqueIds = new HashMap<>();
             itemRepository.saveAll(dto.getProductList().stream().map(productList -> {
+                // some DSA idea
+                if (uniqueIds.containsKey(productList.getProductId()))
+                    throw new TypesInError("Each item should be unique");
+
+                uniqueIds.put(productList.getProductId(), 'a');
+
                 ProductItem productItem = new ProductItem(productRepository.findById(productList.getProductId()).orElseThrow(() -> new NotFoundException("Product with id " + productList.getProductId() + " not found")), productList.getAmount());
                 if (!productItem.getItemProduct().getType().equals(warehouse.getType())) {
                     throw new TypesInError("Product with id " + productList.getProductId() + " type " + productItem.getItemProduct().getType() + " not equal with warehouse type " + warehouse.getType());

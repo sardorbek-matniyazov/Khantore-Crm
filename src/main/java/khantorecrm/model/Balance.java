@@ -37,7 +37,6 @@ public class Balance extends BaseEntity {
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();
         result.put("balanceId", super.getId());
-        result.put("createdAt", super.getCreatedAt());
 
         result.put("amount", this.getAmount());
         return result;

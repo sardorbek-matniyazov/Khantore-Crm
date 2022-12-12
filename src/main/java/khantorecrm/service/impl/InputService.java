@@ -10,15 +10,19 @@ import khantorecrm.payload.dto.ProductItemWrapper;
 import khantorecrm.repository.*;
 import khantorecrm.service.IInputService;
 import khantorecrm.utils.exceptions.NotFoundException;
+import khantorecrm.utils.exceptions.TypesInError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class InputService implements
         IInputService {
 
@@ -29,7 +33,13 @@ public class InputService implements
     private final BalanceRepository balanceRepository;
 
     @Autowired
-    public InputService(InputRepository repository, ProductItemRepository productItemRepository, ProductRepository productRepository, EmployeeRepository employeeRepository, BalanceRepository balanceRepository) {
+    public InputService(
+            InputRepository repository,
+            ProductItemRepository productItemRepository,
+            ProductRepository productRepository,
+            EmployeeRepository employeeRepository,
+            BalanceRepository balanceRepository
+    ) {
         this.repository = repository;
         this.productItemRepository = productItemRepository;
         this.productRepository = productRepository;
@@ -88,12 +98,19 @@ public class InputService implements
                                 () -> new NotFoundException("Product item with id " + item.getProductItemId() + " not found")
                         );
 
+                        if (productItem.getItemProduct().getType().equals(ProductType.INGREDIENT))
+                            throw new TypesInError("Product type should be PRODUCT");
+
                         productItem.setItemAmount(productItem.getItemAmount() + item.getAmount());
 
                         final ProductItem save = productItemRepository.save(productItem);
-                        boolean b = changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
 
-                        if (!b) throw new NotFoundException("There are something wrong with ingredients");
+                        // decreasing ingredients
+                        final Set<ProductItem> productItems =
+                                changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
+
+                        if (productItems.size() == 0)
+                            throw new NotFoundException("There are something wrong with ingredients");
 
                         // saving input
                         repository.save(
@@ -111,6 +128,8 @@ public class InputService implements
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
@@ -121,13 +140,16 @@ public class InputService implements
         return repository.findAllByStatusAndCreatedBy_Role_RoleName(wait, RoleName.DRIVER);
     }
 
-    private boolean changeIngredients(Set<ItemForCollection> ingredients, Double itemAmount, char ch) {
-        try {
-            Stream<ProductItem> productItemStream = ingredients.stream().map(
+    @Override
+    public List<Input> getAllByType(ProductType type) {
+        return repository.findAllByType(type);
+    }
+
+    private Set<ProductItem> changeIngredients(Set<ItemForCollection> ingredients, Double itemAmount, char ch) {
+        return ingredients.stream().map(
                     ingredient -> {
-                        ProductItem productItem = productItemRepository.findById(ingredient.getProductItem().getId()).orElseThrow(
-                                () -> new NotFoundException("Product item with id " + ingredient.getProductItem().getId() + " not found")
-                        );
+                        final ProductItem productItem = ingredient.getProductItem();
+                        System.out.println("console.log");
 
                         if (ch == '+') {
                             productItem.setItemAmount(productItem.getItemAmount() - ingredient.getItemAmount() * itemAmount);
@@ -135,17 +157,8 @@ public class InputService implements
                             productItem.setItemAmount(productItem.getItemAmount() + ingredient.getItemAmount() * itemAmount);
                         }
 
-                        return productItemRepository.save(productItem);
+                        return productItem;
                     }
-            );
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public List<Input> getAllByType(ProductType type) {
-        return repository.findAllByType(type);
+            ).collect(Collectors.toSet());
     }
 }

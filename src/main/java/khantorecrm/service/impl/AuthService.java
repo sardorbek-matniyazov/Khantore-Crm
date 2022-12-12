@@ -5,6 +5,7 @@ import khantorecrm.model.Role;
 import khantorecrm.model.User;
 import khantorecrm.model.Warehouse;
 import khantorecrm.model.enums.ProductType;
+import khantorecrm.payload.dao.LoginResponse;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.LoginDto;
 import khantorecrm.payload.dto.RegisterDto;
@@ -61,7 +62,12 @@ public class AuthService implements IUserService {
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                return OwnResponse.LOGIN_SUCCESSFULLY.setData(user.getCurrentToken());
+                return OwnResponse.LOGIN_SUCCESSFULLY.setData(
+                        new LoginResponse(
+                                user.getCurrentToken(),
+                                user
+                        )
+                );
             }
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());

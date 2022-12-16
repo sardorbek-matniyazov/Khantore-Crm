@@ -123,14 +123,13 @@ public class DeliveryService implements
 
     @Override
     public OwnResponse getBaggageWithUserId(Long id) {
-        // if user is deliverer
         try {
             return OwnResponse.ALL_DATA.setData(
                     itemRepository.findAllByWarehouseId(
                             repository.findById(id).orElseThrow(
                                     () -> new NotFoundException("Delivery with user id " + id + " not found")
                             ).getBaggage().getId()
-                    )
+                    ).stream().filter(it -> it.getItemAmount() > 0).collect(Collectors.toList())
             );
         } catch (NotFoundException e) {
             return OwnResponse.DELIVERY_NOT_FOUND.setMessage(e.getMessage());

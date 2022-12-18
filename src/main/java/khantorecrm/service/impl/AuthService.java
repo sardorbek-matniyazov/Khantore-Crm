@@ -17,7 +17,6 @@ import khantorecrm.security.JwtProvider;
 import khantorecrm.service.IUserService;
 import khantorecrm.utils.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,18 +79,23 @@ public class AuthService implements IUserService {
         try {
             switch (dto.getRoleName()) {
                 case DRIVER:
+                    final User user1 = repository.save(
+                            new User(
+                                    dto.getName(),
+                                    dto.getPhoneNumber(),
+                                    passwordEncoder.encode(dto.getPassword()),
+                                    roleRepository.findByRoleName(dto.getRoleName()).orElse(
+                                            new Role(
+                                                    dto.getRoleName()
+                                            )
+                                    )
+                            )
+                    );
                     deliveryRepository.save(
                             new Delivery(
-                                    new User(
-                                            dto.getName(),
-                                            dto.getPhoneNumber(),
-                                            passwordEncoder.encode(dto.getPassword()),
-                                            roleRepository.findByRoleName(dto.getRoleName()).orElse(
-                                                    new Role(
-                                                            dto.getRoleName()
-                                                    )
-                                            )
-                                    ),
+                                    user1.getId(),
+                                    user1
+                                    ,
                                     new Warehouse(
                                             dto.getName() + "'s Baggage",
                                             ProductType.BAGGAGE

@@ -82,8 +82,13 @@ public class SaleService implements InstanceReturnable<Sale, Long>, ISaleService
             );
 
             final Double wholePrice = atomicWholePrice.get();
-            if (wholePrice < dto.getPaymentAmount())
+            final double debtPrice = wholePrice - dto.getPaymentAmount();
+            if (debtPrice < 0)
                 throw new TypesInError("Sale Whole price should be less than payment price");
+
+            // changing balance of client
+            final Balance balance = client.getBalance();
+            balance.setAmount(balance.getAmount() - debtPrice);
 
             // creating sale
             repository.save(
@@ -94,14 +99,13 @@ public class SaleService implements InstanceReturnable<Sale, Long>, ISaleService
                             ),
                             client,
                             wholePrice,
-                            wholePrice - dto.getPaymentAmount(),
+                            debtPrice,
                             new Payment(
                                     dto.getPaymentAmount(),
                                     PaymentType.CASH
                             )
                     )
             );
-
 
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {

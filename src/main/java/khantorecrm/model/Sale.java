@@ -25,7 +25,7 @@ public class Sale extends BaseWithCreatedBy {
     @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Output output;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     private Client client;
 
     @Column(name = "sale_whole_price", nullable = false)

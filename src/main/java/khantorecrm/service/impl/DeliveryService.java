@@ -268,7 +268,7 @@ public class DeliveryService implements
 
     @Override
     public List<Output> getAllOrdersByDriverId(Long id) {
-        return outputRepository.findAllByCreatedBy_Id(id);
+        return outputRepository.findAllByDelivery_Id(id);
     }
 
     @Override

@@ -229,17 +229,13 @@ public class DeliveryService implements
                 throw new TypesInError("The input is already accepted");
 
             final Delivery delivery = repository.findById(
-                    userRepository.findById(
-                            input.getCreatedBy().getId()
-                    ).orElseThrow(
-                            () -> new NotFoundException("User with id " + input.getCreatedBy().getId() + " not found !")
-                    ).getId()
+                    input.getCreatedBy().getId()
             ).orElseThrow(
                     () -> new NotFoundException("Delivery with id " + input.getCreatedBy().getId() + " not found !")
             );
 
             ProductItem productItem = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId()).stream().filter(
-                    item -> Objects.equals(item.getId(), input.getProductItem().getId())
+                    item -> Objects.equals(item.getItemProduct().getId(), input.getProductItem().getId())
             ).findFirst().orElseThrow(
                     () -> new NotFoundException("Product item with id " + input.getProductItem().getId() + " not found in the baggage !")
             );

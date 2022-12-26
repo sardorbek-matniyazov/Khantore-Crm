@@ -1,13 +1,19 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Employee;
+import khantorecrm.model.Input;
+import khantorecrm.model.ItemForCollection;
+import khantorecrm.model.Product;
+import khantorecrm.model.ProductItem;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
 import khantorecrm.payload.dto.ProductItemWrapper;
-import khantorecrm.repository.*;
+import khantorecrm.repository.EmployeeRepository;
+import khantorecrm.repository.InputRepository;
+import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.service.IInputService;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
@@ -19,7 +25,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -28,23 +33,17 @@ public class InputService implements
 
     private final InputRepository repository;
     private final ProductItemRepository productItemRepository;
-    private final ProductRepository productRepository;
     private final EmployeeRepository employeeRepository;
-    private final BalanceRepository balanceRepository;
 
     @Autowired
     public InputService(
             InputRepository repository,
             ProductItemRepository productItemRepository,
-            ProductRepository productRepository,
-            EmployeeRepository employeeRepository,
-            BalanceRepository balanceRepository
+            EmployeeRepository employeeRepository
     ) {
         this.repository = repository;
         this.productItemRepository = productItemRepository;
-        this.productRepository = productRepository;
         this.employeeRepository = employeeRepository;
-        this.balanceRepository = balanceRepository;
     }
 
     @Override
@@ -109,6 +108,7 @@ public class InputService implements
                         final Set<ProductItem> productItems =
                                 changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
 
+                        System.out.println(productItems);
                         if (productItems.size() == 0)
                             throw new NotFoundException("There are something wrong with ingredients");
 
@@ -147,18 +147,17 @@ public class InputService implements
 
     private Set<ProductItem> changeIngredients(Set<ItemForCollection> ingredients, Double itemAmount, char ch) {
         return ingredients.stream().map(
-                    ingredient -> {
-                        final ProductItem productItem = ingredient.getProductItem();
-                        System.out.println("console.log");
+                ingredient -> {
+                    final ProductItem productItem = ingredient.getProductItem();
 
-                        if (ch == '+') {
-                            productItem.setItemAmount(productItem.getItemAmount() - ingredient.getItemAmount() * itemAmount);
-                        } else {
-                            productItem.setItemAmount(productItem.getItemAmount() + ingredient.getItemAmount() * itemAmount);
-                        }
-
-                        return productItem;
+                    if (ch == '+') {
+                        productItem.setItemAmount(productItem.getItemAmount() - ingredient.getItemAmount() * itemAmount);
+                    } else {
+                        productItem.setItemAmount(productItem.getItemAmount() + ingredient.getItemAmount() * itemAmount);
                     }
-            ).collect(Collectors.toSet());
+
+                    return productItemRepository.save(productItem);
+                }
+        ).collect(Collectors.toSet());
     }
 }

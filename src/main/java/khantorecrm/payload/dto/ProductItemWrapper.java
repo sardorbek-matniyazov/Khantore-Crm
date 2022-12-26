@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductItemWrapper {
     @CheckProductItemList
-    private List<ProductItemList> items;
+    private List<ProductItemListDto> items;
 }

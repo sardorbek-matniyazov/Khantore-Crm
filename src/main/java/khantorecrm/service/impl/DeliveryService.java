@@ -7,6 +7,7 @@ import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.DeliveryDto;
+import khantorecrm.payload.dto.DeliveryShareDto;
 import khantorecrm.payload.dto.ReturnProductDto;
 import khantorecrm.repository.*;
 import khantorecrm.service.IDeliveryService;
@@ -15,6 +16,7 @@ import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -33,16 +35,22 @@ public class DeliveryService implements
     private final DeliveryRepository repository;
     private final ProductItemRepository itemRepository;
     private final InputRepository inputRepository;
-    private final UserRepository userRepository;
     private final OutputRepository outputRepository;
+    private final DeliveryMovingProductHistoryRepository movingProductHistoryRepository;
 
     @Autowired
-    public DeliveryService(DeliveryRepository repository, ProductItemRepository itemRepository, InputRepository inputRepository, UserRepository userRepository, OutputRepository outputRepository) {
+    public DeliveryService(
+            DeliveryRepository repository,
+            ProductItemRepository itemRepository,
+            InputRepository inputRepository,
+            OutputRepository outputRepository,
+            DeliveryMovingProductHistoryRepository movingProductHistoryRepository
+    ) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.inputRepository = inputRepository;
-        this.userRepository = userRepository;
         this.outputRepository = outputRepository;
+        this.movingProductHistoryRepository = movingProductHistoryRepository;
     }
 
     @Override
@@ -270,5 +278,171 @@ public class DeliveryService implements
     @Override
     public List<Input> getAllWaitReturns() {
         return inputRepository.findAllByStatusAndCreatedBy_Role_RoleName(ActionType.WAIT, RoleName.DRIVER);
+    }
+
+    @Override
+    public OwnResponse shareWithDriver(DeliveryShareDto dto) {
+        try {
+            // current user should be a driver
+            // get current driver
+            final Delivery currentDeliverer = repository.findById(
+                    ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()
+            ).orElseThrow(
+                    () -> new NotFoundException("You aren't a driver")
+            );
+
+            final Delivery secondDeliverer = repository.findById(dto.getDeliveryId()).orElseThrow(
+                    () -> new NotFoundException("Delivery with id " + dto.getDeliveryId() + " not found !")
+            );
+
+            // check if the driver is not the same
+            if (currentDeliverer.getId().equals(secondDeliverer.getId()))
+                throw new TypesInError("You can't share with yourself");
+
+            // get moving product
+            final ProductItem movingProduct = itemRepository.findById(dto.getProductItemId()).orElseThrow(
+                    () -> new NotFoundException("Product with id " + dto.getProductItemId() + " not found !")
+            );
+
+            // check if the product is in the current driver's baggage
+            if (!movingProduct.getWarehouse().getId().equals(currentDeliverer.getBaggage().getId()))
+                throw new NotFoundException("Product with id " + dto.getProductItemId() + " not found in your baggage !");
+
+            // check if the product amount is less than the moving amount
+            if (movingProduct.getItemAmount() < dto.getAmount())
+                throw new TypesInError("Amount should be less than product amount");
+
+            // saving current product amount
+            movingProduct.setItemAmount(movingProduct.getItemAmount() - dto.getAmount());
+            itemRepository.save(movingProduct);
+
+            // saving moving product
+            movingProductHistoryRepository.save(
+                    new DeliveryMovingProductHistory(
+                            currentDeliverer,
+                            secondDeliverer,
+                            movingProduct.getItemProduct(),
+                            dto.getAmount(),
+                            ActionType.WAIT
+                    )
+            );
+
+                return OwnResponse.UPDATED_SUCCESSFULLY;
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        }
+    }
+
+    @Override
+    public OwnResponse acceptMovingProductWithDeliverer(Long movingId) {
+        try {
+            final DeliveryMovingProductHistory deliveryMovingProductHistoryWithId = movingProductHistoryRepository.findById(movingId).orElseThrow(
+                    () -> new NotFoundException("Moving product with id " + movingId + " not found !")
+            );
+
+            // check if the moving product is not accepted
+            if (deliveryMovingProductHistoryWithId.getAction().equals(ActionType.ACCEPTED))
+                throw new TypesInError("The moving product is already accepted");
+
+            if (
+                    !deliveryMovingProductHistoryWithId.getToDelivery().getId().equals(
+                            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId())
+            ) return OwnResponse.NOT_FOUND.setMessage("You aren't the receiver of this product");
+
+            // get second driver's baggage
+            final List<ProductItem> secondDriverBaggage = itemRepository.findAllByWarehouseId(deliveryMovingProductHistoryWithId.getToDelivery().getBaggage().getId());
+
+            // check if the product is in the second driver's baggage
+            if (
+                    secondDriverBaggage.stream().noneMatch(
+                            item -> Objects.equals(item.getItemProduct().getId(), deliveryMovingProductHistoryWithId.getProduct().getId()))
+            ) {
+                // create new product item
+                itemRepository.save(
+                        new ProductItem (
+                                deliveryMovingProductHistoryWithId.getProduct(),
+                                deliveryMovingProductHistoryWithId.getAmount(),
+                                deliveryMovingProductHistoryWithId.getToDelivery().getBaggage()
+                        )
+                );
+            } else {
+                // get the product item
+                final ProductItem secondDriverProductItem = secondDriverBaggage.stream().filter(
+                        item -> Objects.equals(item.getItemProduct().getId(), deliveryMovingProductHistoryWithId.getProduct().getId())
+                ).findFirst().orElseThrow(
+                        () -> new NotFoundException("Product with id " + deliveryMovingProductHistoryWithId.getProduct().getId() + " not found in the second driver's baggage !")
+                );
+
+                // add amount
+                secondDriverProductItem.setItemAmount(secondDriverProductItem.getItemAmount() + deliveryMovingProductHistoryWithId.getAmount());
+                itemRepository.save(secondDriverProductItem);
+            }
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        }
+        return OwnResponse.UPDATED_SUCCESSFULLY.setData("Product moved successfully !");
+    }
+
+    @Override
+    public OwnResponse rejectMovingProductWithDeliverer(Long movingId) {
+        try {
+            final DeliveryMovingProductHistory deliveryMovingProductHistoryWithId = movingProductHistoryRepository.findById(movingId).orElseThrow(
+                    () -> new NotFoundException("Moving product with id " + movingId + " not found !")
+            );
+
+            // check if the moving product is not accepted
+            if (!deliveryMovingProductHistoryWithId.getAction().equals(ActionType.WAIT))
+                throw new TypesInError("The moving product is already accepted or rejected");
+
+            if (
+                    !deliveryMovingProductHistoryWithId.getToDelivery().getId().equals(
+                            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId())
+            ) return OwnResponse.NOT_FOUND.setMessage("You aren't the receiver of this product");
+
+            // get current driver's baggage
+            final List<ProductItem> currentDriverBaggage = itemRepository.findAllByWarehouseId(deliveryMovingProductHistoryWithId.getFromDelivery().getBaggage().getId());
+
+            // check if the product is in the current driver's baggage
+            if (
+                    currentDriverBaggage.stream().noneMatch(
+                            item -> Objects.equals(item.getItemProduct().getId(), deliveryMovingProductHistoryWithId.getProduct().getId()))
+            ) {
+                // create new product item
+                itemRepository.save(
+                        new ProductItem (
+                                deliveryMovingProductHistoryWithId.getProduct(),
+                                deliveryMovingProductHistoryWithId.getAmount(),
+                                deliveryMovingProductHistoryWithId.getFromDelivery().getBaggage()
+                        )
+                );
+            } else {
+                // get the product item
+                final ProductItem currentDriverProductItem = currentDriverBaggage.stream().filter(
+                        item -> Objects.equals(item.getItemProduct().getId(), deliveryMovingProductHistoryWithId.getProduct().getId())
+                ).findFirst().orElseThrow(
+                        () -> new NotFoundException("Product with id " + deliveryMovingProductHistoryWithId.getProduct().getId() + " not found in the current driver's baggage !")
+                );
+
+                // add amount
+                currentDriverProductItem.setItemAmount(currentDriverProductItem.getItemAmount() + deliveryMovingProductHistoryWithId.getAmount());
+                itemRepository.save(currentDriverProductItem);
+            }
+            return OwnResponse.UPDATED_SUCCESSFULLY.setData("Product moving rejected successfully !");
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        }
+    }
+
+    @Override
+    public OwnResponse getAllMovingWithDelivererId(Long id) {
+        return OwnResponse.ALL_DATA.setData(
+                movingProductHistoryRepository.findAllByToDeliveryId(id, Sort.by(Sort.Direction.DESC, "id"))
+        );
     }
 }

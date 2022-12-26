@@ -22,7 +22,7 @@ public class ProductDto {
     private Double price;
 
     // optional, These are only for product with type PRODUCT
-    private List<ProductItemList> ingredients;
+    private List<ProductItemListDto> ingredients;
 
     public Product toEntity() {
         return new Product(

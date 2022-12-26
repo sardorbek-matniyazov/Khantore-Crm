@@ -15,5 +15,5 @@ public class DeliveryDto {
     @NotNull(message = "Delivery id is required")
     private Long deliveryId;
     @CheckProductItemList
-    private List<ProductItemList> items;
+    private List<ProductItemListDto> items;
 }

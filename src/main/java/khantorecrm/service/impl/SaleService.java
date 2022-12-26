@@ -5,7 +5,7 @@ import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
-import khantorecrm.payload.dto.ProductItemList;
+import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
 import khantorecrm.repository.ClientRepository;
 import khantorecrm.repository.ProductItemRepository;
@@ -52,7 +52,7 @@ public class SaleService implements InstanceReturnable<Sale, Long>, ISaleService
     public OwnResponse sell(SaleDto dto) {
         try {
             AtomicReference<Double> atomicWholePrice = new AtomicReference<>(0.0);
-            Set<ItemForCollection> collect = dto.getProductItemsList().stream().filter(ProductItemList::isItemCreatableId).map(
+            Set<ItemForCollection> collect = dto.getProductItemsList().stream().filter(ProductItemListDto::isItemCreatableId).map(
                     dItem -> {
                         ProductItem item = itemRepository.findById(
                                 dItem.getProductItemId()).orElseThrow(

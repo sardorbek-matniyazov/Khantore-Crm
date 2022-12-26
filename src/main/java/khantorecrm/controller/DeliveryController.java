@@ -2,12 +2,18 @@ package khantorecrm.controller;
 
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.DeliveryDto;
+import khantorecrm.payload.dto.DeliveryShareDto;
 import khantorecrm.payload.dto.ReturnProductDto;
 import khantorecrm.service.impl.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -75,5 +81,26 @@ public class DeliveryController {
     @PostMapping(value = "reject/{inputId}")
     public HttpEntity<?> rejectReturnedProduct(@PathVariable Long inputId) {
         return service.rejectReturnedProduct(inputId).handleResponse();
+    }
+
+    // moving with deliverer
+    @PostMapping(value = "share-with-driver")
+    public HttpEntity<?> shareWithDriver(@RequestBody DeliveryShareDto dto) {
+        return service.shareWithDriver(dto).handleResponse();
+    }
+
+    @GetMapping(value = "{id}/moving")
+    public HttpEntity<?> getAllMovingWithDelivererId(@PathVariable Long id) {
+        return OwnResponse.ALL_DATA.setData(service.getAllMovingWithDelivererId(id)).handleResponse();
+    }
+
+    @PostMapping(value = "accept-moving/{movingId}")
+    public HttpEntity<?> acceptMovingProduct(@PathVariable Long movingId) {
+        return service.acceptMovingProductWithDeliverer(movingId).handleResponse();
+    }
+
+    @PostMapping(value = "reject-moving/{movingId}")
+    public HttpEntity<?> rejectMovingProduct(@PathVariable Long movingId) {
+        return service.rejectMovingProductWithDeliverer(movingId).handleResponse();
     }
 }

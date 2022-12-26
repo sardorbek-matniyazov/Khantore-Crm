@@ -5,7 +5,7 @@ import khantorecrm.model.Product;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductDto;
-import khantorecrm.payload.dto.ProductItemList;
+import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.repository.IngredientRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.ProductRepository;
@@ -115,7 +115,7 @@ public class ProductService implements
 
     // todo: add delete method
 
-    private Set<ItemForCollection> makeIngredients(List<ProductItemList> ingredients) {
+    private Set<ItemForCollection> makeIngredients(List<ProductItemListDto> ingredients) {
         return ingredients.stream().map(
                 ingredient -> {
                     ItemForCollection ingredientProduct = new ItemForCollection();

@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SaleDto {
     @CheckProductItemList
-    private List<ProductItemList> productItemsList;
+    private List<ProductItemListDto> productItemsList;
 
     @NotNull(message = "Client id is required")
     private Long clientId;

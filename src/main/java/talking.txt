@@ -1,0 +1,86 @@
+Question: What is the difference between a “good” and a “bad” debt?
+Answer: A good debt is one that you can afford to pay back. A bad debt is one that you cannot afford to pay back.
+
+Q: What is the difference between a “good” and a “bad” debt?
+A: A good debt is one that you can afford to pay back. A bad debt is one that you cannot afford to pay back.
+
+Q: What is your name?
+A: My name is ________.
+
+Q: Where are you from?
+A: I am from ________.
+
+Q: What is your address?
+A: My address is ________.
+
+Q: What is your phone number?
+A: My phone number is ________.
+
+Q: What is your email address?
+A: My email address is ________.
+
+Q: What is your date of birth?
+A: My date of birth is ________.
+
+Q: Are you gay?
+A: No, I am not
+
+Q: Are you straight?
+A: Yes, I am
+
+Q: Are you bisexual?
+A: No, I am not
+
+Q: Are you from India?
+A: No, I am not
+
+Q: Are you from China?
+A: No, I am not
+
+Q: Are you from Japan?
+A: No, I am not
+
+Q: Are you from UK?
+A: No, I am not
+
+Q: Are you from the USA?
+A: Yes, I am
+
+Q: Are you from Canada?
+A: No, I am not
+
+Q: Do you like programming?
+A: Yes, I do
+
+Q: Do you like to play video games?
+A: Yes, I do
+
+Q: Do you like to watch movies?
+A: Yes, I do
+
+Q: Do you watch anime?
+A: Yes, I do
+
+Q: Is Anime interesting for you?
+A: Yes, it is
+
+Q: Are you a student?
+A: Yes, I am
+
+Q: Are you a guy?
+A: Yes, I am
+
+Q: Is your age 20?
+A: No, it is not
+
+Q: Is your age 21?
+A: No, it is not
+
+Q: Is your age 18?
+A: Yes, it is
+
+Q: Is your age 19?
+A: No, it is not
+
+Q: Is your name Alice?
+A: No, it is not

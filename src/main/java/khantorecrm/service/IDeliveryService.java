@@ -3,6 +3,7 @@ package khantorecrm.service;
 import khantorecrm.model.Input;
 import khantorecrm.model.Output;
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dto.DeliveryShareDto;
 import khantorecrm.payload.dto.ReturnProductDto;
 
 import java.util.List;
@@ -23,4 +24,12 @@ public interface IDeliveryService {
     List<Output> getAllOrdersByDriverId(Long id);
 
     List<Input> getAllWaitReturns();
+
+    OwnResponse shareWithDriver(DeliveryShareDto dto);
+
+    OwnResponse acceptMovingProductWithDeliverer(Long movingId);
+
+    OwnResponse rejectMovingProductWithDeliverer(Long movingId);
+
+    OwnResponse getAllMovingWithDelivererId(Long id);
 }

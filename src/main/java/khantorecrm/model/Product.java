@@ -8,10 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,14 +22,15 @@ import java.util.Set;
 @Entity(name = "product")
 @NoArgsConstructor
 @AllArgsConstructor
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Product extends BaseEntity implements Serializable {
     @Column(name = "product_name", length = NamingConstants.MODEL_NAME_LENGTH, unique = true)
     private String name;
 
     @Column(name = "product_price")
     private Double price = 0.0;
+
+    @Column(name = "product_warning_amount")
+    private Double warningAmount = 0.0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_type", length = NamingConstants.MODEL_ENUM_LENGTH)
@@ -43,10 +43,11 @@ public class Product extends BaseEntity implements Serializable {
     @JoinColumn(name = "product_fk", referencedColumnName = "id")
     private Set<ItemForCollection> ingredients = new HashSet<>();
 
-    public Product(String name, Double price, ProductType type) {
+    public Product(String name, Double price, ProductType type, @NotNull(message = "Warning Amount not be null") Double warningAmount) {
         this.name = name;
         this.price = price;
         this.type = type;
+        this.warningAmount = warningAmount;
     }
 
     @JsonValue
@@ -56,6 +57,7 @@ public class Product extends BaseEntity implements Serializable {
 
         result.put("name", this.getName());
         result.put("price", this.getPrice());
+        result.put("warningAmount", this.getWarningAmount());
         return result;
     }
 }

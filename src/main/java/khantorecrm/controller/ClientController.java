@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "client")
 @PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
@@ -37,7 +39,7 @@ public class ClientController {
     }
 
     @PostMapping(value = "create")
-    public HttpEntity<?> createClient(@RequestBody ClientDto dto) {
+    public HttpEntity<?> createClient(@RequestBody @Valid ClientDto dto) {
         return service.create(dto).handleResponse();
     }
 }

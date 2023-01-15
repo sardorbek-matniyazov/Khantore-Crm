@@ -20,6 +20,8 @@ public class ProductDto {
     private ProductType type;
     @NotNull(message = "Price must not be null")
     private Double price;
+    @NotNull(message = "Warning Amount not be null")
+    private Double warningAmount;
 
     // optional, These are only for product with type PRODUCT
     private List<ProductItemListDto> ingredients;
@@ -28,7 +30,8 @@ public class ProductDto {
         return new Product(
                 name,
                 price,
-                type
+                type,
+                warningAmount
         );
     }
 }

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -20,8 +18,6 @@ import java.util.Map;
 @Entity(name = "delivery")
 @NoArgsConstructor
 @AllArgsConstructor
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Delivery {
     @Id
     private Long id;

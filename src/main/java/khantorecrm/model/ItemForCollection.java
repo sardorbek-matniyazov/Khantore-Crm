@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -21,8 +19,6 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "items_for_collection")
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemForCollection extends BaseEntity {
@@ -35,6 +31,9 @@ public class ItemForCollection extends BaseEntity {
 
     @Column(name = "item_for_collection_cr_pr_price")
     private Double currentProductPrice = 0.0;
+
+    @Column(name = "item_for_collection_cr_ingr_price")
+    private Double currentIngredientPrice = 0.0;
 
     @JsonValue
     public Map<String, Object> toJson() {

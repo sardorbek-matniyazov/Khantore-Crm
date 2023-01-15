@@ -1,15 +1,12 @@
 package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -23,8 +20,6 @@ import java.util.Map;
 @Entity(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User extends BaseWithCreatedBy implements UserDetails {
     @Column(name = "user_name", nullable = false, length = NamingConstants.MODEL_NAME_LENGTH)
     private String name;

@@ -36,7 +36,7 @@ class ProductServiceTest {
 
     @Test
     void getAllInstances() {
-        Product product = new Product("Test-Banana", 12.0, ProductType.INGREDIENT);
+        Product product = new Product("Test-Banana", 12.0, ProductType.INGREDIENT, 12.0);
         repository.save(product);
 
         List<Product> all = repository.findAll();

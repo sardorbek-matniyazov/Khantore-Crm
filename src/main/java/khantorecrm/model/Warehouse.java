@@ -2,7 +2,6 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
-import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.utils.constants.NamingConstants;
@@ -10,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,8 +20,6 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "warehouse")
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Warehouse extends BaseWithCreatedBy {

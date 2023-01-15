@@ -1,14 +1,12 @@
 package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.utils.constants.NamingConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,8 +18,6 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "employee")
-//caching
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee extends BaseWithCreatedBy {

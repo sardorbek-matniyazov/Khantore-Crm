@@ -85,7 +85,7 @@ public class DeliveryController {
 
     // moving with deliverer
     @PostMapping(value = "share-with-driver")
-    public HttpEntity<?> shareWithDriver(@RequestBody DeliveryShareDto dto) {
+    public HttpEntity<?> shareWithDriver(@RequestBody @Valid DeliveryShareDto dto) {
         return service.shareWithDriver(dto).handleResponse();
     }
 

@@ -1,69 +1,80 @@
 package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
-import khantorecrm.utils.constants.NamingConstants;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.EnumType.STRING;
+import static khantorecrm.utils.constants.NamingConstants.MODEL_ENUM_LENGTH;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "input")
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NoArgsConstructor
-@AllArgsConstructor
 public class Input extends BaseWithCreatedBy {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
+    @ManyToOne(optional = false, cascade = MERGE)
     private ProductItem productItem;
 
     @Column(name = "input_amount")
     private Double amount = 0.0;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "input_product_type", length = NamingConstants.MODEL_ENUM_LENGTH)
+    @Enumerated(STRING)
+    @Column(name = "input_product_type", length = MODEL_ENUM_LENGTH)
     private ProductType type;
 
     @Column(name = "input_cr_pr_price")
     private Double currentProductPrice = 0.0;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = MERGE)
     private Employee employee;
 
     @Column(name = "input_status")
-    private ActionType status = ActionType.WAIT;
+    private ActionType status = ActionType.ACCEPTED;
+
+    @Column(name = "input_date_string", length = MODEL_ENUM_LENGTH)
+    private String inputDateString;
 
     public Input(
             ProductItem productItem,
             Double amount,
             ProductType type,
             Double currentProductPrice,
+            Employee employee,
             ActionType actionType
     ) {
         this.productItem = productItem;
         this.amount = amount;
         this.type = type;
         this.status = actionType;
+        this.employee = employee;
         this.currentProductPrice = currentProductPrice;
+        setInputDateString();
+    }
+
+    private void setInputDateString() {
+        this.inputDateString = convertTimestampToReadableInSqlDaily();
+    }
+
+    public static String convertTimestampToReadableInSqlDaily() {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return simpleDateFormat.format(new Date());
     }
 
     @JsonValue

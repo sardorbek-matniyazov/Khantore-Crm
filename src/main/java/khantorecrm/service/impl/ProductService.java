@@ -96,6 +96,7 @@ public class ProductService implements
                 product -> {
                     product.setName(dto.getName());
                     product.setPrice(dto.getPrice());
+                    product.setWarningAmount(dto.getWarningAmount());
 
                     // deleting old ingredients
                     ingredientRepository.deleteAll(product.getIngredients());

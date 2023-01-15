@@ -1,14 +1,11 @@
 package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.base.BaseWithCreatedBy;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.HashMap;
@@ -19,8 +16,6 @@ import java.util.Map;
 @Entity(name = "sale")
 @NoArgsConstructor
 @AllArgsConstructor
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Sale extends BaseWithCreatedBy {
     @OneToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Output output;

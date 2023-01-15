@@ -28,9 +28,6 @@ A: No, I am not
 Q: Are you straight?
 A: Yes, I am
 
-Q: Are you bisexual?
-A: No, I am not
-
 Q: Are you from India?
 A: No, I am not
 
@@ -83,4 +80,16 @@ Q: Is your age 19?
 A: No, it is not
 
 Q: Is your name Alice?
+A: No, it is not
+
+Q: Is your name Bob?
+A: No, it is not
+
+Q: Is your name John?
+A: Yes, it is
+
+Q: What is your favorite color?
+A: My favorite color is ________.
+
+Q: Is your favourite color green?
 A: No, it is not

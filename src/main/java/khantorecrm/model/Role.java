@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
@@ -21,8 +19,6 @@ import javax.persistence.Enumerated;
 @Entity(name = "role")
 @NoArgsConstructor
 @AllArgsConstructor
-//caching
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Role extends BaseEntity implements GrantedAuthority {
     @Enumerated(EnumType.STRING)
     @Column(name = "role_name", nullable = false, length = NamingConstants.MODEL_ENUM_LENGTH)

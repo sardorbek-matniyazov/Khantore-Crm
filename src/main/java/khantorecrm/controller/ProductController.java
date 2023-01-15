@@ -6,10 +6,13 @@ import khantorecrm.payload.dto.ProductDto;
 import khantorecrm.service.impl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "product")
@@ -55,5 +58,11 @@ public class ProductController {
     @PutMapping(value = "{id}")
     public HttpEntity<?> updateProduct(@RequestBody @Valid ProductDto dto, @PathVariable Long id) {
         return service.update(dto, id).handleResponse();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public HttpEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return OwnResponse.INPUT_TYPE_ERROR.setMessage(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage()).handleResponse();
     }
 }

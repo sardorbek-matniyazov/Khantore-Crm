@@ -1,6 +1,12 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Balance;
+import khantorecrm.model.Client;
+import khantorecrm.model.ItemForCollection;
+import khantorecrm.model.Output;
+import khantorecrm.model.Payment;
+import khantorecrm.model.ProductItem;
+import khantorecrm.model.Sale;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.model.enums.ProductType;
@@ -25,7 +31,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
-public class SaleService implements InstanceReturnable<Sale, Long>, ISaleService {
+public class SaleService
+        implements InstanceReturnable<Sale, Long>,
+        ISaleService {
     private final SaleRepository repository;
     private final ProductItemRepository itemRepository;
     private final ClientRepository clientRepository;
@@ -72,7 +80,8 @@ public class SaleService implements InstanceReturnable<Sale, Long>, ISaleService
                         return new ItemForCollection(
                                 item,
                                 dItem.getAmount(),
-                                item.getItemProduct().getPrice()
+                                item.getItemProduct().getPrice(),
+                                item.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getProductItem().getItemProduct().getPrice()).sum()
                         );
                     }
             ).collect(Collectors.toSet());

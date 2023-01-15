@@ -1,6 +1,12 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Delivery;
+import khantorecrm.model.DeliveryMovingProductHistory;
+import khantorecrm.model.Input;
+import khantorecrm.model.ItemForCollection;
+import khantorecrm.model.Output;
+import khantorecrm.model.ProductItem;
+import khantorecrm.model.User;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.ProductType;
@@ -9,7 +15,11 @@ import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.DeliveryDto;
 import khantorecrm.payload.dto.DeliveryShareDto;
 import khantorecrm.payload.dto.ReturnProductDto;
-import khantorecrm.repository.*;
+import khantorecrm.repository.DeliveryMovingProductHistoryRepository;
+import khantorecrm.repository.DeliveryRepository;
+import khantorecrm.repository.InputRepository;
+import khantorecrm.repository.OutputRepository;
+import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.service.IDeliveryService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
@@ -96,7 +106,8 @@ public class DeliveryService implements
                             return new ItemForCollection(
                                     baggageItem,
                                     itemDto.getAmount(),
-                                    baggageItem.getItemProduct().getPrice()
+                                    baggageItem.getItemProduct().getPrice(),
+                                    baggageItem.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getProductItem().getItemProduct().getPrice()).sum()
                             );
                         } else {
                             return new ItemForCollection(
@@ -106,7 +117,8 @@ public class DeliveryService implements
                                             delivery.getBaggage()
                                     ),
                                     itemDto.getAmount(),
-                                    productItem.getItemProduct().getPrice()
+                                    productItem.getItemProduct().getPrice(),
+                                    productItem.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getProductItem().getItemProduct().getPrice()).sum()
                             );
                         }
                     }).collect(Collectors.toSet());
@@ -187,6 +199,7 @@ public class DeliveryService implements
                             dto.getAmount(),
                             ProductType.PRODUCT,
                             realWarehouseItem.getItemProduct().getPrice(),
+                            null,
                             ActionType.WAIT
                     )
             );
@@ -440,9 +453,7 @@ public class DeliveryService implements
     }
 
     @Override
-    public OwnResponse getAllMovingWithDelivererId(Long id) {
-        return OwnResponse.ALL_DATA.setData(
-                movingProductHistoryRepository.findAllByToDeliveryId(id, Sort.by(Sort.Direction.DESC, "id"))
-        );
+    public List<DeliveryMovingProductHistory> getAllMovingWithDelivererId(Long id) {
+        return movingProductHistoryRepository.findAllByToDeliveryId(id, Sort.by(Sort.Direction.DESC, "id"));
     }
 }

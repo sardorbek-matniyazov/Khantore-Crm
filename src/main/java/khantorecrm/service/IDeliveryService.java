@@ -1,5 +1,6 @@
 package khantorecrm.service;
 
+import khantorecrm.model.DeliveryMovingProductHistory;
 import khantorecrm.model.Input;
 import khantorecrm.model.Output;
 import khantorecrm.payload.dao.OwnResponse;
@@ -31,5 +32,5 @@ public interface IDeliveryService {
 
     OwnResponse rejectMovingProductWithDeliverer(Long movingId);
 
-    OwnResponse getAllMovingWithDelivererId(Long id);
+    List<DeliveryMovingProductHistory> getAllMovingWithDelivererId(Long id);
 }

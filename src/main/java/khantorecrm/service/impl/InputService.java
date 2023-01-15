@@ -1,10 +1,6 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Employee;
-import khantorecrm.model.Input;
-import khantorecrm.model.ItemForCollection;
-import khantorecrm.model.Product;
-import khantorecrm.model.ProductItem;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
@@ -66,25 +62,24 @@ public class InputService implements
             // save employee
             employee.getBalance().setAmount(employee.getBalance().getAmount() - dto.getPrice() * dto.getAmount());
 
-            repository.save(
+            final Input save = repository.save(
                     new Input(
                             productItemRepository.save(productItem),
                             dto.getAmount(),
                             ProductType.INGREDIENT,
                             dto.getPrice(),
-                            employeeRepository.save(employee),
+                            employee,
                             ActionType.ACCEPTED
                     )
             );
+
+            System.out.println(save);
+            return OwnResponse.CREATED_SUCCESSFULLY.setData(save);
         } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
-        } catch (NullPointerException e) {
-            return OwnResponse.ERROR.setMessage("There is no such product item");
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
-
-        return OwnResponse.CREATED_SUCCESSFULLY;
     }
 
     @Override
@@ -119,6 +114,7 @@ public class InputService implements
                                         item.getAmount(),
                                         ProductType.PRODUCT,
                                         productItem.getItemProduct().getPrice(),
+                                        null,
                                         ActionType.ACCEPTED
                                 )
                         );

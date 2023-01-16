@@ -20,7 +20,7 @@ public class StatisticsService
     }
 
     @Override
-    public OwnResponse getMainPageStatistics() {
+    public OwnResponse mainPageStatistics() {
         final Map<String, Double> mainPageStatistics = new HashMap<>();
         final Long countOfClients           = repository.countClients();
         final Long countOfDebtClients       = repository.countOfDebtClients();
@@ -37,7 +37,13 @@ public class StatisticsService
     }
 
     @Override
-    public OwnResponse getAllClientByBoughtProducts() {
+    public OwnResponse allClientByBoughtProducts() {
         return OwnResponse.ALL_DATA.setMessage("Clients by bought products").setData(repository.allClientsByBoughtProducts());
+    }
+
+    @Override
+    public OwnResponse benefitBySoldProducts() {
+        final Double benefitBySoldProducts = repository.benefitBySoldProducts();
+        return OwnResponse.ALL_DATA.setMessage("Benefit by sold products").setData(benefitBySoldProducts == null ? 0.0 : benefitBySoldProducts);
     }
 }

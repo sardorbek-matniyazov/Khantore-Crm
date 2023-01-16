@@ -20,12 +20,17 @@ public class StatisticsController {
     }
 
     @GetMapping(value = "main-page-all")
-    public HttpEntity<?> getMainPageStatistics() {
-        return service.getMainPageStatistics().handleResponse();
+    public HttpEntity<?> mainPageStatistics() {
+        return service.mainPageStatistics().handleResponse();
     }
 
     @GetMapping(value = "client-list-by-bought-products")
-    public HttpEntity<?> getAllClientByBoughtProducts() {
-        return service.getAllClientByBoughtProducts().handleResponse();
+    public HttpEntity<?> allClientByBoughtProducts() {
+        return service.allClientByBoughtProducts().handleResponse();
+    }
+
+    @GetMapping(value = "benefit-by-sold-products")
+    public HttpEntity<?> benefitBySoldProducts() {
+        return service.benefitBySoldProducts().handleResponse();
     }
 }

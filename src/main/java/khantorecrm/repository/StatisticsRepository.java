@@ -56,4 +56,12 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
             nativeQuery = true
     )
     List<ClientListByBoughtProducts> allClientsByBoughtProducts();
+
+    // benefit by sold products
+    @Query (
+            value = "select sum(si.item_for_collection_cr_pr_price * si.item_for_collection_amount) - sum(si.item_for_collection_cr_ingr_price * si.item_for_collection_amount) " +
+                    "from (sale s join items_for_collection i on i.output_fk=s.output_id) si",
+            nativeQuery = true
+    )
+    Double benefitBySoldProducts();
 }

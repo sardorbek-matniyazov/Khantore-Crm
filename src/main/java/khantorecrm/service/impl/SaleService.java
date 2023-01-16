@@ -70,9 +70,10 @@ public class SaleService
                         if (item.getItemProduct().getType().equals(ProductType.INGREDIENT))
                             throw new TypesInError("Product item with id " + dItem.getProductItemId() + " is ingredient");
 
+/*
                         if (item.getItemAmount() < dItem.getAmount())
                             throw new TypesInError("There aren't enough product in the warehouse !");
-
+*/
                         atomicWholePrice.updateAndGet(v -> (v + item.getItemProduct().getPrice() * dItem.getAmount()));
 
                         item.setItemAmount(item.getItemAmount() - dItem.getAmount());

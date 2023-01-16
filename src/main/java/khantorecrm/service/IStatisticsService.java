@@ -3,7 +3,11 @@ package khantorecrm.service;
 import khantorecrm.payload.dao.OwnResponse;
 
 public interface IStatisticsService {
-    OwnResponse getMainPageStatistics();
+    OwnResponse mainPageStatistics();
 
-    OwnResponse getAllClientByBoughtProducts();
+    OwnResponse allClientByBoughtProducts();
+
+    OwnResponse benefitBySoldProducts();
+
+
 }

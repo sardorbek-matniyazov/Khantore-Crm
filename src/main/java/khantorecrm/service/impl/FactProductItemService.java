@@ -2,7 +2,6 @@ package khantorecrm.service.impl;
 
 import khantorecrm.model.FactProductItemDaily;
 import khantorecrm.payload.dao.OwnResponse;
-import khantorecrm.payload.dao.projection.FactDailyProjection;
 import khantorecrm.payload.dto.FactProductItemDailyDto;
 import khantorecrm.repository.FactProductItemRepository;
 import khantorecrm.repository.ProductItemRepository;
@@ -66,7 +65,7 @@ public class FactProductItemService implements IFactProductItemService {
     }
 
     @Override
-    public List<FactDailyProjection> getFactDailyWarehouseProducts(Long warehouseId) {
-        return null;
+    public List<FactProductItemDaily> getFactDailyWarehouseProducts(Long warehouseId) {
+        return repository.findAll();
     }
 }

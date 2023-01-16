@@ -2,7 +2,9 @@ package khantorecrm.controller;
 
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.FactProductItemDailyDto;
+import khantorecrm.service.IFactProductItemService;
 import khantorecrm.service.impl.FactProductItemService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -22,13 +24,13 @@ import javax.validation.Valid;
 import java.util.Objects;
 
 @RestController
-@RequestMapping(value = "fact-product-item")
+@RequestMapping(value = "fact-product-item", name = "Fact Product Item")
 @PreAuthorize(value = "hasAnyRole('ADMIN')")
 public class FactProductItemController {
-    private final FactProductItemService service;
+    private final IFactProductItemService service;
 
     @Autowired
-    public FactProductItemController(FactProductItemService service) {
+    public FactProductItemController(IFactProductItemService service) {
         this.service = service;
     }
 

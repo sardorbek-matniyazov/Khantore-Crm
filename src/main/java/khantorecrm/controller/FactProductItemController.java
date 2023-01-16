@@ -34,6 +34,7 @@ public class FactProductItemController {
 
     @PostMapping(value = "daily-fact-product-item")
     private HttpEntity<?> createDailyFactProductItem(@RequestBody @Valid FactProductItemDailyDto dto) {
+        System.out.println(dto);
         return service.createDailyFactProductItem(dto).handleResponse();
     }
 

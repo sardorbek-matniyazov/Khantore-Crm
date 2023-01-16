@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
-@Component
+//@Component
 @Slf4j
 public class Creator implements CommandLineRunner {
     private final UserRepository userRepository;

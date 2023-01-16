@@ -24,25 +24,21 @@ public class FactProductItemService implements IFactProductItemService {
 
     @Override
     public OwnResponse createDailyFactProductItem(FactProductItemDailyDto dto) {
-        if (dto.getDate().matches("\\d{2}-\\d{2}-\\d{4}")) {
-            dto.getProductItems().forEach(
-                    item ->
-                            itemRepository.findById(item.getProductItemId()).ifPresent(
-                                    productItem ->
-                                            repository.save(
-                                                    new FactProductItemDaily(
-                                                            item.getProductItemId(),
-                                                            item.getStartAmount()  != null ? item.getStartAmount() : 0.0,
-                                                            item.getEndAmount()  != null ? item.getEndAmount() : 0.0,
-                                                            dto.getDate()
-                                                    )
-                                            )
-                            )
-            );
-        } else {
-            return OwnResponse.INPUT_TYPE_ERROR.setMessage("Date must be in format dd-MM-yyyy");
-        }
-        return OwnResponse.CREATED_SUCCESSFULLY;
+        dto.getProductItems().forEach(
+                item ->
+                        itemRepository.findById(item.getProductItemId()).ifPresent(
+                                productItem ->
+                                        repository.save(
+                                                new FactProductItemDaily(
+                                                        item.getProductItemId(),
+                                                        item.getStartAmount() != null ? item.getStartAmount() : 0.0,
+                                                        item.getEndAmount() != null ? item.getEndAmount() : 0.0,
+                                                        dto.getDate()
+                                                )
+                                        )
+                        )
+        );
+        return OwnResponse.CREATED_SUCCESSFULLY.setMessage("Daily fact product item created successfully");
     }
 
     @Override
@@ -52,11 +48,11 @@ public class FactProductItemService implements IFactProductItemService {
                     item ->
                             itemRepository.findById(
                                     item.getProductItemId()).flatMap(
-                                            productItem -> repository.findByIdAndDate(item.getProductItemId(), dto.getDate())).ifPresent(factProductItemDaily -> {
-                                                factProductItemDaily.setDayStartAmount(item.getStartAmount() != null ? item.getStartAmount() : 0.0);
-                                                factProductItemDaily.setDayEndAmount(item.getEndAmount() != null ? item.getEndAmount() : 0.0);
-                                                repository.save(factProductItemDaily);
-                                            })
+                                    productItem -> repository.findByIdAndDate(item.getProductItemId(), dto.getDate())).ifPresent(factProductItemDaily -> {
+                                factProductItemDaily.setDayStartAmount(item.getStartAmount() != null ? item.getStartAmount() : 0.0);
+                                factProductItemDaily.setDayEndAmount(item.getEndAmount() != null ? item.getEndAmount() : 0.0);
+                                repository.save(factProductItemDaily);
+                            })
             );
         } else {
             return OwnResponse.INPUT_TYPE_ERROR.setMessage("Date must be in format dd-MM-yyyy");

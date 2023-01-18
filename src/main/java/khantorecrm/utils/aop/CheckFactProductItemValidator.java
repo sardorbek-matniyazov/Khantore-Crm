@@ -10,8 +10,7 @@ public class CheckFactProductItemValidator implements ConstraintValidator<CheckF
     @Override
     public boolean isValid(List<FactProductItemDto> factProductItemDTOs, ConstraintValidatorContext constraintValidatorContext) {
         return factProductItemDTOs != null
-                && factProductItemDTOs.size() > 0
-                && factProductItemDTOs.stream().allMatch(
+                && factProductItemDTOs.stream().anyMatch(
                         factProductItemDTO -> factProductItemDTO.getProductItemId() != null
                                 && (factProductItemDTO.getStartAmount() != null || factProductItemDTO.getEndAmount() != null)
         );

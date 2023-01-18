@@ -7,8 +7,7 @@ import khantorecrm.payload.dto.FactProductItemDailyDto;
 import java.util.List;
 
 public interface IFactProductItemService {
-    OwnResponse createDailyFactProductItem(FactProductItemDailyDto dto);
-    OwnResponse updateDailyFactProductItemWithId(FactProductItemDailyDto dto);
+    OwnResponse createOrUpdateDailyFactProductItem(FactProductItemDailyDto dto);
 
     List<FactProductItemDaily> getFactDailyWarehouseProducts(Long warehouseId);
 }

@@ -2,7 +2,6 @@ package khantorecrm.config;
 
 import khantorecrm.security.MyFilter;
 import khantorecrm.security.MyUserDetailsService;
-import khantorecrm.service.impl.FactProductItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

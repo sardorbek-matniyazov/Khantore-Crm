@@ -1,6 +1,10 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Employee;
+import khantorecrm.model.Input;
+import khantorecrm.model.ItemForCollection;
+import khantorecrm.model.Product;
+import khantorecrm.model.ProductItem;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;

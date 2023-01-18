@@ -21,8 +21,4 @@ public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    public BaseEntity(long id) {
-        this.id = id;
-    }
 }

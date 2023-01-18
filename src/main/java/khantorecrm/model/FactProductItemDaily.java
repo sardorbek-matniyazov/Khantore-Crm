@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 import static khantorecrm.utils.constants.NamingConstants.MODEL_NUMBER_LENGTH;
 
@@ -18,10 +15,10 @@ import static khantorecrm.utils.constants.NamingConstants.MODEL_NUMBER_LENGTH;
 @Entity(name = "fact_warehouse_daily")
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"fact_product_item_id", "fact_day"}))
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "product_item_id", "fact_day" }) })
 public class FactProductItemDaily extends BaseEntity {
-    @Column(name = "fact_product_item_id")
-    private Long productItem;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private ProductItem productItem;
     @Column(name = "fact_start_amount")
     private Double dayStartAmount;
     @Column(name = "fact_end_amount")

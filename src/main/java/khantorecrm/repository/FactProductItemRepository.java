@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface FactProductItemRepository extends JpaRepository<FactProductItemDaily, Long> {
-    Optional<FactProductItemDaily> findByIdAndDate(Long productItemId, String date);
+
+    Optional<FactProductItemDaily> findByProductItemIdAndDate(Long id, String date);
 }

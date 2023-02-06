@@ -48,4 +48,8 @@ public class ClientService implements
         );
         return OwnResponse.CREATED_SUCCESSFULLY;
     }
+
+    public List<Client> debtClients() {
+        return repository.findAllByBalance_AmountSmallerThan0();
+    }
 }

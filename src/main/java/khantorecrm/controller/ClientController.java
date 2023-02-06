@@ -42,4 +42,12 @@ public class ClientController {
     public HttpEntity<?> createClient(@RequestBody @Valid ClientDto dto) {
         return service.create(dto).handleResponse();
     }
+
+    @GetMapping(value = "debt-clients")
+    public HttpEntity<?> debtClients() {
+        return OwnResponse.ALL_DATA
+                .setMessage("All the debt clients")
+                .setData(service.debtClients())
+                .handleResponse();
+    }
 }

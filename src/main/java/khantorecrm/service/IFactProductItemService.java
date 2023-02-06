@@ -9,5 +9,5 @@ import java.util.List;
 public interface IFactProductItemService {
     OwnResponse createOrUpdateDailyFactProductItem(FactProductItemDailyDto dto);
 
-    List<FactProductItemDaily> getFactDailyWarehouseProducts(Long warehouseId);
+    List<FactProductItemDaily> getFactDailyWarehouseProducts();
 }

@@ -1,9 +1,6 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Delivery;
-import khantorecrm.model.Role;
-import khantorecrm.model.User;
-import khantorecrm.model.Warehouse;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.LoginResponse;
 import khantorecrm.payload.dao.OwnResponse;
@@ -88,7 +85,9 @@ public class AuthService implements IUserService {
                                             new Role(
                                                     dto.getRoleName()
                                             )
-                                    )
+                                    ),
+                                    dto.getKpiPercent(),
+                                    new Balance()
                             )
                     );
                     deliveryRepository.save(
@@ -124,7 +123,9 @@ public class AuthService implements IUserService {
                                 new Role(
                                         dto.getRoleName()
                                 )
-                        )
+                        ),
+                        dto.getKpiPercent(),
+                        new Balance()
                 )
         );
     }

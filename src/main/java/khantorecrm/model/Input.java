@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
+import khantorecrm.utils.exceptions.TypesInError;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,13 +71,28 @@ public class Input extends BaseWithCreatedBy {
         setInputDateString();
     }
 
+    public Input setCreatedDate(String time) {
+        this.setCreatedAt(getTime(time));
+        return this;
+    }
+
     private void setInputDateString() {
         this.inputDateString = convertTimestampToReadableInSqlDaily();
     }
 
     public static String convertTimestampToReadableInSqlDaily() {
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
         return simpleDateFormat.format(new Date());
+    }
+
+    public static Timestamp getTime(String time) {
+        if (time == null) return null;
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(time);
+            return new Timestamp(date.getTime());
+        } catch (ParseException e) {
+            throw new TypesInError("Date time is not parseable, format should be yyyy-MM-dd HH:mm");
+        }
     }
 
     @JsonValue

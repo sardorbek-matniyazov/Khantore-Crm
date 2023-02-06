@@ -27,10 +27,9 @@ public class ProductFactController {
         return service.createOrUpdateDailyFactProductItem(dto).handleResponse();
     }
 
-    @GetMapping(value = "daily-fact-warehouse/{warehouseId}")
-    private HttpEntity<?> getFactDailyByWarehouse(@PathVariable Long warehouseId) {
-        System.out.println(service);
-        return OwnResponse.ALL_DATA.setData("this").handleResponse();
+    @GetMapping(value = "daily-fact-warehouse")
+    private HttpEntity<?> getFactDailyByWarehouse() {
+        return OwnResponse.ALL_DATA.setData(service.getFactDailyWarehouseProducts()).handleResponse();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -46,7 +46,7 @@ public class ProductFactService implements IFactProductItemService {
     }
 
     @Override
-    public List<FactProductItemDaily> getFactDailyWarehouseProducts(Long warehouseId) {
-        return null;
+    public List<FactProductItemDaily> getFactDailyWarehouseProducts() {
+        return factProductItemRepository.findAll();
     }
 }

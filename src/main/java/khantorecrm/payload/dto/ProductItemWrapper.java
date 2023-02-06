@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -13,4 +14,7 @@ import java.util.List;
 public class ProductItemWrapper {
     @CheckProductItemList
     private List<ProductItemListDto> items;
+
+    @NotBlank(message = "Date is required")
+    private String date;
 }

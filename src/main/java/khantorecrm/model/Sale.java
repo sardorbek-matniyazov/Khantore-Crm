@@ -36,6 +36,9 @@ public class Sale extends BaseWithCreatedBy {
     @JoinColumn(name = "sale_fk", referencedColumnName = "id")
     private Payment payment;
 
+    @Column(name = "sale_usr_cur_kpi")
+    private Double currKpiUser;
+
     @JsonValue
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();

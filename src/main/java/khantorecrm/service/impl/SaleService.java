@@ -1,18 +1,13 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Balance;
-import khantorecrm.model.Client;
-import khantorecrm.model.ItemForCollection;
-import khantorecrm.model.Output;
-import khantorecrm.model.Payment;
-import khantorecrm.model.ProductItem;
-import khantorecrm.model.Sale;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
+import khantorecrm.repository.BalanceRepository;
 import khantorecrm.repository.ClientRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.SaleRepository;
@@ -22,6 +17,7 @@ import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -37,12 +33,14 @@ public class SaleService
     private final SaleRepository repository;
     private final ProductItemRepository itemRepository;
     private final ClientRepository clientRepository;
+    private final BalanceRepository balanceRepository;
 
     @Autowired
-    public SaleService(SaleRepository repository, ProductItemRepository itemRepository, ClientRepository clientRepository) {
+    public SaleService(SaleRepository repository, ProductItemRepository itemRepository, ClientRepository clientRepository, BalanceRepository balanceRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.clientRepository = clientRepository;
+        this.balanceRepository = balanceRepository;
     }
 
     @Override
@@ -113,9 +111,13 @@ public class SaleService
                             new Payment(
                                     dto.getPaymentAmount(),
                                     PaymentType.CASH
-                            )
+                            ),
+                            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getKpiPercent()
                     )
             );
+
+            // increase balance
+            increaseUsersAmountWithKpi(wholePrice);
 
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
@@ -125,5 +127,16 @@ public class SaleService
         } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
+    }
+
+    public void increaseUsersAmountWithKpi(Double amount) {
+        final User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (currentUser.getKpiPercent() == 0)
+            return;
+        final Balance balance = currentUser.getBalance();
+        balance.setAmount(balance.getAmount() * currentUser.getKpiPercent() / 100.0D);
+
+        balanceRepository.save(balance);
     }
 }

@@ -20,4 +20,6 @@ public class RegisterDto {
     private String phoneNumber;
     @NotNull(message = "Role name is required")
     private RoleName roleName;
+    @NotNull(message = "Kpi percent value is required")
+    private Double kpiPercent;
 }

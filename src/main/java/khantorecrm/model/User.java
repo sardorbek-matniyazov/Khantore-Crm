@@ -36,11 +36,24 @@ public class User extends BaseWithCreatedBy implements UserDetails {
     @ManyToOne(optional = false, targetEntity = Role.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Role role;
 
-    public User(String name, String phoneNumber, String password, Role role) {
+    @Column(name = "user_kpi_percent")
+    private Double kpiPercent;
+
+    @OneToOne(
+            targetEntity = Balance.class,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
+    )
+    private Balance balance;
+
+    public User(String name, String phoneNumber, String password, Role role, Double kpiPercent, Balance balance) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.role = role;
+        this.kpiPercent = kpiPercent;
+        this.balance = balance;
     }
 
     @JsonValue
@@ -55,6 +68,7 @@ public class User extends BaseWithCreatedBy implements UserDetails {
         if (this.getCreatedBy() != null) {
             result.put("createdBy", this.getCreatedBy().getPhoneNumber());
         }
+        result.put("kpiPercent", kpiPercent);
         return result;
     }
 

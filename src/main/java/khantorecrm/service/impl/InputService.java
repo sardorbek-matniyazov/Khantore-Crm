@@ -22,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -105,11 +109,10 @@ public class InputService implements
 
                         // decreasing ingredients
                         final Set<ProductItem> productItems =
-                                changeIngredients(productItem.getItemProduct().getIngredients(), productItem.getItemAmount(), '+');
+                                changeIngredients(productItem.getItemProduct().getIngredients(), item.getAmount(), '+');
 
-                        System.out.println(productItems);
                         if (productItems.size() == 0)
-                            throw new NotFoundException("There are something wrong with ingredients");
+                            throw new NotFoundException("There are something wrong with ingredients, format yyyy-MM-dd HH:mm");
 
                         // saving input
                         repository.save(
@@ -120,7 +123,7 @@ public class InputService implements
                                         productItem.getItemProduct().getPrice(),
                                         null,
                                         ActionType.ACCEPTED
-                                )
+                                ).setCreatedDate(dto.getDate())
                         );
                     }
             );

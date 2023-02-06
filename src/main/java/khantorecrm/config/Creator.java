@@ -1,5 +1,6 @@
 package khantorecrm.config;
 
+import khantorecrm.model.Balance;
 import khantorecrm.model.Role;
 import khantorecrm.model.User;
 import khantorecrm.model.enums.RoleName;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
-@Component
+//@Component
 @Slf4j
 public class Creator implements CommandLineRunner {
     private final UserRepository userRepository;
@@ -38,9 +39,13 @@ public class Creator implements CommandLineRunner {
                         jwtProvider.generateToken("admin"),
                         new Role(
                                 RoleName.ADMIN
-                        )
+                        ),
+                        0.0D,
+                        new Balance()
                 )
         );
         log.info("Admin created: " + save);
     }
 }
+
+

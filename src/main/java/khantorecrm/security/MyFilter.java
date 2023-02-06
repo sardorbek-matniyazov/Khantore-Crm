@@ -39,8 +39,8 @@ public class MyFilter extends OncePerRequestFilter {
             User user;
             try {
                  user = service.loadUserByUsername(username);
-                 if (!token.equals(user.getCurrentToken()))
-                     throw new UsernameNotFoundException("Token doesn't match, there is another user is connected");
+//                 if (!token.equals(user.getCurrentToken()))
+//                     throw new UsernameNotFoundException("Token doesn't match, there is another user is connected");
             } catch (UsernameNotFoundException e) {
                 filterChain.doFilter(request, response);
                 log.error(e.getMessage());

@@ -3,11 +3,13 @@ package khantorecrm.service.impl;
 import khantorecrm.model.Product;
 import khantorecrm.model.ProductItem;
 import khantorecrm.model.Warehouse;
+import khantorecrm.model.WarehouseMovingProductHistory;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.MovingItemDto;
 import khantorecrm.payload.dto.ProductList;
 import khantorecrm.payload.dto.WarehouseDto;
+import khantorecrm.repository.MovingWarehouseHistoryRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.ProductRepository;
 import khantorecrm.repository.WarehouseRepository;
@@ -35,16 +37,18 @@ public class WarehouseService implements
     private final WarehouseRepository repository;
     private final ProductItemRepository itemRepository;
     private final ProductRepository productRepository;
+    private final MovingWarehouseHistoryRepository warehouseHistoryRepository;
 
     @Autowired
     public WarehouseService(
             WarehouseRepository repository,
             ProductItemRepository itemRepository,
-            ProductRepository productRepository
-    ) {
+            ProductRepository productRepository,
+            MovingWarehouseHistoryRepository warehouseHistoryRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.productRepository = productRepository;
+        this.warehouseHistoryRepository = warehouseHistoryRepository;
     }
 
     @Override
@@ -159,6 +163,16 @@ public class WarehouseService implements
             // repository.saveAll(List.of(itemOne.getWarehouse(), itemTwo.getWarehouse()));
             itemRepository.save(itemOne);
             itemRepository.save(itemTwo);
+
+            // saving history of moving
+            warehouseHistoryRepository.save(
+                    new WarehouseMovingProductHistory(
+                            itemOne.getItemProduct(),
+                            itemOne.getWarehouse(),
+                            itemTwo.getWarehouse(),
+                            dto.getAmount()
+                    )
+            );
 
             return OwnResponse.UPDATED_SUCCESSFULLY;
 

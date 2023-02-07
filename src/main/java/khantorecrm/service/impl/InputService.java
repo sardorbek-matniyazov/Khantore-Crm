@@ -112,7 +112,7 @@ public class InputService implements
                             () -> new NotFoundException("Product item with id " + item.getProductItemId() + " not found")
                     );
 
-                    if (productItem.getItemProduct().getType().equals(ProductType.INGREDIENT))
+                    if (date != null && productItem.getItemProduct().getType().equals(ProductType.INGREDIENT))
                         throw new TypesInError("Product type should be PRODUCT");
 
                     productItem.setItemAmount(productItem.getItemAmount() + item.getAmount());

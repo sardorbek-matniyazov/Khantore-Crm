@@ -11,9 +11,11 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class MovingItemDto {
     @NotNull(message = "Moving first item id is required")
-    private Long itemOneId;
+    private Long warehouseOneId;
     @NotNull(message = "Moving second item id is required")
-    private Long itemTwoId;
+    private Long warehouseTwoId;
+    @NotNull(message = "Product id is required")
+    private Long productId;
     @NotNull(message = "Moving amount is required")
     private Double amount;
 }

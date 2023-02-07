@@ -1,10 +1,12 @@
 package khantorecrm.payload.dto;
 
+import khantorecrm.utils.aop.CheckProductItemList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -12,10 +14,8 @@ import javax.validation.constraints.NotNull;
 public class InputDto {
     @NotNull(message = "Product id is required")
     private Long productItemId;
-    @NotNull(message = "Product amount is required")
-    private Double amount;
-    @NotNull(message = "Product price is required")
-    private Double price;
+    @CheckProductItemList
+    private List<ProductItemListDto> items;
     @NotNull(message = "Employer id is required")
     private Long employerId;
 }

@@ -141,17 +141,21 @@ public class WarehouseService implements
     @Override
     public OwnResponse moveItem(MovingItemDto dto) {
         try {
-            ProductItem itemOne = itemRepository.findById(dto.getItemOneId()).orElseThrow(
-                    () -> new NotFoundException("Product item with id " + dto.getItemOneId() + " not found in the database !")
-            );
+            final ProductItem itemOne = itemRepository.findAllByWarehouseId(dto.getWarehouseOneId())
+                    .stream()
+                    .filter(item -> item.getItemProduct().getId().equals(dto.getProductId()))
+                    .findFirst()
+                    .orElseThrow(
+                            () -> new NotFoundException("Product doesn't exists in the Warehouse one")
+                    );
 
-            ProductItem itemTwo = itemRepository.findById(dto.getItemTwoId()).orElseThrow(
-                    () -> new NotFoundException("Product item with id " + dto.getItemTwoId() + " not found in the database !")
-            );
-
-            if (!Objects.equals(itemOne.getItemProduct().getId(), itemTwo.getItemProduct().getId())) {
-                throw new ProductsNotEqualException("Product items should be equal");
-            }
+            final ProductItem itemTwo = itemRepository.findAllByWarehouseId(dto.getWarehouseTwoId())
+                    .stream()
+                    .filter(item -> item.getItemProduct().getId().equals(dto.getProductId()))
+                    .findAny()
+                    .orElseThrow(
+                            () -> new NotFoundException("Product doesn't exists in the Warehouse one")
+                    );
 
             if (dto.getAmount() > itemOne.getItemAmount()) {
                 return OwnResponse.INPUT_TYPE_ERROR.setMessage("Amount should be less than item amount");

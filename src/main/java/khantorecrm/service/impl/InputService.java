@@ -59,7 +59,9 @@ public class InputService implements
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
-        } catch (Exception e) {
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        }catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
     }

@@ -12,8 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InputDto {
-    @NotNull(message = "Product id is required")
-    private Long productItemId;
     @CheckProductItemList
     private List<ProductItemListDto> items;
     @NotNull(message = "Employer id is required")

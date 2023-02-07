@@ -150,7 +150,7 @@ public class InputService implements
                                 new Input(
                                         productItem,
                                         item.getAmount(),
-                                        ProductType.PRODUCT,
+                                        ProductType.INGREDIENT,
                                         productItem.getItemProduct().getPrice(),
                                         employee,
                                         ActionType.ACCEPTED

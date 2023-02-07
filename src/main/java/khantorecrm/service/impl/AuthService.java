@@ -103,6 +103,7 @@ public class AuthService implements IUserService {
                     );
                     break;
                 case ADMIN:
+                case LOADER:
                 case SELLER:
                     final User user = createUser(dto);
                     return OwnResponse.CREATED_SUCCESSFULLY.setData(user);

@@ -18,8 +18,10 @@ public interface ProductPriceForSellersRepository extends JpaRepository<ProductP
 
     @Query(
             value = "select pppfs.product_name as productName, pppfs.product_id as productId, pppfs.price as price, d.user_name as delivererName, d.id as delivererId " +
-                    "from (product_prices_for_sellers ppfs join product p on p.id = ppfs.product_id) pppfs join users d on pppfs.deliverer_id=d.id;",
+                    "from (product_prices_for_sellers ppfs join product p on p.id = ppfs.product_id) pppfs join users d on pppfs.deliverer_id=d.id " +
+                    " where d.id=?1",
             nativeQuery = true
     )
-    List<ProductPriceForSellerProjection> getAllByProductId();
+    List<ProductPriceForSellerProjection> getAllByDelivererId(Long id);
+
 }

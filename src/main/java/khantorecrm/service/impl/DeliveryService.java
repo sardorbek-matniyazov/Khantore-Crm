@@ -23,10 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -139,14 +136,16 @@ public class DeliveryService implements
     public OwnResponse getBaggageWithUserId(Long id) {
         try {
             return OwnResponse.ALL_DATA.setData(
-                    itemRepository.findAllByWarehouseId(
+                    itemRepository.findAllBaggageItemByDeliveryWarehouseId(
                             repository.findById(id).orElseThrow(
                                     () -> new NotFoundException("Delivery with user id " + id + " not found")
                             ).getBaggage().getId()
-                    ).stream().filter(it -> it.getItemAmount() > 0).collect(Collectors.toList())
+                    ).stream().filter(it -> it.getProductAmount() > 0).collect(Collectors.toList())
             );
         } catch (NotFoundException e) {
             return OwnResponse.DELIVERY_NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ALL_DATA.setData(new int[]{});
         }
     }
 
@@ -478,6 +477,6 @@ public class DeliveryService implements
 
     @Override
     public List<ProductPriceForSellerProjection> productPricesByDelivererId(Long id) {
-        return priceForSellersRepository.getAllByProductId();
+        return priceForSellersRepository.getAllByDelivererId(id);
     }
 }

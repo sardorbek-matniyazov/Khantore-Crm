@@ -7,10 +7,7 @@ import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
-import khantorecrm.repository.BalanceRepository;
-import khantorecrm.repository.ClientRepository;
-import khantorecrm.repository.ProductItemRepository;
-import khantorecrm.repository.SaleRepository;
+import khantorecrm.repository.*;
 import khantorecrm.service.ISaleService;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
@@ -26,6 +23,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static khantorecrm.utils.constants.Statics.getCurrentUser;
+
 @Service
 public class SaleService
         implements InstanceReturnable<Sale, Long>,
@@ -34,13 +33,15 @@ public class SaleService
     private final ProductItemRepository itemRepository;
     private final ClientRepository clientRepository;
     private final BalanceRepository balanceRepository;
+    private final ProductPriceForSellersRepository priceForSellersRepository;
 
     @Autowired
-    public SaleService(SaleRepository repository, ProductItemRepository itemRepository, ClientRepository clientRepository, BalanceRepository balanceRepository) {
+    public SaleService(SaleRepository repository, ProductItemRepository itemRepository, ClientRepository clientRepository, BalanceRepository balanceRepository, ProductPriceForSellersRepository priceForSellersRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.clientRepository = clientRepository;
         this.balanceRepository = balanceRepository;
+        this.priceForSellersRepository = priceForSellersRepository;
     }
 
     @Override
@@ -57,6 +58,7 @@ public class SaleService
     @Transactional
     public OwnResponse sell(SaleDto dto) {
         try {
+            final User crUser = getCurrentUser();
             AtomicReference<Double> atomicWholePrice = new AtomicReference<>(0.0);
             Set<ItemForCollection> collect = dto.getProductItemsList().stream().filter(ProductItemListDto::isItemCreatableId).map(
                     dItem -> {
@@ -68,18 +70,23 @@ public class SaleService
                         if (item.getItemProduct().getType().equals(ProductType.INGREDIENT))
                             throw new TypesInError("Product item with id " + dItem.getProductItemId() + " is ingredient");
 
-/*
                         if (item.getItemAmount() < dItem.getAmount())
                             throw new TypesInError("There aren't enough product in the warehouse !");
-*/
-                        atomicWholePrice.updateAndGet(v -> (v + item.getItemProduct().getPrice() * dItem.getAmount()));
+
+                        final Double drPrice = priceForSellersRepository.findByDelivererIdAndProductId(crUser.getId(), item.getItemProduct().getId())
+                                .orElseThrow(
+                                        () -> new NotFoundException("Product '" + item.getItemProduct().getName() + "' price nor set")
+                                )
+                                .getPrice();
+
+                        atomicWholePrice.updateAndGet(v -> (v + drPrice * dItem.getAmount()));
 
                         item.setItemAmount(item.getItemAmount() - dItem.getAmount());
 
                         return new ItemForCollection(
                                 item,
                                 dItem.getAmount(),
-                                item.getItemProduct().getPrice(),
+                                drPrice,
                                 item.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getProductItem().getItemProduct().getPrice()).sum()
                         );
                     }
@@ -130,12 +137,12 @@ public class SaleService
     }
 
     public void increaseUsersAmountWithKpi(Double amount) {
-        final User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final User currentUser = getCurrentUser();
 
         if (currentUser.getKpiPercent() == 0)
             return;
         final Balance balance = currentUser.getBalance();
-        balance.setAmount(balance.getAmount() * currentUser.getKpiPercent() / 100.0D);
+        balance.setAmount(balance.getAmount() + amount * currentUser.getKpiPercent() / 100.0D);
 
         balanceRepository.save(balance);
     }

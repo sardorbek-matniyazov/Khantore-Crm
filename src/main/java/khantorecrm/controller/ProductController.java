@@ -3,6 +3,7 @@ package khantorecrm.controller;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductDto;
+import khantorecrm.payload.dto.ProductPriceForSellerDto;
 import khantorecrm.service.impl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -58,11 +59,5 @@ public class ProductController {
     @PutMapping(value = "{id}")
     public HttpEntity<?> updateProduct(@RequestBody @Valid ProductDto dto, @PathVariable Long id) {
         return service.update(dto, id).handleResponse();
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public HttpEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        return OwnResponse.INPUT_TYPE_ERROR.setMessage(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage()).handleResponse();
     }
 }

@@ -11,4 +11,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     @Query(value = "select c from client c join balance b on c.balance=b where b.amount < 0")
     List<Client> findAllByBalance_AmountSmallerThan0();
+
+    List<Client> findAllByCreatedBy_Id(Long id);
 }

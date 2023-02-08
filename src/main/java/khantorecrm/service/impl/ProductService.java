@@ -6,9 +6,8 @@ import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductDto;
 import khantorecrm.payload.dto.ProductItemListDto;
-import khantorecrm.repository.IngredientRepository;
-import khantorecrm.repository.ProductItemRepository;
-import khantorecrm.repository.ProductRepository;
+import khantorecrm.payload.dto.ProductPriceForSellerDto;
+import khantorecrm.repository.*;
 import khantorecrm.service.IProductService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
@@ -37,7 +36,12 @@ public class ProductService implements
     private final IngredientRepository ingredientRepository;
 
     @Autowired
-    public ProductService(ProductRepository repository, ProductItemRepository productItemRepository, IngredientRepository ingredientRepository) {
+    public ProductService(
+            ProductRepository repository,
+            ProductItemRepository productItemRepository,
+            IngredientRepository ingredientRepository,
+            ProductPriceForSellersRepository priceForSellersRepository,
+            DeliveryRepository deliveryRepository) {
         this.repository = repository;
         this.productItemRepository = productItemRepository;
         this.ingredientRepository = ingredientRepository;

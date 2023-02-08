@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
@@ -28,7 +29,6 @@ public class AuthService implements IUserService {
     private final JwtProvider jwtProvider;
     private final RoleRepository roleRepository;
     private final DeliveryRepository deliveryRepository;
-    private final WarehouseRepository warehouseRepository;
 
     @Autowired
     public AuthService(
@@ -36,13 +36,12 @@ public class AuthService implements IUserService {
             PasswordEncoder passwordEncoder,
             JwtProvider jwtProvider,
             RoleRepository roleRepository,
-            DeliveryRepository deliveryRepository, WarehouseRepository warehouseRepository) {
+            DeliveryRepository deliveryRepository) {
         this.repository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
         this.roleRepository = roleRepository;
         this.deliveryRepository = deliveryRepository;
-        this.warehouseRepository = warehouseRepository;
     }
 
     @Override
@@ -111,6 +110,8 @@ public class AuthService implements IUserService {
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.USER_ALREADY_EXISTS;
         }
     }
 

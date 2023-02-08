@@ -17,7 +17,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "client")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER')")
 public class ClientController {
     private final ClientService service;
 

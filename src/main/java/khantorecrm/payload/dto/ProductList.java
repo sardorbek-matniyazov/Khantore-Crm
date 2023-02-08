@@ -12,6 +12,6 @@ import javax.validation.constraints.NotNull;
 public class ProductList {
     @NotNull(message = "Product id must not be null")
     private Long productId;
-    @NotNull(message = "Product amount must not be null")
+    @NotNull(message = "Amount must not be null")
     private Double amount;
 }

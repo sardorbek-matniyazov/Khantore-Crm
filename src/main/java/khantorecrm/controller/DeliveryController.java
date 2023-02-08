@@ -3,6 +3,7 @@ package khantorecrm.controller;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.DeliveryDto;
 import khantorecrm.payload.dto.DeliveryShareDto;
+import khantorecrm.payload.dto.ProductPriceForSellerDto;
 import khantorecrm.payload.dto.ReturnProductDto;
 import khantorecrm.service.impl.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "delivery")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER')")
 public class DeliveryController {
     private final DeliveryService service;
 
@@ -102,5 +103,14 @@ public class DeliveryController {
     @PostMapping(value = "reject-moving/{movingId}")
     public HttpEntity<?> rejectMovingProduct(@PathVariable Long movingId) {
         return service.rejectMovingProductWithDeliverer(movingId).handleResponse();
+    }
+
+    @PostMapping(value = "product-price")
+    public HttpEntity<?> productPriceForDriver(@RequestBody @Valid ProductPriceForSellerDto dto) {
+        return service.productPriceInjecting(dto).handleResponse();
+    }
+    @GetMapping(value = "{id}/product-price")
+    public HttpEntity<?> productPriceForDriver(@PathVariable Long id) {
+        return OwnResponse.ALL_DATA.setData(service.productPricesByDelivererId(id)).handleResponse();
     }
 }

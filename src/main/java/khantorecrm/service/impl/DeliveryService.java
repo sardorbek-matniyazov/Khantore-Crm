@@ -1,25 +1,17 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Delivery;
-import khantorecrm.model.DeliveryMovingProductHistory;
-import khantorecrm.model.Input;
-import khantorecrm.model.ItemForCollection;
-import khantorecrm.model.Output;
-import khantorecrm.model.ProductItem;
-import khantorecrm.model.User;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dao.projection.ProductPriceForSellerProjection;
 import khantorecrm.payload.dto.DeliveryDto;
 import khantorecrm.payload.dto.DeliveryShareDto;
+import khantorecrm.payload.dto.ProductPriceForSellerDto;
 import khantorecrm.payload.dto.ReturnProductDto;
-import khantorecrm.repository.DeliveryMovingProductHistoryRepository;
-import khantorecrm.repository.DeliveryRepository;
-import khantorecrm.repository.InputRepository;
-import khantorecrm.repository.OutputRepository;
-import khantorecrm.repository.ProductItemRepository;
+import khantorecrm.repository.*;
 import khantorecrm.service.IDeliveryService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
@@ -47,6 +39,7 @@ public class DeliveryService implements
     private final InputRepository inputRepository;
     private final OutputRepository outputRepository;
     private final DeliveryMovingProductHistoryRepository movingProductHistoryRepository;
+    private final ProductPriceForSellersRepository priceForSellersRepository;
 
     @Autowired
     public DeliveryService(
@@ -54,13 +47,14 @@ public class DeliveryService implements
             ProductItemRepository itemRepository,
             InputRepository inputRepository,
             OutputRepository outputRepository,
-            DeliveryMovingProductHistoryRepository movingProductHistoryRepository
-    ) {
+            DeliveryMovingProductHistoryRepository movingProductHistoryRepository,
+            ProductPriceForSellersRepository priceForSellersRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.inputRepository = inputRepository;
         this.outputRepository = outputRepository;
         this.movingProductHistoryRepository = movingProductHistoryRepository;
+        this.priceForSellersRepository = priceForSellersRepository;
     }
 
     @Override
@@ -339,7 +333,7 @@ public class DeliveryService implements
                     )
             );
 
-                return OwnResponse.UPDATED_SUCCESSFULLY;
+            return OwnResponse.UPDATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (TypesInError e) {
@@ -373,7 +367,7 @@ public class DeliveryService implements
             ) {
                 // create new product item
                 itemRepository.save(
-                        new ProductItem (
+                        new ProductItem(
                                 deliveryMovingProductHistoryWithId.getProduct(),
                                 deliveryMovingProductHistoryWithId.getAmount(),
                                 deliveryMovingProductHistoryWithId.getToDelivery().getBaggage()
@@ -425,7 +419,7 @@ public class DeliveryService implements
             ) {
                 // create new product item
                 itemRepository.save(
-                        new ProductItem (
+                        new ProductItem(
                                 deliveryMovingProductHistoryWithId.getProduct(),
                                 deliveryMovingProductHistoryWithId.getAmount(),
                                 deliveryMovingProductHistoryWithId.getFromDelivery().getBaggage()
@@ -454,5 +448,36 @@ public class DeliveryService implements
     @Override
     public List<DeliveryMovingProductHistory> getAllMovingWithDelivererId(Long id) {
         return movingProductHistoryRepository.findAllByToDeliveryId(id, Sort.by(Sort.Direction.DESC, "id"));
+    }
+
+    @Override
+    public OwnResponse productPriceInjecting(ProductPriceForSellerDto dto) {
+        try {
+            if (!repository.existsById(dto.getDelivererId())) {
+                throw new  NotFoundException("Delivery not found");
+            }
+            final List<ProductPricesForSellers> collect = dto.getProductList()
+                    .stream()
+                    .map(
+                            item -> priceForSellersRepository.findByDelivererIdAndProductId(dto.getDelivererId(), item.getProductId()).orElse(
+                                    new ProductPricesForSellers(
+                                            dto.getDelivererId(),
+                                            item.getProductId(),
+                                            item.getAmount()
+                                    )
+                            ).setPrice(item.getAmount())
+                    ).collect(Collectors.toList());
+            priceForSellersRepository.saveAll(collect);
+            return OwnResponse.CREATED_SUCCESSFULLY;
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage("There is something wrong");
+        }
+    }
+
+    @Override
+    public List<ProductPriceForSellerProjection> productPricesByDelivererId(Long id) {
+        return priceForSellersRepository.getAllByProductId();
     }
 }

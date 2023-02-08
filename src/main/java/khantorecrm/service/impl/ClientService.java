@@ -2,16 +2,23 @@ package khantorecrm.service.impl;
 
 import khantorecrm.model.Balance;
 import khantorecrm.model.Client;
+import khantorecrm.model.User;
 import khantorecrm.model.enums.ClientType;
+import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ClientDto;
 import khantorecrm.repository.ClientRepository;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static khantorecrm.utils.constants.Statics.getCurrentUser;
 
 @Service
 public class ClientService implements
@@ -26,7 +33,11 @@ public class ClientService implements
 
     @Override
     public List<Client> getAllInstances() {
-        return repository.findAll();
+        final User user = getCurrentUser();
+        if (Objects.requireNonNull(user.getRole().getRoleName()) == RoleName.ADMIN) {
+            return repository.findAll();
+        }
+        return repository.findAllByCreatedBy_Id(user.getId());
     }
 
     @Override
@@ -50,6 +61,13 @@ public class ClientService implements
     }
 
     public List<Client> debtClients() {
-        return repository.findAllByBalance_AmountSmallerThan0();
+        final User user = getCurrentUser();
+        final List<Client> allByBalanceAmountSmallerThan0 = repository.findAllByBalance_AmountSmallerThan0();
+        if (user.getRole().getRoleName().equals(RoleName.ADMIN))
+            return allByBalanceAmountSmallerThan0;
+        return allByBalanceAmountSmallerThan0
+                .stream()
+                .filter(client -> client.getCreatedBy().getId().equals(user.getId()))
+                .collect(Collectors.toList());
     }
 }

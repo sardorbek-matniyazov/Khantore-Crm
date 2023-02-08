@@ -4,7 +4,9 @@ import khantorecrm.model.DeliveryMovingProductHistory;
 import khantorecrm.model.Input;
 import khantorecrm.model.Output;
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dao.projection.ProductPriceForSellerProjection;
 import khantorecrm.payload.dto.DeliveryShareDto;
+import khantorecrm.payload.dto.ProductPriceForSellerDto;
 import khantorecrm.payload.dto.ReturnProductDto;
 
 import java.util.List;
@@ -33,4 +35,8 @@ public interface IDeliveryService {
     OwnResponse rejectMovingProductWithDeliverer(Long movingId);
 
     List<DeliveryMovingProductHistory> getAllMovingWithDelivererId(Long id);
+
+    OwnResponse productPriceInjecting(ProductPriceForSellerDto dto);
+
+    List<ProductPriceForSellerProjection> productPricesByDelivererId(Long id);
 }

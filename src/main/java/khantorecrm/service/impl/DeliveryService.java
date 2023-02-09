@@ -1,6 +1,13 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Delivery;
+import khantorecrm.model.DeliveryMovingProductHistory;
+import khantorecrm.model.Input;
+import khantorecrm.model.ItemForCollection;
+import khantorecrm.model.Output;
+import khantorecrm.model.ProductItem;
+import khantorecrm.model.ProductPricesForSellers;
+import khantorecrm.model.User;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.ProductType;
@@ -11,7 +18,12 @@ import khantorecrm.payload.dto.DeliveryDto;
 import khantorecrm.payload.dto.DeliveryShareDto;
 import khantorecrm.payload.dto.ProductPriceForSellerDto;
 import khantorecrm.payload.dto.ReturnProductDto;
-import khantorecrm.repository.*;
+import khantorecrm.repository.DeliveryMovingProductHistoryRepository;
+import khantorecrm.repository.DeliveryRepository;
+import khantorecrm.repository.InputRepository;
+import khantorecrm.repository.OutputRepository;
+import khantorecrm.repository.ProductItemRepository;
+import khantorecrm.repository.ProductPriceForSellersRepository;
 import khantorecrm.service.IDeliveryService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
@@ -23,7 +35,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +60,8 @@ public class DeliveryService implements
             InputRepository inputRepository,
             OutputRepository outputRepository,
             DeliveryMovingProductHistoryRepository movingProductHistoryRepository,
-            ProductPriceForSellersRepository priceForSellersRepository) {
+            ProductPriceForSellersRepository priceForSellersRepository
+    ) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.inputRepository = inputRepository;

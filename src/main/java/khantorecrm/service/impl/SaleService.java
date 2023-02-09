@@ -4,6 +4,7 @@ import khantorecrm.model.*;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.model.enums.ProductType;
+import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
@@ -36,7 +37,10 @@ public class SaleService
     private final ProductPriceForSellersRepository priceForSellersRepository;
 
     @Autowired
-    public SaleService(SaleRepository repository, ProductItemRepository itemRepository, ClientRepository clientRepository, BalanceRepository balanceRepository, ProductPriceForSellersRepository priceForSellersRepository) {
+    public SaleService(
+            SaleRepository repository, ProductItemRepository itemRepository,
+            ClientRepository clientRepository, BalanceRepository balanceRepository,
+            ProductPriceForSellersRepository priceForSellersRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.clientRepository = clientRepository;
@@ -46,6 +50,9 @@ public class SaleService
 
     @Override
     public List<Sale> getAllInstances() {
+        final User currentUser = getCurrentUser();
+        if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN))
+            return repository.findAllById(currentUser.getId(), Sort.by(Sort.Direction.DESC, "id"));
         return repository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 

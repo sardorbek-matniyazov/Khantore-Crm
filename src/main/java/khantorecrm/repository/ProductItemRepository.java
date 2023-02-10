@@ -17,7 +17,7 @@ public interface ProductItemRepository extends JpaRepository<ProductItem, Long> 
                     "from (bum join warehouse w on bum.warehouse_id=w.id) piw join product p on piw.product_id=p.id where piw.warehouse_id = ?1",
             nativeQuery = true
     )
-    List<ProductItemDeliveryProjection> findAllBaggageItemByDeliveryWarehouseId(Long warehouseId);
+    List<ProductItemDeliveryProjection> findAllBaggageItemByDeliveryWarehouseId(Long warehouseId, Long deliveryId);
 
     boolean existsByWarehouseIdAndItemProduct_Id(Long warehouseId, Long productId);
 

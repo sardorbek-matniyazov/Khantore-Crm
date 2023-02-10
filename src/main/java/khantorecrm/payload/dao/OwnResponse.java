@@ -35,6 +35,7 @@ public class OwnResponse {
     public static final OwnResponse PASSWORD_WRONG = new OwnResponse("The passwords doesn't match", HttpStatus.BAD_REQUEST.value(), false);
     public static final OwnResponse LOGIN_SUCCESSFULLY = new OwnResponse("Login successfully");
     public static final OwnResponse REJECTED_SUCCESSFULLY = new OwnResponse("Rejected successfully");
+    public static final OwnResponse CANT_DELETE = new OwnResponse("Can't delete", HttpStatus.BAD_REQUEST.value(), false);
 
     private String message;
     @JsonIgnore

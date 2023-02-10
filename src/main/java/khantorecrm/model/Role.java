@@ -2,7 +2,7 @@ package khantorecrm.model;
 
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.enums.RoleName;
-import khantorecrm.utils.constants.NamingConstants;
+import khantorecrm.utils.constants.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +21,7 @@ import javax.persistence.Enumerated;
 @AllArgsConstructor
 public class Role extends BaseEntity implements GrantedAuthority {
     @Enumerated(EnumType.STRING)
-    @Column(name = "role_name", nullable = false, length = NamingConstants.MODEL_ENUM_LENGTH)
+    @Column(name = "role_name", nullable = false, length = Constants.MODEL_ENUM_LENGTH)
     private RoleName roleName;
 
     @Override

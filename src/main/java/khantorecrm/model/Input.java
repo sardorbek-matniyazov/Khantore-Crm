@@ -24,7 +24,7 @@ import java.util.Map;
 
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.EnumType.STRING;
-import static khantorecrm.utils.constants.NamingConstants.MODEL_ENUM_LENGTH;
+import static khantorecrm.utils.constants.Constants.MODEL_ENUM_LENGTH;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

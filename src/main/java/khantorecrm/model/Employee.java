@@ -2,7 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseWithCreatedBy;
-import khantorecrm.utils.constants.NamingConstants;
+import khantorecrm.utils.constants.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,13 +21,13 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee extends BaseWithCreatedBy {
-    @Column(name = "employee_name", length = NamingConstants.MODEL_NAME_LENGTH)
+    @Column(name = "employee_name", length = Constants.MODEL_NAME_LENGTH)
     private String name;
 
-    @Column(name = "employee_phone_number", unique = true, length = NamingConstants.MODEL_NUMBER_LENGTH)
+    @Column(name = "employee_phone_number", unique = true, length = Constants.MODEL_NUMBER_LENGTH)
     private String phoneNumber;
 
-    @Column(name = "employee_comment", length = NamingConstants.MODEL_COMMENT_LENGTH)
+    @Column(name = "employee_comment", length = Constants.MODEL_COMMENT_LENGTH)
     private String comment;
 
     @OneToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.PERSIST})

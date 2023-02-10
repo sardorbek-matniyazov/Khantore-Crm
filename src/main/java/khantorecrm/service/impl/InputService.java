@@ -1,6 +1,9 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Employee;
+import khantorecrm.model.Input;
+import khantorecrm.model.ItemForCollection;
+import khantorecrm.model.ProductItem;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
@@ -142,9 +145,9 @@ public class InputService implements
                                 ).setCreatedDate(date)
                         );
                     } else if (employee != null) {
-                        final Balance balance = employee.getBalance();
-                        balance.setAmount(balance.getAmount() - productItem.getItemProduct().getPrice() * item.getAmount());
-                        balanceRepository.save(balance);
+                        employee.getBalance().setAmount(
+                                employee.getBalance().getAmount() - productItem.getItemProduct().getPrice() * item.getAmount()
+                        );
                         repository.save(
                                 new Input(
                                         productItem,

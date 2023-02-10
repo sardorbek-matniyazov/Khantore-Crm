@@ -3,6 +3,11 @@ package khantorecrm.utils.constants;
 import khantorecrm.model.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author :  Sardor Matniyazov
  * @mailto :  sardorbekmatniyazov03@gmail.com
@@ -11,5 +16,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class Statics {
     public static User getCurrentUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public static boolean isNonDeletable(long time) {
+        long minute = System.currentTimeMillis() - time;
+        minute /= 60 * 1000L;
+        return minute > Constants.DELETE_TIME;
+    }
+
+    public static Timestamp getTime(String time) {
+        if (time == null) return null;
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(time);
+            return new Timestamp(date.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

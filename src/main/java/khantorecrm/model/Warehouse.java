@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseWithCreatedBy;
 import khantorecrm.model.enums.ProductType;
-import khantorecrm.utils.constants.NamingConstants;
+import khantorecrm.utils.constants.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,12 +23,12 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Warehouse extends BaseWithCreatedBy {
-    @Column(name = "wr_name", length = NamingConstants.MODEL_NAME_LENGTH, unique = true)
+    @Column(name = "wr_name", length = Constants.MODEL_NAME_LENGTH, unique = true)
     private String name;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
-    @Column(name = "warehouse_type", length = NamingConstants.MODEL_ENUM_LENGTH)
+    @Column(name = "warehouse_type", length = Constants.MODEL_ENUM_LENGTH)
     private ProductType type;
 
     @JsonValue

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-import static khantorecrm.utils.constants.NamingConstants.MODEL_NUMBER_LENGTH;
+import static khantorecrm.utils.constants.Constants.MODEL_NUMBER_LENGTH;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

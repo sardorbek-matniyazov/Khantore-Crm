@@ -2,7 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseWithCreatedBy;
-import khantorecrm.utils.constants.NamingConstants;
+import khantorecrm.utils.constants.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,16 +21,16 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseWithCreatedBy implements UserDetails {
-    @Column(name = "user_name", nullable = false, length = NamingConstants.MODEL_NAME_LENGTH)
+    @Column(name = "user_name", nullable = false, length = Constants.MODEL_NAME_LENGTH)
     private String name;
 
-    @Column(name = "user_phone_number", nullable = false, unique = true, length = NamingConstants.MODEL_NAME_LENGTH)
+    @Column(name = "user_phone_number", nullable = false, unique = true, length = Constants.MODEL_NAME_LENGTH)
     private String phoneNumber;
 
-    @Column(name = "user_password", nullable = false, length = NamingConstants.PASSWORD_LENGTH)
+    @Column(name = "user_password", nullable = false, length = Constants.PASSWORD_LENGTH)
     private String password;
 
-    @Column(name = "user_current_token", length = NamingConstants.TOKEN_LENGTH)
+    @Column(name = "user_current_token", length = Constants.TOKEN_LENGTH)
     private String currentToken;
 
     @ManyToOne(optional = false, targetEntity = Role.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)

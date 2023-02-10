@@ -3,7 +3,7 @@ package khantorecrm.model;
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.model.enums.ProductType;
-import khantorecrm.utils.constants.NamingConstants;
+import khantorecrm.utils.constants.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,7 +23,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product extends BaseEntity implements Serializable {
-    @Column(name = "product_name", length = NamingConstants.MODEL_NAME_LENGTH, unique = true)
+    @Column(name = "product_name", length = Constants.MODEL_NAME_LENGTH, unique = true)
     private String name;
 
     @Column(name = "product_price")
@@ -33,7 +33,7 @@ public class Product extends BaseEntity implements Serializable {
     private Double warningAmount = 0.0;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "product_type", length = NamingConstants.MODEL_ENUM_LENGTH)
+    @Column(name = "product_type", length = Constants.MODEL_ENUM_LENGTH)
     private ProductType type;
 
     @OneToMany(

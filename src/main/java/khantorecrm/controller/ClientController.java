@@ -2,6 +2,7 @@ package khantorecrm.controller;
 
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ClientDto;
+import khantorecrm.payload.dto.SalePaymentDto;
 import khantorecrm.service.impl.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -42,6 +43,11 @@ public class ClientController {
     public HttpEntity<?> createClient(@RequestBody @Valid ClientDto dto) {
         return service.create(dto).handleResponse();
     }
+
+//    @PostMapping(value = "{id}/}pay")
+//    public HttpEntity<?> paymentToBalance(@RequestBody @Valid SalePaymentDto dto, @PathVariable Long id) {
+//        return service.paymentToBalance(dto).handleResponse();
+//    }
 
     @GetMapping(value = "debt-clients")
     public HttpEntity<?> debtClients() {

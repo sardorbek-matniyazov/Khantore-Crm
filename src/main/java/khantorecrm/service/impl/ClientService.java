@@ -8,6 +8,7 @@ import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ClientDto;
 import khantorecrm.repository.ClientRepository;
+import khantorecrm.service.IClientService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,8 @@ import static khantorecrm.utils.constants.Statics.getCurrentUser;
 @Service
 public class ClientService implements
         InstanceReturnable<Client, Long>,
-        Creatable<ClientDto> {
+        Creatable<ClientDto>,
+        IClientService {
     private final ClientRepository repository;
 
     @Autowired
@@ -69,5 +71,10 @@ public class ClientService implements
                 .stream()
                 .filter(client -> client.getCreatedBy().getId().equals(user.getId()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OwnResponse paymentToBalance(ClientDto dto) {
+        return null;
     }
 }

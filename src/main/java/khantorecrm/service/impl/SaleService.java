@@ -1,6 +1,13 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Balance;
+import khantorecrm.model.Client;
+import khantorecrm.model.ItemForCollection;
+import khantorecrm.model.Output;
+import khantorecrm.model.Payment;
+import khantorecrm.model.ProductItem;
+import khantorecrm.model.Sale;
+import khantorecrm.model.User;
 import khantorecrm.model.enums.OutputType;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.model.enums.ProductType;
@@ -8,7 +15,11 @@ import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
-import khantorecrm.repository.*;
+import khantorecrm.repository.BalanceRepository;
+import khantorecrm.repository.ClientRepository;
+import khantorecrm.repository.ProductItemRepository;
+import khantorecrm.repository.ProductPriceForSellersRepository;
+import khantorecrm.repository.SaleRepository;
 import khantorecrm.service.ISaleService;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;

@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 
 //@Component
 @Slf4j
+@Component
 public class Creator implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

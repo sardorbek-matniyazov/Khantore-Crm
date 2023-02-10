@@ -25,13 +25,13 @@ public class StatisticsService
         final Long countOfClients           = repository.countClients();
         final Long countOfDebtClients       = repository.countOfDebtClients();
         final Double sumOfAllTheDebtSums    = repository.sumOfAllDebtSumOfClients();
-        final Double sumOfAllThPaidSaleSums = repository.sumOfAllPaidSumsOfSale();
+        final Double sumOfAllEmployeeDebts  = repository.sumOfAllDebtSumEmployers();
 
 
         mainPageStatistics.put("countOfClients",            countOfClients         == null ? 0.0 : countOfClients.doubleValue());
         mainPageStatistics.put("countOfDebtClients",        countOfDebtClients     == null ? 0.0 : countOfDebtClients.doubleValue());
         mainPageStatistics.put("sumOfAllTheDebtSums",       sumOfAllTheDebtSums    == null ? 0.0 : sumOfAllTheDebtSums);
-        mainPageStatistics.put("sumOfAllThPaidSaleSums",    sumOfAllThPaidSaleSums == null ? 0.0 : sumOfAllThPaidSaleSums);
+        mainPageStatistics.put("sumOfAllThPaidSaleSums",    sumOfAllEmployeeDebts  == null ? 0.0 : sumOfAllEmployeeDebts);
 
         return OwnResponse.ALL_DATA.setMessage("Main page statistics").setData(mainPageStatistics);
     }

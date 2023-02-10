@@ -64,4 +64,12 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
             nativeQuery = true
     )
     Double benefitBySoldProducts();
+
+    @Query(
+            value = "select sum(b.balance_amount) " +
+                    "    from employer e join balance b on b.id = e.balance_id " +
+                    "        where b.balance_amount < 0.0;",
+            nativeQuery = true
+    )
+    Double sumOfAllDebtSumEmployers();
 }

@@ -44,7 +44,7 @@ public class ClientController {
         return service.create(dto).handleResponse();
     }
 
-//    @PostMapping(value = "{id}/}pay")
+//    @PostMapping(value = "{id}/pay")
 //    public HttpEntity<?> paymentToBalance(@RequestBody @Valid SalePaymentDto dto, @PathVariable Long id) {
 //        return service.paymentToBalance(dto).handleResponse();
 //    }

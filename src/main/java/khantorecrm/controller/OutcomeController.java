@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @RestController
 @PreAuthorize(value = "hasAnyAuthority({'GL_ADMIN', 'SELLER_CAR', 'SELLER_ADMIN', 'WORKER'})")
-@RequestMapping(value = "/api/outcome")
+@RequestMapping(value = "outcome")
 public class OutcomeController {
     private final OutcomeService service;
 

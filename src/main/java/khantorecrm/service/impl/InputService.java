@@ -1,9 +1,6 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Employee;
-import khantorecrm.model.Input;
-import khantorecrm.model.ItemForCollection;
-import khantorecrm.model.ProductItem;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
@@ -11,6 +8,7 @@ import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.InputDto;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.ProductItemWrapper;
+import khantorecrm.repository.BalanceRepository;
 import khantorecrm.repository.EmployeeRepository;
 import khantorecrm.repository.InputRepository;
 import khantorecrm.repository.ProductItemRepository;
@@ -34,16 +32,18 @@ public class InputService implements
     private final InputRepository repository;
     private final ProductItemRepository productItemRepository;
     private final EmployeeRepository employeeRepository;
+    private final BalanceRepository balanceRepository;
 
     @Autowired
     public InputService(
             InputRepository repository,
             ProductItemRepository productItemRepository,
-            EmployeeRepository employeeRepository
-    ) {
+            EmployeeRepository employeeRepository,
+            BalanceRepository balanceRepository) {
         this.repository = repository;
         this.productItemRepository = productItemRepository;
         this.employeeRepository = employeeRepository;
+        this.balanceRepository = balanceRepository;
     }
 
     @Override
@@ -142,9 +142,9 @@ public class InputService implements
                                 ).setCreatedDate(date)
                         );
                     } else if (employee != null) {
-                        employee.getBalance().setAmount(
-                                employee.getBalance().getAmount() - productItem.getItemProduct().getPrice() * item.getAmount()
-                        );
+                        final Balance balance = employee.getBalance();
+                        balance.setAmount(balance.getAmount() - productItem.getItemProduct().getPrice() * item.getAmount());
+                        balanceRepository.save(balance);
                         repository.save(
                                 new Input(
                                         productItem,

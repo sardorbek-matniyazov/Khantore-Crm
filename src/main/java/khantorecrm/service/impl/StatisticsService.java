@@ -31,7 +31,7 @@ public class StatisticsService
         mainPageStatistics.put("countOfClients",            countOfClients         == null ? 0.0 : countOfClients.doubleValue());
         mainPageStatistics.put("countOfDebtClients",        countOfDebtClients     == null ? 0.0 : countOfDebtClients.doubleValue());
         mainPageStatistics.put("sumOfAllTheDebtSums",       sumOfAllTheDebtSums    == null ? 0.0 : sumOfAllTheDebtSums);
-        mainPageStatistics.put("sumOfAllThPaidSaleSums",    sumOfAllEmployeeDebts  == null ? 0.0 : sumOfAllEmployeeDebts);
+        mainPageStatistics.put("sumOfAllEmployeeDebts",    sumOfAllEmployeeDebts   == null ? 0.0 : sumOfAllEmployeeDebts);
 
         return OwnResponse.ALL_DATA.setMessage("Main page statistics").setData(mainPageStatistics);
     }

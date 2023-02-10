@@ -150,10 +150,10 @@ public class DeliveryService implements
 
     @Override
     public OwnResponse getBaggageWithUserId(Long id) {
-        final Delivery delivery = repository.findById(id).orElseThrow(
-                () -> new NotFoundException("Delivery with user id " + id + " not found")
-        );
         try {
+            final Delivery delivery = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Delivery with user id " + id + " not found")
+            );
             return OwnResponse.ALL_DATA.setData(
                     itemRepository.findAllBaggageItemByDeliveryWarehouseId(
                             delivery.getBaggage().getId(),
@@ -471,7 +471,7 @@ public class DeliveryService implements
     public OwnResponse productPriceInjecting(ProductPriceForSellerDto dto) {
         try {
             if (!repository.existsById(dto.getDelivererId())) {
-                throw new  NotFoundException("Delivery not found");
+                throw new NotFoundException("Delivery not found");
             }
             final List<ProductPricesForSellers> collect = dto.getProductList()
                     .stream()

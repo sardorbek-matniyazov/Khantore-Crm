@@ -105,7 +105,7 @@ public class SaleService
                                 item,
                                 dItem.getAmount(),
                                 drPrice,
-                                item.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getProductItem().getItemProduct().getPrice()).sum()
+                                item.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getItemAmount() * it.getProductItem().getItemProduct().getPrice()).sum()
                         );
                     }
             ).collect(Collectors.toSet());

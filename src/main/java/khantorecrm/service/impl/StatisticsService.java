@@ -56,4 +56,9 @@ public class StatisticsService
     public OwnResponse productListByAmount() {
         return OwnResponse.ALL_DATA.setMessage("Product list by amount").setData(repository.productListByAmount());
     }
+
+    @Override
+    public OwnResponse productListAboutInput() {
+        return OwnResponse.ALL_DATA.setMessage("Product list about input").setData(repository.productListAboutInput());
+    }
 }

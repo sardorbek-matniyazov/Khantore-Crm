@@ -45,6 +45,9 @@ public class Input extends BaseWithCreatedBy {
     @Column(name = "input_cr_pr_price")
     private Double currentProductPrice = 0.0;
 
+    @Column(name = "input_cr_pr_ingr_price")
+    private Double currentProductIngPrice = 0.0;
+
     @ManyToOne(cascade = MERGE)
     private Employee employee;
 
@@ -60,6 +63,7 @@ public class Input extends BaseWithCreatedBy {
             ProductType type,
             Double currentProductPrice,
             Employee employee,
+            Double currentProductIngPrice,
             ActionType actionType
     ) {
         this.productItem = productItem;
@@ -67,6 +71,7 @@ public class Input extends BaseWithCreatedBy {
         this.type = type;
         this.status = actionType;
         this.employee = employee;
+        this.currentProductIngPrice = currentProductIngPrice;
         this.currentProductPrice = currentProductPrice;
         setInputDateString();
     }

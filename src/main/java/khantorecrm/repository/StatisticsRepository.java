@@ -2,6 +2,7 @@ package khantorecrm.repository;
 
 import khantorecrm.model.base.BaseEntity;
 import khantorecrm.payload.dao.projection.ClientListBySumAmount;
+import khantorecrm.payload.dao.projection.ProductListAboutInput;
 import khantorecrm.payload.dao.projection.ProductListBySumAmount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -66,6 +67,7 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
     )
     Double benefitBySoldProducts();
 
+    // debt clients list
     @Query(
             value = "select sum(b.balance_amount) " +
                     "    from employee e join balance b on b.id = e.balance_id " +
@@ -74,6 +76,7 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
     )
     Double sumOfAllDebtSumEmployers();
 
+    // client list by payments
     @Query(
             value = "select sum(s.sale_whole_price - s.sale_debt_price) as sumAmount, c.id as clientId, c.client_name as clientName " +
                     "    from sale s join client c on s.client_id = c.id " +
@@ -82,6 +85,7 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
     )
     List<ClientListBySumAmount> clientListByPayments();
 
+    // sold products list by amount
     @Query(
             value = "with bum as (select sum(ifc.item_for_collection_amount) as sumAmount, ifc.product_item_id as itemId " +
                     "    from output o join items_for_collection ifc on o.id = ifc.output_fk " +
@@ -93,4 +97,15 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
             nativeQuery = true
     )
     List<ProductListBySumAmount> productListByAmount();
+
+    // benefits of input products production
+    @Query(
+            value = "select sum(i.input_amount) as amount, pi.item_product_id as productId, p.product_name as productName, sum(i.input_cr_pr_price * i.input_amount) as sumWholePrice, sum(i.input_cr_pr_ingr_price * i.input_amount) as sumRealPrice " +
+                    "    from input i join product_item pi on i.product_item_id = pi.id " +
+                    "    join product p on pi.item_product_id = p.id " +
+                    "    where i.input_product_type='PRODUCT' " +
+                    "    group by pi.item_product_id, p.product_name;",
+            nativeQuery = true
+    )
+    List<ProductListAboutInput> productListAboutInput();
 }

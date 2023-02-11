@@ -210,6 +210,7 @@ public class DeliveryService implements
                             ProductType.PRODUCT,
                             realWarehouseItem.getItemProduct().getPrice(),
                             null,
+                            0.0,
                             ActionType.WAIT
                     )
             );

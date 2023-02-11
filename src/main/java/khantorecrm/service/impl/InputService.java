@@ -141,6 +141,7 @@ public class InputService implements
                                         ProductType.PRODUCT,
                                         productItem.getItemProduct().getPrice(),
                                         null,
+                                        productItem.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getItemAmount() * it.getProductItem().getItemProduct().getPrice()).sum(),
                                         ActionType.ACCEPTED
                                 ).setCreatedDate(date)
                         );
@@ -155,6 +156,7 @@ public class InputService implements
                                         ProductType.INGREDIENT,
                                         productItem.getItemProduct().getPrice(),
                                         employee,
+                                        productItem.getItemProduct().getIngredients().stream().mapToDouble(it -> it.getItemAmount() * it.getProductItem().getItemProduct().getPrice()).sum(),
                                         ActionType.ACCEPTED
                                 )
                         );

@@ -43,4 +43,9 @@ public class StatisticsController {
     public HttpEntity<?> productListByAmount() {
         return service.productListByAmount().handleResponse();
     }
+
+    @GetMapping(value = "product-list-about-input")
+    public HttpEntity<?> productListAboutInput() {
+        return service.productListAboutInput().handleResponse();
+    }
 }

@@ -131,9 +131,9 @@ public class ClientService implements
                 }).collect(Collectors.toList());
         if (amount.get() > 0) {
             throw new TypesInError("Amount is greater than debt");
+        } else {
+            // saving sales
+            saleRepository.saveAll(sales);
         }
-
-        // saving sales
-        saleRepository.saveAll(sales);
     }
 }

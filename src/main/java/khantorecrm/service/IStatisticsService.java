@@ -9,5 +9,7 @@ public interface IStatisticsService {
 
     OwnResponse benefitBySoldProducts();
 
+    OwnResponse clientListByPayments();
 
+    OwnResponse productListByAmount();
 }

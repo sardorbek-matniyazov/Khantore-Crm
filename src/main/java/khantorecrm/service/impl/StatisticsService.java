@@ -46,4 +46,14 @@ public class StatisticsService
         final Double benefitBySoldProducts = repository.benefitBySoldProducts();
         return OwnResponse.ALL_DATA.setMessage("Benefit by sold products").setData(benefitBySoldProducts == null ? 0.0 : benefitBySoldProducts);
     }
+
+    @Override
+    public OwnResponse clientListByPayments() {
+        return OwnResponse.ALL_DATA.setMessage("Client list by payments").setData(repository.clientListByPayments());
+    }
+
+    @Override
+    public OwnResponse productListByAmount() {
+        return OwnResponse.ALL_DATA.setMessage("Product list by amount").setData(repository.productListByAmount());
+    }
 }

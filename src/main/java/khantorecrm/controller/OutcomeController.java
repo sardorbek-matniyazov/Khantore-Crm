@@ -1,5 +1,6 @@
 package khantorecrm.controller;
 
+import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.OutcomeDto;
 import khantorecrm.service.impl.OutcomeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,7 @@ public class OutcomeController {
     // k
     @GetMapping(value = "all")
     public HttpEntity<?> all(@RequestParam(value = "start", required = false) String start, @RequestParam(value = "end", required = false) String end){
-        return ResponseEntity.ok(service.getAllInstances(start, end));
-    }
-
-    @GetMapping(value = "types")
-    public HttpEntity<?> types(){
-        return ResponseEntity.ok(service.getTypes());
+        return OwnResponse.ALL_DATA.setData(service.getAllInstances(start, end)).handleResponse();
     }
 
     @DeleteMapping(value = "{id}")

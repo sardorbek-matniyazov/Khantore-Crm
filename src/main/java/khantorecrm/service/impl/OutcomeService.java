@@ -64,9 +64,7 @@ public class OutcomeService
                     new Timestamp(System.currentTimeMillis())
             );
         }
-        else {
-            return repository.findAllByCreatedAtBetweenOrderByIdDesc(getTime(start), getTime(end));
-        }
+        return repository.findAllByCreatedAtBetweenOrderByIdDesc(getTime(start), getTime(end));
     }
 
     @Override

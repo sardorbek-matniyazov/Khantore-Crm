@@ -33,4 +33,14 @@ public class StatisticsController {
     public HttpEntity<?> benefitBySoldProducts() {
         return service.benefitBySoldProducts().handleResponse();
     }
+
+    @GetMapping(value = "client-list-by-payments")
+    public HttpEntity<?> clientListByPayments() {
+        return service.clientListByPayments().handleResponse();
+    }
+
+    @GetMapping(value = "product-list-by-amount")
+    public HttpEntity<?> productListByAmount() {
+        return service.productListByAmount().handleResponse();
+    }
 }

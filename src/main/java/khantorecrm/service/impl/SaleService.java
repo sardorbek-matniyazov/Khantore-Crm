@@ -1,29 +1,17 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Balance;
-import khantorecrm.model.Client;
-import khantorecrm.model.ItemForCollection;
-import khantorecrm.model.Output;
-import khantorecrm.model.Payment;
-import khantorecrm.model.ProductItem;
-import khantorecrm.model.Sale;
-import khantorecrm.model.User;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.*;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
-import khantorecrm.repository.BalanceRepository;
-import khantorecrm.repository.ClientRepository;
-import khantorecrm.repository.ProductItemRepository;
-import khantorecrm.repository.ProductPriceForSellersRepository;
-import khantorecrm.repository.SaleRepository;
+import khantorecrm.repository.*;
 import khantorecrm.service.ISaleService;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -43,17 +31,19 @@ public class SaleService
     private final ClientRepository clientRepository;
     private final BalanceRepository balanceRepository;
     private final ProductPriceForSellersRepository priceForSellersRepository;
+    private final PaymentRepository paymentRepository;
 
     @Autowired
     public SaleService(
             SaleRepository repository, ProductItemRepository itemRepository,
             ClientRepository clientRepository, BalanceRepository balanceRepository,
-            ProductPriceForSellersRepository priceForSellersRepository) {
+            ProductPriceForSellersRepository priceForSellersRepository, PaymentRepository paymentRepository) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.clientRepository = clientRepository;
         this.balanceRepository = balanceRepository;
         this.priceForSellersRepository = priceForSellersRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -120,6 +110,18 @@ public class SaleService
             final Balance balance = client.getBalance();
             balance.setAmount(balance.getAmount() - debtPrice);
 
+            // creating payment
+            final Payment savedPayment = paymentRepository.save(
+                    new Payment(
+                            dto.getPaymentAmount(),
+                            PaymentType.CASH,
+                            PaymentStatus.INCOME
+                    )
+            );
+
+            // adding payment to client
+            client.getBalance().getPayments().add(savedPayment);
+
             // creating sale
             repository.save(
                     new Sale(
@@ -130,12 +132,8 @@ public class SaleService
                             client,
                             wholePrice,
                             debtPrice,
-                            new Payment(
-                                    dto.getPaymentAmount(),
-                                    PaymentType.CASH,
-                                    PaymentStatus.INCOME
-                            ),
-                            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getKpiPercent()
+                            savedPayment,
+                            getCurrentUser().getKpiPercent()
                     )
             );
 

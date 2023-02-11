@@ -1,22 +1,28 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Balance;
-import khantorecrm.model.Client;
-import khantorecrm.model.User;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ClientType;
+import khantorecrm.model.enums.PaymentStatus;
 import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ClientDto;
+import khantorecrm.payload.dto.PaymentDto;
+import khantorecrm.repository.BalanceRepository;
 import khantorecrm.repository.ClientRepository;
+import khantorecrm.repository.SaleRepository;
 import khantorecrm.service.IClientService;
 import khantorecrm.service.functionality.Creatable;
 import khantorecrm.service.functionality.InstanceReturnable;
+import khantorecrm.utils.exceptions.NotFoundException;
+import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static khantorecrm.utils.constants.Statics.getCurrentUser;
@@ -27,10 +33,14 @@ public class ClientService implements
         Creatable<ClientDto>,
         IClientService {
     private final ClientRepository repository;
+    private final BalanceRepository balanceRepository;
+    private final SaleRepository saleRepository;
 
     @Autowired
-    public ClientService(ClientRepository clientRepository) {
+    public ClientService(ClientRepository clientRepository, BalanceRepository balanceRepository, SaleRepository saleRepository) {
         this.repository = clientRepository;
+        this.balanceRepository = balanceRepository;
+        this.saleRepository = saleRepository;
     }
 
     @Override
@@ -73,8 +83,57 @@ public class ClientService implements
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
-    public OwnResponse paymentToBalance(ClientDto dto) {
-        return null;
+    public OwnResponse paymentToBalance(Long id, PaymentDto dto) {
+        try {
+            final Client client = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Client not found")
+            );
+
+            final Balance balance = client.getBalance();
+            balance.setAmount(balance.getAmount() + dto.getAmount());
+            balance.getPayments().add(
+                    new Payment(
+                            dto.getAmount(),
+                            dto.getType(),
+                            PaymentStatus.INCOME
+                    )
+            );
+
+            // increasing sale amounts by client
+            increasingSaleAmountsByClient(id, new AtomicReference<>(dto.getAmount()));
+
+            // saving balance
+            balanceRepository.save(balance);
+            return OwnResponse.CREATED_SUCCESSFULLY;
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR;
+        }
+    }
+
+    private void increasingSaleAmountsByClient(Long clientId, final AtomicReference<Double> amount) {
+        final List<Sale> sales = saleRepository.findAllByClient_Id(clientId, Sort.by(Sort.Direction.DESC, "id"))
+                .stream()
+                .map(sale -> {
+                    if (amount.get() > 0) {
+                        if (sale.getDebtPrice() > amount.get()) {
+                            sale.setDebtPrice(sale.getDebtPrice() - amount.get());
+                            amount.set(0.0);
+                        } else {
+                            amount.set(amount.get() - sale.getDebtPrice());
+                            sale.setDebtPrice(0.0);
+                        }
+                        return sale;
+                    } return null;
+                }).collect(Collectors.toList());
+        if (amount.get() > 0) {
+            throw new TypesInError("Amount is greater than debt");
+        }
+
+        // saving sales
+        saleRepository.saveAll(sales);
     }
 }

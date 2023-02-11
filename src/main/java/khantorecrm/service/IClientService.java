@@ -2,6 +2,7 @@ package khantorecrm.service;
 
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ClientDto;
+import khantorecrm.payload.dto.PaymentDto;
 
 /**
  * @author :  Sardor Matniyazov
@@ -9,5 +10,5 @@ import khantorecrm.payload.dto.ClientDto;
  * @created : 10 Feb 2023
  **/
 public interface IClientService {
-    OwnResponse paymentToBalance(ClientDto dto);
+    OwnResponse paymentToBalance(Long id, PaymentDto paymentDto);
 }

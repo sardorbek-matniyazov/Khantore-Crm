@@ -42,7 +42,7 @@ public class OutcomeService
     public OwnResponse create(OutcomeDto dto) {
         OutcomeType outcomeType = OutcomeType.valueOf(dto.getType());
         Outcome outcome = new Outcome(dto.getMoneyAmount(), outcomeType, dto.getComment());
-        if (outcomeType.equals(OutcomeType.OYLIK)) {
+        if (outcomeType.equals(OutcomeType.ЗАРПЛАТА)) {
             Optional<User> byId = userRepository.findById(dto.getUserId());
             if (byId.isPresent()) {
                 User user = byId.get();
@@ -86,7 +86,7 @@ public class OutcomeService
                 return OwnResponse.CANT_DELETE;
             }
             if (outcome.getCreatedBy().getId().equals(creator.getId())) {
-                if (outcome.getType().equals(OutcomeType.OYLIK)) {
+                if (outcome.getType().equals(OutcomeType.ЗАРПЛАТА)) {
                     User user = outcome.getUser();
                     user.getBalance().setAmount(user.getBalance().getAmount() + outcome.getAmount());
                     userRepository.save(user);

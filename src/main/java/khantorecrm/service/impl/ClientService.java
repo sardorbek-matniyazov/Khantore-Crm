@@ -1,6 +1,10 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Balance;
+import khantorecrm.model.Client;
+import khantorecrm.model.Payment;
+import khantorecrm.model.Sale;
+import khantorecrm.model.User;
 import khantorecrm.model.enums.ClientType;
 import khantorecrm.model.enums.PaymentStatus;
 import khantorecrm.model.enums.RoleName;
@@ -19,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -83,7 +86,6 @@ public class ClientService implements
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public OwnResponse paymentToBalance(Long id, PaymentDto dto) {
         try {

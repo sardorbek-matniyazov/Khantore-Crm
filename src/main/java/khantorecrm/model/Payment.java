@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseWithCreatedBy;
+import khantorecrm.model.enums.PaymentStatus;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.utils.constants.Constants;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,10 @@ public class Payment extends BaseWithCreatedBy {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_type", length = Constants.MODEL_ENUM_LENGTH)
     private PaymentType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", length = Constants.MODEL_ENUM_LENGTH)
+    private PaymentStatus status;
 
     @JsonValue
     public Map<String, Object> toJson() {

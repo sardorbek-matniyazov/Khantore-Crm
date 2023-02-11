@@ -48,4 +48,9 @@ public class StatisticsController {
     public HttpEntity<?> productListAboutInput() {
         return service.productListAboutInput().handleResponse();
     }
+
+    @GetMapping(value = "benefit-by-payment-and-outcome")
+    public HttpEntity<?> benefitByPaymentAndOutcome() {
+        return service.benefitByPaymentAndOutcome().handleResponse();
+    }
 }

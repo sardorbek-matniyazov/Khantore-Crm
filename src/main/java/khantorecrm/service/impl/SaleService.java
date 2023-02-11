@@ -8,10 +8,7 @@ import khantorecrm.model.Payment;
 import khantorecrm.model.ProductItem;
 import khantorecrm.model.Sale;
 import khantorecrm.model.User;
-import khantorecrm.model.enums.OutputType;
-import khantorecrm.model.enums.PaymentType;
-import khantorecrm.model.enums.ProductType;
-import khantorecrm.model.enums.RoleName;
+import khantorecrm.model.enums.*;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
@@ -135,7 +132,8 @@ public class SaleService
                             debtPrice,
                             new Payment(
                                     dto.getPaymentAmount(),
-                                    PaymentType.CASH
+                                    PaymentType.CASH,
+                                    PaymentStatus.INCOME
                             ),
                             ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getKpiPercent()
                     )

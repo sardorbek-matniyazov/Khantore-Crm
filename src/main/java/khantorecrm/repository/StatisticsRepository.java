@@ -108,4 +108,26 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
             nativeQuery = true
     )
     List<ProductListAboutInput> productListAboutInput();
+
+    @Query(
+            value = "select sum(payment_amount) " +
+                    "from payment where payment_status='INCOME';",
+            nativeQuery = true
+    )
+    Double incomePayments();
+    
+    @Query(
+            value = "select sum(payment_amount) " +
+                    "from payment where payment_status='OUTCOME';",
+            nativeQuery = true
+    )
+    Double outcomePayments();
+
+
+    @Query(
+            value = "sselect sum(outcome_amount) " +
+                    "from outcome where user_id is null;",
+            nativeQuery = true
+    )
+    Double sumOfOutcomeAmount();
 }

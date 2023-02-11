@@ -61,4 +61,20 @@ public class StatisticsService
     public OwnResponse productListAboutInput() {
         return OwnResponse.ALL_DATA.setMessage("Product list about input").setData(repository.productListAboutInput());
     }
+
+    @Override
+    public OwnResponse benefitByPaymentAndOutcome() {
+        Map<String, Object> mp = new HashMap<>();
+
+        final Double incomePayments     = repository.incomePayments();
+        final Double outcomePayments    = repository.outcomePayments();
+        final Double sumOfOutcomeAmount = repository.sumOfOutcomeAmount();
+
+        mp.put("incomePayments",     incomePayments     == null ? 0.0 : incomePayments);
+        mp.put("outcomePayments",    outcomePayments    == null ? 0.0 : outcomePayments);
+        mp.put("sumOfOutcomeAmount", sumOfOutcomeAmount == null ? 0.0 : sumOfOutcomeAmount);
+
+
+        return OwnResponse.ALL_DATA.setMessage("Benefit by payment and outcome").setData(mp);
+    }
 }

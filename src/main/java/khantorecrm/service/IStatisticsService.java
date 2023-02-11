@@ -14,4 +14,6 @@ public interface IStatisticsService {
     OwnResponse productListByAmount();
 
     OwnResponse productListAboutInput();
+
+    OwnResponse benefitByPaymentAndOutcome();
 }

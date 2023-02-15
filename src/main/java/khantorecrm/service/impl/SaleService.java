@@ -150,6 +150,11 @@ public class SaleService
         }
     }
 
+    @Override
+    public List<Sale> getAllInstancesByClientName(Long clientId) {
+        return repository.findAllByClientId(clientId, Sort.by(Sort.Direction.DESC, "id"));
+    }
+
     public void increaseUsersAmountWithKpi(Double amount) {
         final User currentUser = getCurrentUser();
 

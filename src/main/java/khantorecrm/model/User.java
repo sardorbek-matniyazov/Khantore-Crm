@@ -65,6 +65,7 @@ public class User extends BaseWithCreatedBy implements UserDetails {
         result.put("name", this.name);
         result.put("phoneNumber", this.phoneNumber);
         result.put("role", this.role.getRoleName());
+        result.put("balance", this.balance.getAmount());
         if (this.getCreatedBy() != null) {
             result.put("createdBy", this.getCreatedBy().getName());
         }

@@ -14,4 +14,4 @@ There are some pictures of how looks like front app.
 
 
 
-We also uploading new feature to this product. stay up-to-date )
+We're also uploading new feature to this product. stay up-to-date )

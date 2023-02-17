@@ -251,7 +251,6 @@ public class DeliveryService implements
 
     @Override
     public OwnResponse rejectReturnedProduct(Long inputId) {
-
         try {
             Input input = inputRepository.findById(inputId).orElseThrow(
                     () -> new NotFoundException("Input with id " + inputId + " not found !")
@@ -281,6 +280,8 @@ public class DeliveryService implements
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (TypesInError e) {
             return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR.setMessage("error with input delete");
         }
     }
 

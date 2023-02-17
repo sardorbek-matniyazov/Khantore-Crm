@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "input")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER')")
 public class InputController {
     private final InputService service;
 

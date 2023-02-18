@@ -44,6 +44,7 @@ public class ProductItem extends BaseEntity {
         result.put("productItemId", super.getId());
 
         result.put("product", this.getItemProduct().getName());
+        result.put("productId", this.getItemProduct().getId());
         result.put("productPrice", this.getItemProduct().getPrice());
         result.put("productAmount", this.getItemAmount());
         result.put("warehouseId", this.getWarehouse().getId());

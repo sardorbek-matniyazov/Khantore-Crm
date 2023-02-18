@@ -141,6 +141,9 @@ public class WarehouseService implements
     @Override
     public OwnResponse moveItem(MovingItemDto dto) {
         try {
+            if (dto.getWarehouseOneId().equals(dto.getWarehouseTwoId())) {
+                return OwnResponse.INPUT_TYPE_ERROR.setMessage("Warehouse one and two should be different");
+            }
             final ProductItem itemOne = itemRepository.findAllByWarehouseId(dto.getWarehouseOneId())
                     .stream()
                     .filter(item -> item.getItemProduct().getId().equals(dto.getProductId()))
@@ -152,9 +155,9 @@ public class WarehouseService implements
             final ProductItem itemTwo = itemRepository.findAllByWarehouseId(dto.getWarehouseTwoId())
                     .stream()
                     .filter(item -> item.getItemProduct().getId().equals(dto.getProductId()))
-                    .findAny()
+                    .findFirst()
                     .orElseThrow(
-                            () -> new NotFoundException("Product doesn't exists in the Warehouse one")
+                            () -> new NotFoundException("Product doesn't exists in the Warehouse two")
                     );
 
             if (dto.getAmount() > itemOne.getItemAmount()) {

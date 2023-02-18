@@ -12,4 +12,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findAllByClient_Id(Long clientId, Sort id1);
 
     List<Sale> findAllByClientId(Long clientID, Sort id);
+
+    List<Sale> findAllByCreatedBy_Id(Long id, Sort id1);
 }

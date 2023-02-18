@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "employee")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER')")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER', 'SUPER_LOADER')")
 public class EmployeeController {
 
     private final EmployeeService service;

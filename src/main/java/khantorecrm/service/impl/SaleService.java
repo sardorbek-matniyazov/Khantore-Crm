@@ -50,7 +50,7 @@ public class SaleService
     public List<Sale> getAllInstances() {
         final User currentUser = getCurrentUser();
         if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN))
-            return repository.findAllById(currentUser.getId(), Sort.by(Sort.Direction.DESC, "id"));
+            return repository.findAllByCreatedBy_Id(currentUser.getId(), Sort.by(Sort.Direction.DESC, "id"));
         return repository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 

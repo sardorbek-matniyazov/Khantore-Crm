@@ -404,6 +404,8 @@ public class DeliveryService implements
                 secondDriverProductItem.setItemAmount(secondDriverProductItem.getItemAmount() + deliveryMovingProductHistoryWithId.getAmount());
                 itemRepository.save(secondDriverProductItem);
             }
+                deliveryMovingProductHistoryWithId.setAction(ActionType.ACCEPTED);
+                movingProductHistoryRepository.save(deliveryMovingProductHistoryWithId);
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (TypesInError e) {
@@ -456,6 +458,9 @@ public class DeliveryService implements
                 currentDriverProductItem.setItemAmount(currentDriverProductItem.getItemAmount() + deliveryMovingProductHistoryWithId.getAmount());
                 itemRepository.save(currentDriverProductItem);
             }
+
+            deliveryMovingProductHistoryWithId.setAction(ActionType.REJECTED);
+            movingProductHistoryRepository.save(deliveryMovingProductHistoryWithId);
             return OwnResponse.UPDATED_SUCCESSFULLY.setData("Product moving rejected successfully !");
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());

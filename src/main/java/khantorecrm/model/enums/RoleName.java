@@ -4,5 +4,6 @@ public enum RoleName {
     ADMIN,
     DRIVER,
     SELLER,
-    LOADER
+    LOADER,
+    SUPER_LOADER,
 }

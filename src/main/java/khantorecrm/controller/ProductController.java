@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "product")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER')")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER', 'SUPER_LOADER')")
 public class ProductController {
     private final ProductService service;
 

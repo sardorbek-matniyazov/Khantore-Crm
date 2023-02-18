@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "sale")
-@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER')")
+@PreAuthorize(value = "hasAnyRole('ADMIN', 'DRIVER', 'SELLER', 'LOADER', 'SUPER_LOADER')")
 public class SaleController {
     private final SaleService service;
 

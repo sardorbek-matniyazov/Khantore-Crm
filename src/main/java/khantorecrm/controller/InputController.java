@@ -30,12 +30,12 @@ public class InputController {
 
     @GetMapping(value = "ingredients")
     public HttpEntity<?> getAllIngredients() {
-        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.INGREDIENT)).handleResponse();
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.INGREDIENT)).setMessage("All ingredient inputs").handleResponse();
     }
 
     @GetMapping(value = "products")
     public HttpEntity<?> getAllProducts() {
-        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.PRODUCT)).handleResponse();
+        return OwnResponse.ALL_DATA.setData(service.getAllByType(ProductType.PRODUCT)).setMessage("All product inputs").handleResponse();
     }
 
     @PostMapping(value = "income-ingredient")
@@ -48,12 +48,17 @@ public class InputController {
         return service.production(dto).handleResponse();
     }
 
+    @DeleteMapping(value = "{id}")
+    public HttpEntity<?> deleteInputWithId(@PathVariable Long id) {
+        return service.delete(id).handleResponse();
+    }
+
     @GetMapping(value = "all-wait")
     public HttpEntity<?> getAllWaitingInputs() {
         return ResponseEntity.ok(
                 OwnResponse.ALL_DATA.setData(
                         service.getAllInputsByStatus(ActionType.WAIT)
-                )
+                ).setMessage("All waiting inputs")
         );
     }
 

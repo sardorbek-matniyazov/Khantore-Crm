@@ -49,6 +49,7 @@ public class Input extends BaseWithCreatedBy {
     private Double currentProductIngPrice = 0.0;
 
     @ManyToOne(cascade = MERGE)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Employee employee;
 
     @Column(name = "input_status")

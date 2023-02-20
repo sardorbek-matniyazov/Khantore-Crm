@@ -1,9 +1,6 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Employee;
-import khantorecrm.model.Input;
-import khantorecrm.model.ItemForCollection;
-import khantorecrm.model.ProductItem;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ActionType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
@@ -16,10 +13,12 @@ import khantorecrm.repository.EmployeeRepository;
 import khantorecrm.repository.InputRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.service.IInputService;
+import khantorecrm.service.functionality.Deletable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,10 +26,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static khantorecrm.utils.constants.Statics.getCurrentUser;
+import static khantorecrm.utils.constants.Statics.isNonDeletable;
+
 @Service
 @Slf4j
 public class InputService implements
-        IInputService {
+        IInputService,
+        Deletable<Long> {
 
     private final InputRepository repository;
     private final ProductItemRepository productItemRepository;
@@ -63,7 +66,7 @@ public class InputService implements
             return OwnResponse.PRODUCT_NOT_FOUND.setMessage(e.getMessage());
         } catch (TypesInError e) {
             return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             return OwnResponse.ERROR.setMessage(e.getMessage());
         }
     }
@@ -90,7 +93,7 @@ public class InputService implements
 
     @Override
     public List<Input> getAllByType(ProductType type) {
-        return repository.findAllByType(type);
+        return repository.findAllByType(type, Sort.by(Sort.Direction.DESC, "createdDate"));
     }
 
     private Set<ProductItem> changeIngredients(Set<ItemForCollection> ingredients, Double itemAmount, char ch) {
@@ -165,5 +168,35 @@ public class InputService implements
                     }
                 }
         );
+    }
+
+    @Override
+    public OwnResponse delete(Long id) {
+        try {
+            final User currentUser = getCurrentUser();
+
+            final Input input = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Input with id " + id + " not found")
+            );
+
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(input.getCreatedAt().getTime())) {
+                return OwnResponse.CANT_DELETE;
+            }
+
+            final ProductItem productItem = input.getProductItem();
+            productItem.setItemAmount(productItem.getItemAmount() - input.getAmount());
+            if (input.getType().equals(ProductType.PRODUCT)) {
+                changeIngredients(productItem.getItemProduct().getIngredients(), input.getAmount(), '-');
+            }
+
+            productItemRepository.save(productItem);
+
+            repository.deleteById(id);
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR.setMessage(e.getMessage());
+        }
+        return OwnResponse.DELETED_SUCCESSFULLY;
     }
 }

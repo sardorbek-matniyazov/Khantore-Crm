@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +15,8 @@ public class RegisterDto {
     private String password;
     @NotBlank(message = "Name is required")
     private String name;
-    @NotBlank(message = "Phone number is required")
+    @Size(min = 9, max = 9, message = "Phone number must be 9 digits")
+    @NotBlank(message = "Phone is required")
     private String phoneNumber;
     @NotNull(message = "Role name is required")
     private RoleName roleName;

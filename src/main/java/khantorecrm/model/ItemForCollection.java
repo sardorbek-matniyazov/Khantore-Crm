@@ -42,6 +42,7 @@ public class ItemForCollection extends BaseEntity {
 
         result.put("itemAmount", this.getItemAmount());
         result.put("productItem", this.getProductItem());
+        result.put("currentProductPrice", this.getCurrentProductPrice());
         return result;
     }
 }

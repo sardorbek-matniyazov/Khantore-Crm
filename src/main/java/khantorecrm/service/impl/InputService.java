@@ -131,8 +131,8 @@ public class InputService implements
                         final Set<ProductItem> productItems =
                                 changeIngredients(productItem.getItemProduct().getIngredients(), item.getAmount(), '+');
 
-                        if (productItems.size() == 0)
-                            throw new NotFoundException("There are something wrong with ingredients, format");
+//                        if (productItems.size() == 0)
+//                            throw new NotFoundException("There are something wrong with ingredients, format");
                     }
 
                     // saving input

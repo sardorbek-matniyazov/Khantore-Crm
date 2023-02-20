@@ -93,7 +93,7 @@ public class InputService implements
 
     @Override
     public List<Input> getAllByType(ProductType type) {
-        return repository.findAllByType(type, Sort.by(Sort.Direction.DESC, "createdDate"));
+        return repository.findAllByType(type, Sort.by(Sort.Direction.DESC, "id"));
     }
 
     private Set<ProductItem> changeIngredients(Set<ItemForCollection> ingredients, Double itemAmount, char ch) {

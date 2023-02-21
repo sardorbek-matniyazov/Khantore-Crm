@@ -1,6 +1,7 @@
 package khantorecrm.repository;
 
 import khantorecrm.model.Outcome;
+import khantorecrm.payload.dao.projection.ChartOutcome;
 import khantorecrm.payload.dao.projection.OutcomeProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -40,4 +41,14 @@ public interface OutcomeRepository extends JpaRepository<Outcome, Long> {
     List<OutcomeProjection> findAllWithRoleName(Timestamp start, Timestamp end);
 
     List<Outcome> findAllByCreatedAtBetweenOrderByIdDesc(Timestamp start, Timestamp end);
+
+
+    @Query(
+            value = "select o.outcome_type as type, sum(o.outcome_amount) as amount " +
+                    "from outcome o " +
+                    "where o.created_at >= ?1 and o.created_at <= ?2 " +
+                    "group by o.outcome_type",
+            nativeQuery = true
+    )
+    List<ChartOutcome> sumMoneyByType(Timestamp timestamp, Timestamp timestamp1);
 }

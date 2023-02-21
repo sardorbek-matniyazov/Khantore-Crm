@@ -45,4 +45,9 @@ public class OutcomeController {
         return  service.delete(id).handleResponse();
     }
 
+    @GetMapping(value = "for-chart")
+    public HttpEntity<?> forChart(@RequestParam(value = "start", required = false) String start, @RequestParam(value = "end", required = false) String end){
+        return OwnResponse.ALL_DATA.setData(service.forChart(start, end)).handleResponse();
+    }
+
 }

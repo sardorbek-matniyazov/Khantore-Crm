@@ -4,6 +4,7 @@ import khantorecrm.model.Outcome;
 import khantorecrm.model.User;
 import khantorecrm.model.enums.OutcomeType;
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dao.projection.ChartOutcome;
 import khantorecrm.payload.dto.OutcomeDto;
 import khantorecrm.repository.OutcomeRepository;
 import khantorecrm.repository.UserRepository;
@@ -65,6 +66,17 @@ public class OutcomeService
             );
         }
         return repository.findAllByCreatedAtBetweenOrderByIdDesc(getTime(start), getTime(end));
+    }
+
+    @Override
+    public List<ChartOutcome> forChart(String start, String end) {
+        if (start == null && end == null) {
+            return repository.sumMoneyByType(
+                    new Timestamp(System.currentTimeMillis() - A_MONTH * 60 * 1000 * 60 * 60),
+                    new Timestamp(System.currentTimeMillis())
+            );
+        }
+        return repository.sumMoneyByType(getTime(start), getTime(end));
     }
 
     @Override

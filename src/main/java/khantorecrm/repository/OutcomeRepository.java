@@ -44,10 +44,11 @@ public interface OutcomeRepository extends JpaRepository<Outcome, Long> {
 
 
     @Query(
-            value = "select o.outcome_type as type, sum(o.outcome_amount) as amount " +
+            value = "select sum(o.outcome_amount) as amount, o.outcome_type as type " +
                     "from outcome o " +
-                    "where o.created_at >= ?1 and o.created_at <= ?2 " +
-                    "group by o.outcome_type",
+                    "where o.created_at >= ?1 " +
+                    "  and o.created_at <= ?2 " +
+                    "group by o.outcome_type;",
             nativeQuery = true
     )
     List<ChartOutcome> sumMoneyByType(Timestamp timestamp, Timestamp timestamp1);

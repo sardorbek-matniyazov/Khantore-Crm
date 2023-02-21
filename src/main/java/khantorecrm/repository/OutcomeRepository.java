@@ -1,7 +1,7 @@
 package khantorecrm.repository;
 
 import khantorecrm.model.Outcome;
-import khantorecrm.payload.dao.projection.ChartOutcome;
+import khantorecrm.payload.dao.projection.ChartOutcomeProjection;
 import khantorecrm.payload.dao.projection.OutcomeProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -51,5 +51,5 @@ public interface OutcomeRepository extends JpaRepository<Outcome, Long> {
                     "group by o.outcome_type;",
             nativeQuery = true
     )
-    List<ChartOutcome> sumMoneyByType(Timestamp timestamp, Timestamp timestamp1);
+    List<ChartOutcomeProjection> sumMoneyByType(Timestamp timestamp, Timestamp timestamp1);
 }

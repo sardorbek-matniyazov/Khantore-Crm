@@ -6,6 +6,6 @@ package khantorecrm.payload.dao.projection;
  * @created : 21 Feb 2023
  **/
 public interface ChartOutcomeProjection {
+    Double getAmount();
     String getType();
-    double getAmount();
 }

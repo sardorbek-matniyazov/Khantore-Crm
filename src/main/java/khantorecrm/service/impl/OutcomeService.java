@@ -104,7 +104,7 @@ public class OutcomeService
                     userRepository.save(user);
                 }
                 repository.delete(outcome);
-                return OwnResponse.CREATED_SUCCESSFULLY;
+                return OwnResponse.DELETED_SUCCESSFULLY;
             }
             return OwnResponse.CANT_DELETE;
         }

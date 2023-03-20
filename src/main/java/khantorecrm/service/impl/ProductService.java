@@ -131,7 +131,12 @@ public class ProductService implements
                                     () -> new NotFoundException("Product item with id " + ingredient.getProductItemId() + " not found")
                             )
                     );
-                    ingredientProduct.setItemAmount(ingredient.getAmount());
+
+                    // set amount for product
+                    ingredientProduct.setHowMuchIngredient(ingredient.getHowMuchIngredient());
+                    ingredientProduct.setForHowMuchProduct(ingredient.getForHowMuchProduct());
+                    ingredientProduct.setItemAmount(ingredient.getHowMuchIngredient() / ingredient.getForHowMuchProduct());
+
                     return ingredientProduct;
                 }
         ).collect(Collectors.toSet());

@@ -28,6 +28,24 @@ import javax.transaction.Transactional;
 //        this.passwordEncoder = passwordEncoder;
 //        this.jwtProvider = jwtProvider;
 //    }
+//@Transactional
+//@Override
+//public void run(String... args) throws Exception {
+//final User save = userRepository.save(
+//        new User(
+//        "admin",
+//        "phone",
+//        passwordEncoder.encode("admin"),
+//        jwtProvider.generateToken("key"),
+//        new Role(
+//        RoleName.ADMIN
+//        ),
+//        0.0D,
+//        new Balance()
+//        )
+//        );
+//        log.info("Admin created: " + save);
+//        }
 //}
 
 

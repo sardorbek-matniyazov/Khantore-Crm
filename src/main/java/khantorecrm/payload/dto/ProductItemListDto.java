@@ -14,8 +14,13 @@ public class ProductItemListDto {
     @NotNull(message = "Product item id must not be null")
     private Long productItemId;
 
-    @NotNull(message = "Product item amount must not be null")
     private Double amount;
+
+    @NotNull(message = "howMuchIngredient must not be null")
+    private Double howMuchIngredient;
+
+    @NotNull(message = "forHowMuchProduct must not be null")
+    private Double forHowMuchProduct;
 
     @JsonIgnore
     public boolean isItemCreatableId() {

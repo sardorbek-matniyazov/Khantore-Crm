@@ -95,8 +95,8 @@ public class DeliveryService implements
                         );
 
                         // check product item amount enough delivery amount
-                        if (productItem.getItemAmount() < itemDto.getAmount())
-                            throw new TypesInError("Not enough items in stock");
+//                        if (productItem.getItemAmount() < itemDto.getAmount())
+//                            throw new TypesInError("Not enough items in stock");
 
                         // delivery baggage items
                         List<ProductItem> allByWarehouseId = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId());
@@ -267,7 +267,7 @@ public class DeliveryService implements
 
             ProductItem productItem = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId()).stream().filter(
                     item -> Objects.equals(item.getItemProduct().getId(), input.getProductItem().getId())
-            ).findFirst().orElseThrow(
+            ).findAny().orElseThrow(
                     () -> new NotFoundException("Product item with id " + input.getProductItem().getId() + " not found in the baggage !")
             );
 

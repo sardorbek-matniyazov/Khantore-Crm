@@ -266,7 +266,7 @@ public class DeliveryService implements
             );
 
             ProductItem productItem = itemRepository.findAllByWarehouseId(delivery.getBaggage().getId()).stream().filter(
-                    item -> Objects.equals(item.getItemProduct().getId(), input.getProductItem().getId())
+                    item -> Objects.equals(item.getItemProduct().getId(), input.getProductItem().getItemProduct().getId())
             ).findAny().orElseThrow(
                     () -> new NotFoundException("Product item with id " + input.getProductItem().getId() + " not found in the baggage !")
             );

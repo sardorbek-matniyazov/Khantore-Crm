@@ -32,3 +32,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
         format_sql: true
         enable_lazy_load_no_trans: true
+sms:
+  mail: <your_mail>
+  pass: <your_pass>
+  from: "4546"
+  message:
+    boss_phone: +998903000000
+    after_each_sale_message: "Hurmetli %s tolem qabillandi. Buyirtpa summasi: %s Tolegen summa: %s Qariz: %s"
+    attention_each_week_message: "Hurmetli - %s sizdin qarziniz %s kunge kelip %s sumga jetti. Iltimas esaplasip ketin. Xantore nan onimleri %s"
+    callback_url: "http://0000.uz/test.php"

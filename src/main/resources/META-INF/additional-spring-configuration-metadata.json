@@ -9,5 +9,15 @@
       "name": "secret-key.encrypted",
       "type": "java.lang.String",
       "description": "Description for secret-key.encrypted."
+    },
+    {
+      "name": "sms.mail",
+      "type": "java.lang.String",
+      "description": "login for sms.mail."
+    },
+    {
+      "name": "sms.pass",
+      "type": "java.lang.String",
+      "description": "Password for sms.mail."
     }
   ] }

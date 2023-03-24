@@ -495,7 +495,7 @@ public class DeliveryService implements
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return OwnResponse.INPUT_TYPE_ERROR.setMessage("There is something wrong");
         }
     }

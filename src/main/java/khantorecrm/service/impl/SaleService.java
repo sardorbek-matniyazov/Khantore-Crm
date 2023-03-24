@@ -22,6 +22,7 @@ import khantorecrm.repository.PaymentRepository;
 import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.ProductPriceForSellersRepository;
 import khantorecrm.repository.SaleRepository;
+import khantorecrm.service.IClientSmsService;
 import khantorecrm.service.ISaleService;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
@@ -48,18 +49,21 @@ public class SaleService
     private final BalanceRepository balanceRepository;
     private final ProductPriceForSellersRepository priceForSellersRepository;
     private final PaymentRepository paymentRepository;
+    private final IClientSmsService clientSmsService;
 
     @Autowired
     public SaleService(
             SaleRepository repository, ProductItemRepository itemRepository,
             ClientRepository clientRepository, BalanceRepository balanceRepository,
-            ProductPriceForSellersRepository priceForSellersRepository, PaymentRepository paymentRepository) {
+            ProductPriceForSellersRepository priceForSellersRepository,
+            PaymentRepository paymentRepository, IClientSmsService clientSmsService) {
         this.repository = repository;
         this.itemRepository = itemRepository;
         this.clientRepository = clientRepository;
         this.balanceRepository = balanceRepository;
         this.priceForSellersRepository = priceForSellersRepository;
         this.paymentRepository = paymentRepository;
+        this.clientSmsService = clientSmsService;
     }
 
     @Override
@@ -93,8 +97,8 @@ public class SaleService
                         if (item.getItemProduct().getType().equals(ProductType.INGREDIENT))
                             throw new TypesInError("Product item with id " + dItem.getProductItemId() + " is ingredient");
 
-                        if (item.getItemAmount() < dItem.getAmount())
-                            throw new TypesInError("There aren't enough product in the warehouse !");
+//                        if (item.getItemAmount() < dItem.getAmount())
+//                            throw new TypesInError("There aren't enough product in the warehouse !");
 
                         final Double drPrice = priceForSellersRepository.findByDelivererIdAndProductId(crUser.getId(), item.getItemProduct().getId())
                                 .orElseThrow(
@@ -120,7 +124,7 @@ public class SaleService
             );
 
             final Double wholePrice = atomicWholePrice.get();
-            final double debtPrice = wholePrice - dto.getPaymentAmount();
+            final Double debtPrice = wholePrice - dto.getPaymentAmount();
             if (debtPrice < 0)
                 throw new TypesInError("Sale Whole price should be less than payment price");
 
@@ -157,6 +161,16 @@ public class SaleService
 
             // increase balance
             increaseUsersAmountWithKpi(wholePrice);
+
+            // send sms to client
+            if (client.getPhone() != null && !client.getPhone().isEmpty())
+                clientSmsService.sendSmsAfterEachSale(
+                        client.getName(),
+                        client.getPhone(),
+                        wholePrice.toString(),
+                        ((Double)(wholePrice - debtPrice)).toString(),
+                        debtPrice.toString()
+                );
 
             return OwnResponse.CREATED_SUCCESSFULLY;
         } catch (NotFoundException e) {

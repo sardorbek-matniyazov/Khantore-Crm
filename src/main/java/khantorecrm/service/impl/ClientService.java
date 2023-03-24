@@ -52,7 +52,7 @@ public class ClientService implements
         if (Objects.requireNonNull(user.getRole().getRoleName()) == RoleName.ADMIN) {
             return repository.findAll();
         }
-        return repository.findAllByCreatedBy_Id(user.getId());
+        return repository.findAllByCreatedBy_IdOrCreatedBy_Id(user.getId(), 1L, Sort.by(Sort.Direction.DESC, "id"));
     }
 
     @Override

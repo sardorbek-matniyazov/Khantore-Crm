@@ -1,12 +1,15 @@
 package khantorecrm.repository;
 
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dao.projection.ClientListBySumAmount;
 import khantorecrm.payload.dao.projection.ProductListAboutInput;
 import khantorecrm.payload.dao.projection.ProductListBySumAmount;
+import khantorecrm.payload.dao.projection.SellerIncomePayment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
@@ -128,4 +131,36 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
             nativeQuery = true
     )
     Double sumOfOutcomeAmount();
+
+    @Query(
+            value = "select sum(p.payment_amount) as sumPayment, p.created_by_id as userId, p.payment_type as paymentType " +
+                    "from payment p " +
+                    "where payment_status = 'INCOME' " +
+                    "  and p.created_by_id = ?1 " +
+                    "  and p.created_at >= ?2 " +
+                    "  and p.created_at <= ?3 " +
+                    "group by payment_type, p.created_by_id",
+            nativeQuery = true
+    )
+    SellerIncomePayment sellerListByPayments(Long id, String from, String to);
+
+    @Query(
+            value = "select sum(sale_debt_price) " +
+                    "from sale " +
+                    "where sale.created_by_id = ?1 and created_at <= ?2 " +
+                    "group by created_by_id;",
+            nativeQuery = true
+    )
+    Double debtOfSeller(Long id, String toTime);
+
+    @Query(
+            value = "select sum(outcome_amount) " +
+                    "from outcome " +
+                    "where created_by_id = ?1 " +
+                    "  and created_at >= ?2 " +
+                    "  and created_at <= ?3 " +
+                    "group by created_by_id;",
+            nativeQuery = true
+    )
+    Double outcomeAmountOfSeller(Long id, String fromTime, String toTime);
 }

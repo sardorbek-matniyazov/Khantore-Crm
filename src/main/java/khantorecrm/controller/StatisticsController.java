@@ -4,9 +4,7 @@ import khantorecrm.service.impl.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/statistics")
@@ -52,5 +50,14 @@ public class StatisticsController {
     @GetMapping(value = "benefit-by-payment-and-outcome")
     public HttpEntity<?> benefitByPaymentAndOutcome() {
         return service.benefitByPaymentAndOutcome().handleResponse();
+    }
+
+    @GetMapping(value = "sellers-expenses/{id}")
+    public HttpEntity<?> sellerListByPayments(
+            @PathVariable Long id,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to
+    ) {
+        return service.sellerListByPayments(id, from, to).handleResponse();
     }
 }

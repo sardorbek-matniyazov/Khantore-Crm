@@ -16,4 +16,6 @@ public interface IStatisticsService {
     OwnResponse productListAboutInput();
 
     OwnResponse benefitByPaymentAndOutcome();
+
+    OwnResponse sellerListByPayments(Long id, String from, String to);
 }

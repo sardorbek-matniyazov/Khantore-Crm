@@ -133,7 +133,7 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
     Double sumOfOutcomeAmount();
 
     @Query(
-            value = "select sum(p.payment_amount) as sumPayment, p.created_by_id as userId, p.payment_type as paymentType " +
+            value = "select sum(p.payment_amount) as sumPayment, p.payment_type as paymentType " +
                     "from payment p " +
                     "where payment_status = 'INCOME' " +
                     "  and p.created_by_id = ?1 " +
@@ -142,7 +142,7 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
                     "group by payment_type, p.created_by_id",
             nativeQuery = true
     )
-    SellerIncomePayment sellerListByPayments(Long id, String from, String to);
+    List<SellerIncomePayment> sellerListByPayments(Long id, Timestamp from, Timestamp to);
 
     @Query(
             value = "select sum(sale_debt_price) " +
@@ -151,7 +151,7 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
                     "group by created_by_id;",
             nativeQuery = true
     )
-    Double debtOfSeller(Long id, String toTime);
+    Double debtOfSeller(Long id, Timestamp toTime);
 
     @Query(
             value = "select sum(outcome_amount) " +
@@ -162,5 +162,5 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
                     "group by created_by_id;",
             nativeQuery = true
     )
-    Double outcomeAmountOfSeller(Long id, String fromTime, String toTime);
+    Double outcomeAmountOfSeller(Long id, Timestamp fromTime, Timestamp toTime);
 }

@@ -43,7 +43,6 @@ public class OwnResponse {
     private Integer status = HttpStatus.OK.value();
     private boolean success = true;
     private Object data = null;
-    private Integer total = null;
 
     public OwnResponse(String message, Integer status, boolean success) {
         this.message = message;

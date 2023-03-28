@@ -6,7 +6,6 @@ package khantorecrm.payload.dao.projection;
  * @created : 28 Mar 2023
  **/
 public interface SellerIncomePayment {
-    Double getSumAmount();
-    Long getUserId();
+    Double getSumPayment();
     String getPaymentType();
 }

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class StatisticsService
@@ -82,15 +84,24 @@ public class StatisticsService
 
     @Override
     public OwnResponse sellerListByPayments(Long id, String from, String to) {
-        final String fromTime = getTimeStamp(from);
-        final String toTime = getTimeStamp(to);
+        final Timestamp fromTime;
+        final Timestamp toTime;
+
+        try {
+            fromTime = getTimeStamp(from);
+            toTime = getTimeStamp(to);
+        } catch (RuntimeException e) {
+            return OwnResponse.ERROR.setMessage(e.getMessage());
+        }
 
         // payment of seller by time
-        final SellerIncomePayment sellerIncomePayment   = repository.sellerListByPayments(id, fromTime, toTime);
+        final List<SellerIncomePayment> sellerIncomePayment     = repository.sellerListByPayments(id, fromTime, toTime).stream()
+                .filter(s -> s.getSumPayment() != null)
+                .collect(Collectors.toList());
         // debt of seller by time
-        final Double debtOfSeller                       = repository.debtOfSeller(id, toTime);
+        final Double debtOfSeller                               = repository.debtOfSeller(id, toTime);
         // outcome amount of seller by time
-        final Double outcomeAmountOfSeller              = repository.outcomeAmountOfSeller(id, fromTime, toTime);
+        final Double outcomeAmountOfSeller                      = repository.outcomeAmountOfSeller(id, fromTime, toTime);
 
         final Map<String, Object> mp = new HashMap<>();
         mp.put("sellerIncomePayment", sellerIncomePayment);
@@ -103,11 +114,11 @@ public class StatisticsService
     }
 
     // time format: yyyy-MM-dd HH:mm:ss
-    private String getTimeStamp(String date) {
+    private Timestamp getTimeStamp(String date) {
         if (validateTime(date)) {
-            return String.format("%s 00:00:00", date);
+            return Timestamp.valueOf(String.format("%s 00:00:00", date));
         }
-        return "1970-01-01 00:00:00";
+        throw new RuntimeException("Invalid time format");
     }
 
     private boolean validateTime(String date) {

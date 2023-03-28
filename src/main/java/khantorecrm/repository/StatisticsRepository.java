@@ -1,6 +1,7 @@
 package khantorecrm.repository;
 
 import khantorecrm.model.base.BaseEntity;
+import khantorecrm.model.enums.ClientType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dao.projection.ClientListBySumAmount;
 import khantorecrm.payload.dao.projection.ProductListAboutInput;
@@ -145,13 +146,15 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
     List<SellerIncomePayment> sellerListByPayments(Long id, Timestamp from, Timestamp to);
 
     @Query(
-            value = "select sum(sale_debt_price) " +
-                    "from sale " +
-                    "where sale.created_by_id = ?1 and created_at <= ?2 " +
-                    "group by created_by_id;",
+            value = "select sum(s.sale_debt_price) " +
+                    "from sale s join client c on c.id = s.client_id " +
+                    "where c.client_type = ?3 " +
+                    "    and s.created_by_id = ?1 " +
+                    "  and s.created_at <= ?2 " +
+                    "group by s.created_by_id;",
             nativeQuery = true
     )
-    Double debtOfSeller(Long id, Timestamp toTime);
+    Double debtOfSeller(Long id, Timestamp toTime, String type);
 
     @Query(
             value = "select sum(outcome_amount) " +

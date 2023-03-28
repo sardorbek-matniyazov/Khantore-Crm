@@ -1,5 +1,6 @@
 package khantorecrm.service.impl;
 
+import khantorecrm.model.enums.ClientType;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dao.projection.SellerIncomePayment;
 import khantorecrm.repository.StatisticsRepository;
@@ -95,17 +96,20 @@ public class StatisticsService
         }
 
         // payment of seller by time
-        final List<SellerIncomePayment> sellerIncomePayment     = repository.sellerListByPayments(id, fromTime, toTime).stream()
+        final List<SellerIncomePayment> sellerIncomePayment         = repository.sellerListByPayments(id, fromTime, toTime).stream()
                 .filter(s -> s.getSumPayment() != null)
                 .collect(Collectors.toList());
-        // debt of seller by time
-        final Double debtOfSeller                               = repository.debtOfSeller(id, toTime);
+        // debt of seller by time for basic clients
+        final Double debtOfSellerBasics                             = repository.debtOfSeller(id, toTime, ClientType.BASIC.name());
+        // debt of seller by time for basic clients
+        final Double debtOfSellerPClients                           = repository.debtOfSeller(id, toTime, ClientType.P_CLIENT.name());
         // outcome amount of seller by time
-        final Double outcomeAmountOfSeller                      = repository.outcomeAmountOfSeller(id, fromTime, toTime);
+        final Double outcomeAmountOfSeller                          = repository.outcomeAmountOfSeller(id, fromTime, toTime);
 
         final Map<String, Object> mp = new HashMap<>();
         mp.put("sellerIncomePayment", sellerIncomePayment);
-        mp.put("debtOfSeller", debtOfSeller == null ? 0.0 : debtOfSeller);
+        mp.put("debtOfSellerBasics", debtOfSellerBasics == null ? 0.0 : debtOfSellerBasics);
+        mp.put("debtOfSellerPClients", debtOfSellerPClients == null ? 0.0 : debtOfSellerPClients);
         mp.put("outcomeAmountOfSeller", outcomeAmountOfSeller == null ? 0.0 : outcomeAmountOfSeller);
 
         return OwnResponse
@@ -113,7 +117,7 @@ public class StatisticsService
                 .setData(mp);
     }
 
-    // time format: yyyy-MM-dd HH:mm:ss
+    // time format: yyyy-MM-dd
     private Timestamp getTimeStamp(String date) {
         if (validateTime(date)) {
             return Timestamp.valueOf(String.format("%s 00:00:00", date));

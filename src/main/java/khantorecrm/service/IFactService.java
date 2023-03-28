@@ -6,8 +6,13 @@ import khantorecrm.payload.dto.FactProductItemDailyDto;
 
 import java.util.List;
 
-public interface IFactProductItemService {
+/**
+ * @author :  Sardor Matniyazov
+ * @mailto :  sardorbekmatniyazov03@gmail.com
+ * @created : 28 Mar 2023
+ **/
+public interface IFactService {
     OwnResponse createOrUpdateDailyFactProductItem(FactProductItemDailyDto dto);
 
-    List<FactProductItemDaily> getFactDailyWarehouseProducts();
+    List<FactProductItemDaily> getFactDailyWarehouseProducts(Long warehouseId);
 }

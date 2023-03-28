@@ -33,7 +33,7 @@ public class Client extends BaseWithCreatedBy {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "client_type", length = 10, nullable = false)
-    private ClientType type;
+    private ClientType type = ClientType.BASIC;
 
     @OneToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE})
     private Balance balance;
@@ -41,7 +41,7 @@ public class Client extends BaseWithCreatedBy {
     @JsonValue
     public Map<String, Object> toJson() {
         Map<String, Object> result = new HashMap<>();
-        result.put("outputId", super.getId());
+        result.put("clientId", super.getId());
         result.put("createdAt", super.getCreatedAt());
         result.put("createdBy", this.getCreatedBy().getName());
 

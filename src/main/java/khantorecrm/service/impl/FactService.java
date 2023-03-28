@@ -5,17 +5,23 @@ import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.FactProductItemDailyDto;
 import khantorecrm.repository.FactProductItemRepository;
 import khantorecrm.repository.ProductItemRepository;
-import khantorecrm.service.IFactProductItemService;
+import khantorecrm.service.IFactService;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class ProductFactService implements IFactProductItemService {
+/**
+ * @author :  Sardor Matniyazov
+ * @mailto :  sardorbekmatniyazov03@gmail.com
+ * @created : 28 Mar 2023
+ **/
+@Component
+public class FactService implements IFactService {
     private final FactProductItemRepository factProductItemRepository;
     private final ProductItemRepository productItemRepository;
 
-    public ProductFactService(FactProductItemRepository factProductItemRepository, ProductItemRepository productItemRepository) {
+    public FactService(FactProductItemRepository factProductItemRepository, ProductItemRepository productItemRepository) {
         this.factProductItemRepository = factProductItemRepository;
         this.productItemRepository = productItemRepository;
     }
@@ -46,7 +52,7 @@ public class ProductFactService implements IFactProductItemService {
     }
 
     @Override
-    public List<FactProductItemDaily> getFactDailyWarehouseProducts() {
+    public List<FactProductItemDaily> getFactDailyWarehouseProducts(Long warehouseId) {
         return factProductItemRepository.findAll();
     }
 }

@@ -92,7 +92,7 @@ public class StatisticsService
             fromTime = getTimeStamp(from);
             toTime = getTimeStamp(to);
         } catch (RuntimeException e) {
-            return OwnResponse.ERROR.setMessage(e.getMessage());
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
         }
 
         // payment of seller by time

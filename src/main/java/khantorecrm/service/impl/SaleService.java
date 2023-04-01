@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -100,11 +101,17 @@ public class SaleService
 //                        if (item.getItemAmount() < dItem.getAmount())
 //                            throw new TypesInError("There aren't enough product in the warehouse !");
 
-                        final Double drPrice = priceForSellersRepository.findByDelivererIdAndProductId(crUser.getId(), item.getItemProduct().getId())
-                                .orElseThrow(
-                                        () -> new NotFoundException("Product '" + item.getItemProduct().getName() + "' price nor set")
-                                )
-                                .getPrice();
+                        final Double drPrice;
+                        if (Objects.requireNonNull(crUser.getRole().getRoleName()) == RoleName.DRIVER) {
+                            drPrice = priceForSellersRepository.findByDelivererIdAndProductId(crUser.getId(), item.getItemProduct().getId())
+                                    .orElseThrow(
+                                            () -> new NotFoundException(String.format("Product %s price nor set", item.getItemProduct().getName()))
+                                    )
+                                    .getPrice();
+                        } else {
+                            drPrice = item.getItemProduct().getPrice();
+                        }
+
 
                         atomicWholePrice.updateAndGet(v -> (v + drPrice * dItem.getAmount()));
 

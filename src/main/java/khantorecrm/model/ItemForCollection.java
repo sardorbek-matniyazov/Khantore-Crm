@@ -38,7 +38,6 @@ public class ItemForCollection extends BaseEntity {
     @Column(name = "item_for_collection_for_how_much_product")
     private Double forHowMuchProduct = 0.0;
 
-
     @Column(name = "item_for_collection_cr_ingr_price")
     private Double currentIngredientPrice = 0.0;
 

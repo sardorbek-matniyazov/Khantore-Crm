@@ -1,17 +1,22 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.*;
+import khantorecrm.model.Balance;
+import khantorecrm.model.Delivery;
+import khantorecrm.model.Role;
+import khantorecrm.model.User;
+import khantorecrm.model.Warehouse;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.payload.dao.LoginResponse;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.LoginDto;
 import khantorecrm.payload.dto.RegisterDto;
+import khantorecrm.payload.dto.UpdateUserDto;
 import khantorecrm.repository.DeliveryRepository;
 import khantorecrm.repository.RoleRepository;
 import khantorecrm.repository.UserRepository;
-import khantorecrm.repository.WarehouseRepository;
 import khantorecrm.security.JwtProvider;
 import khantorecrm.service.IUserService;
+import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,11 +24,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
-public class AuthService implements IUserService {
+public class AuthService implements IUserService, Updatable<UpdateUserDto, Long> {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -140,5 +144,22 @@ public class AuthService implements IUserService {
     @Override
     public User getCurrentUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    @Override
+    public OwnResponse update(UpdateUserDto dto, Long id) {
+        try {
+            User user = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("User not found"));
+            user.setName(dto.getName());
+            user.setPhoneNumber(dto.getPhoneNumber());
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+            user.setKpiPercent(dto.getKpiPercent());
+            return OwnResponse.UPDATED_SUCCESSFULLY.setData(repository.save(user));
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.USER_ALREADY_EXISTS;
+        }
     }
 }

@@ -3,15 +3,12 @@ package khantorecrm.controller;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.LoginDto;
 import khantorecrm.payload.dto.RegisterDto;
+import khantorecrm.payload.dto.UpdateUserDto;
 import khantorecrm.service.impl.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -44,5 +41,10 @@ public class AuthController {
     @GetMapping(value = "me")
     public HttpEntity<?> getCurrentUser() {
         return OwnResponse.ALL_DATA.setData(service.getCurrentUser()).handleResponse();
+    }
+
+    @PutMapping(value = "{id}")
+    public HttpEntity<?> editUser(@PathVariable Long id, @RequestBody @Valid UpdateUserDto dto) {
+        return service.update(dto, id).handleResponse();
     }
 }

@@ -84,7 +84,9 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
     @Query(
             value = "select sum(s.sale_whole_price - s.sale_debt_price) as sumAmount, c.id as clientId, c.client_name as clientName " +
                     "    from sale s join client c on s.client_id = c.id " +
-                    "    group by c.id;",
+                    "    group by c.id " +
+                    "    order by sumAmount desc " +
+                    "    limit 20;",
             nativeQuery = true
     )
     List<ClientListBySumAmount> clientListByPayments();
@@ -97,7 +99,9 @@ public interface StatisticsRepository extends JpaRepository<BaseEntity, Long> {
                     "            group by ifc.product_item_id) " +
                     "select p.id as id, sum(bum.sumAmount) as sumAmount, p.product_name as ProductName " +
                     "    from product_item pi join bum on bum.itemId=pi.id join product p on pi.item_product_id = p.id " +
-                    "    group by p.id, p.product_name;",
+                    "    group by p.id, p.product_name " +
+                    "    order by sumAmount desc " +
+                    "    limit 20;",
             nativeQuery = true
     )
     List<ProductListBySumAmount> productListByAmount();

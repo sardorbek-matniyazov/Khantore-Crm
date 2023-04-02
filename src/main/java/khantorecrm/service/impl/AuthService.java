@@ -155,6 +155,7 @@ public class AuthService implements IUserService, Updatable<UpdateUserDto, Long>
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
             user.setKpiPercent(dto.getKpiPercent());
+
             return OwnResponse.UPDATED_SUCCESSFULLY.setData(repository.save(user));
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());

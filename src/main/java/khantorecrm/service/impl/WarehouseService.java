@@ -114,9 +114,11 @@ public class WarehouseService implements
                     throw new ProductAlreadyInTheWarehouseException("The product Already in the warehouse");
                 }
                 Product product = productRepository.findById(dto.getProductId()).orElseThrow(
-                        () -> new NotFoundException("Product with id " + dto.getProductId() + " not found in the database !")
+                        () -> new NotFoundException(
+                                String.format("Product with id %s not found in the database !", dto.getProductId()))
                 );
-                if (!product.getType().equals(warehouse.getType())) throw new TypesInError("Warehouse type should equal product type");
+                if (!product.getType().equals(warehouse.getType()))
+                    throw new TypesInError("Warehouse type should equal product type");
 
                 itemRepository.save(
                         new ProductItem(

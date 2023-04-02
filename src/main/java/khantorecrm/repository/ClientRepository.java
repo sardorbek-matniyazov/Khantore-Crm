@@ -16,4 +16,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     List<Client> findAllByCreatedBy_Id(Long id);
 
     List<Client> findAllByCreatedBy_IdOrCreatedBy_Id(Long id, Long l, Sort id1);
+
+    boolean existsByPhoneAndIdIsNot(String phone, Long id);
 }

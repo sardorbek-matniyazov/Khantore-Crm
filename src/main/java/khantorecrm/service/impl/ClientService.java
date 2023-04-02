@@ -16,7 +16,9 @@ import khantorecrm.repository.ClientRepository;
 import khantorecrm.repository.SaleRepository;
 import khantorecrm.service.IClientService;
 import khantorecrm.service.functionality.Creatable;
+import khantorecrm.service.functionality.Deletable;
 import khantorecrm.service.functionality.InstanceReturnable;
+import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,9 @@ import static khantorecrm.utils.constants.Statics.getCurrentUser;
 public class ClientService implements
         InstanceReturnable<Client, Long>,
         Creatable<ClientDto>,
-        IClientService {
+        IClientService,
+        Updatable<ClientDto, Long>,
+        Deletable<Long> {
     private final ClientRepository repository;
     private final BalanceRepository balanceRepository;
     private final SaleRepository saleRepository;
@@ -136,6 +140,40 @@ public class ClientService implements
         } else {
             // saving sales
             saleRepository.saveAll(sales);
+        }
+    }
+
+    @Override
+    public OwnResponse update(ClientDto dto, Long id) {
+        try {
+            if (repository.existsByPhoneAndIdIsNot(dto.getPhone(), id)) return OwnResponse.CLIENT_ALREADY_EXISTS;
+            final Client client = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Client not found")
+            );
+            client.setName(dto.getName());
+            client.setPhone(dto.getPhone());
+            client.setComment(dto.getComment());
+            repository.save(client);
+            return OwnResponse.UPDATED_SUCCESSFULLY;
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR;
+        }
+    }
+
+    @Override
+    public OwnResponse delete(Long id) {
+        try {
+            final Client client = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Client not found")
+            );
+            repository.delete(client);
+            return OwnResponse.DELETED_SUCCESSFULLY;
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
         }
     }
 }

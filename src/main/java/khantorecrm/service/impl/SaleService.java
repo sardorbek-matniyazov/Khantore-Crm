@@ -112,7 +112,6 @@ public class SaleService
                             drPrice = item.getItemProduct().getPrice();
                         }
 
-
                         atomicWholePrice.updateAndGet(v -> (v + drPrice * dItem.getAmount()));
 
                         item.setItemAmount(item.getItemAmount() - dItem.getAmount());

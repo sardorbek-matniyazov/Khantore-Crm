@@ -42,6 +42,16 @@ public class ClientController {
         return service.create(dto).handleResponse();
     }
 
+    @PutMapping(value = "{id}")
+    public HttpEntity<?> updateClient(@RequestBody @Valid ClientDto dto, @PathVariable Long id) {
+        return service.update(dto, id).handleResponse();
+    }
+
+    @DeleteMapping(value = "{id}")
+    public HttpEntity<?> deleteClient(@PathVariable Long id) {
+        return service.delete(id).handleResponse();
+    }
+
     @PostMapping(value = "{id}/pay")
     public HttpEntity<?> paymentToBalance(@RequestBody @Valid PaymentDto dto, @PathVariable Long id) {
         return service.paymentToBalance(id, dto).handleResponse();

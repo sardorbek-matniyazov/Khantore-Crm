@@ -169,11 +169,11 @@ public class ClientService implements
                     () -> new NotFoundException("Client not found")
             );
             repository.delete(client);
-            return OwnResponse.DELETED_SUCCESSFULLY;
+            return OwnResponse.DELETED_SUCCESSFULLY.setMessage("Client deleted successfully");
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
-            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+            return OwnResponse.CANT_DELETE;
         }
     }
 }

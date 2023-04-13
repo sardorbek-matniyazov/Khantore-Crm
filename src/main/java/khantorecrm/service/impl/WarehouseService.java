@@ -1,10 +1,8 @@
 package khantorecrm.service.impl;
 
-import khantorecrm.model.Product;
-import khantorecrm.model.ProductItem;
-import khantorecrm.model.Warehouse;
-import khantorecrm.model.WarehouseMovingProductHistory;
+import khantorecrm.model.*;
 import khantorecrm.model.enums.ProductType;
+import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.MovingItemDto;
 import khantorecrm.payload.dto.ProductList;
@@ -15,6 +13,7 @@ import khantorecrm.repository.ProductRepository;
 import khantorecrm.repository.WarehouseRepository;
 import khantorecrm.service.IWarehouseService;
 import khantorecrm.service.functionality.Creatable;
+import khantorecrm.service.functionality.Deletable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.ProductAlreadyInTheWarehouseException;
@@ -27,11 +26,15 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static khantorecrm.utils.constants.Statics.getCurrentUser;
+import static khantorecrm.utils.constants.Statics.isNonDeletable;
+
 @Service
 public class WarehouseService implements
         InstanceReturnable<Warehouse, Long>,
         Creatable<WarehouseDto>,
         Updatable<WarehouseDto, Long>,
+        Deletable<Long>,
         IWarehouseService {
 
     private final WarehouseRepository repository;
@@ -202,5 +205,24 @@ public class WarehouseService implements
     @Override
     public List<Warehouse> getAllByType(ProductType type) {
         return repository.findAllByType(type);
+    }
+
+    @Override
+    public OwnResponse delete(Long id) {
+        try {
+            final Warehouse warehouse = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Warehouse with id " + id + " not found")
+            );
+
+            final User currentUser = getCurrentUser();
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(warehouse.getCreatedAt().getTime())) {
+                return OwnResponse.CANT_DELETE;
+            }
+            return OwnResponse.DELETED_SUCCESSFULLY;
+        } catch (NotFoundException e) {
+            return OwnResponse.WAREHOUSE_NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+        }
     }
 }

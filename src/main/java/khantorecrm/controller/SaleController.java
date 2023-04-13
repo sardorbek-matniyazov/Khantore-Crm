@@ -40,6 +40,11 @@ public class SaleController {
         return service.sell(dto).handleResponse();
     }
 
+    @DeleteMapping(value = "delete/{id}")
+    public HttpEntity<?> deleteSale(@PathVariable Long id) {
+        return service.delete(id).handleResponse();
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public HttpEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {

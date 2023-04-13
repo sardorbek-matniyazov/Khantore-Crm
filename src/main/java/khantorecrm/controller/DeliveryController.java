@@ -8,15 +8,13 @@ import khantorecrm.payload.dto.ReturnProductDto;
 import khantorecrm.service.impl.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "delivery")
@@ -109,8 +107,20 @@ public class DeliveryController {
     public HttpEntity<?> productPriceForDriver(@RequestBody @Valid ProductPriceForSellerDto dto) {
         return service.productPriceInjecting(dto).handleResponse();
     }
+
     @GetMapping(value = "{id}/product-price")
     public HttpEntity<?> productPriceForDriver(@PathVariable Long id) {
         return OwnResponse.ALL_DATA.setData(service.productPricesByDelivererId(id)).handleResponse();
+    }
+
+    @DeleteMapping(value = "{outputId}")
+    public HttpEntity<?> deleteDelivery(@PathVariable Long outputId) {
+        return service.delete(outputId).handleResponse();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public HttpEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return OwnResponse.INPUT_TYPE_ERROR.setMessage(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage()).handleResponse();
     }
 }

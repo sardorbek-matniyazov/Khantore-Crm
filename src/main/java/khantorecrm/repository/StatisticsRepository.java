@@ -1,8 +1,6 @@
 package khantorecrm.repository;
 
 import khantorecrm.model.base.BaseEntity;
-import khantorecrm.model.enums.ClientType;
-import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dao.projection.ClientListBySumAmount;
 import khantorecrm.payload.dao.projection.ProductListAboutInput;
 import khantorecrm.payload.dao.projection.ProductListBySumAmount;

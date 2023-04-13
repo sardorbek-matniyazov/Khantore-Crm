@@ -60,4 +60,9 @@ public class ProductController {
     public HttpEntity<?> updateProduct(@RequestBody @Valid ProductDto dto, @PathVariable Long id) {
         return service.update(dto, id).handleResponse();
     }
+
+    @DeleteMapping(value = "{id}")
+    public HttpEntity<?> deleteProduct(@PathVariable Long id) {
+        return service.delete(id).handleResponse();
+    }
 }

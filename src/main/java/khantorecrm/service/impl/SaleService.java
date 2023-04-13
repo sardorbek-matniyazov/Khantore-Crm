@@ -24,6 +24,7 @@ import khantorecrm.repository.ProductPriceForSellersRepository;
 import khantorecrm.repository.SaleRepository;
 import khantorecrm.service.IClientSmsService;
 import khantorecrm.service.ISaleService;
+import khantorecrm.service.functionality.Deletable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
@@ -43,6 +44,7 @@ import static khantorecrm.utils.constants.Statics.getCurrentUser;
 @Service
 public class SaleService
         implements InstanceReturnable<Sale, Long>,
+        Deletable<Long>,
         ISaleService {
     private final SaleRepository repository;
     private final ProductItemRepository itemRepository;
@@ -200,6 +202,61 @@ public class SaleService
             return;
         final Balance balance = currentUser.getBalance();
         balance.setAmount(balance.getAmount() + amount * currentUser.getKpiPercent() / 100.0D);
+
+        balanceRepository.save(balance);
+    }
+
+    @Override
+    public OwnResponse delete(Long id) {
+        try {
+final Sale sale = repository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Sale with id " + id + " not found")
+            );
+
+            final User currentUser = getCurrentUser();
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && !sale.getCreatedBy().getId().equals(currentUser.getId()))
+                return OwnResponse.CANT_DELETE.setMessage("You can't delete this sale");
+
+            final Double wholePrice = sale.getWholePrice();
+            final Double debtPrice = sale.getDebtPrice();
+            if (!Objects.equals(debtPrice, wholePrice)) {
+                final Balance balance = sale.getClient().getBalance();
+
+                balance.setAmount(balance.getAmount() + (wholePrice - debtPrice));
+                balanceRepository.save(balance);
+            }
+
+            // rollback kpi
+            rollbackKpi(sale);
+
+            // turn back products to warehouse
+            rollbackProductItems(sale.getOutput().getProductItems());
+
+            repository.delete(sale);
+            return OwnResponse.DELETED_SUCCESSFULLY;
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+        }
+    }
+
+    private void rollbackProductItems(Set<ItemForCollection> productItems) {
+        productItems.forEach(
+                item -> {
+                    final ProductItem productItem = item.getProductItem();
+                    productItem.setItemAmount(productItem.getItemAmount() + item.getItemAmount());
+                    itemRepository.save(productItem);
+                }
+        );
+    }
+
+    private void rollbackKpi(Sale sale) {
+        final User createdBy = sale.getCreatedBy();
+        if (createdBy.getKpiPercent() == 0)
+            return;
+        final Balance balance = createdBy.getBalance();
+        balance.setAmount(balance.getAmount() - sale.getWholePrice() * createdBy.getKpiPercent() / 100.0D);
 
         balanceRepository.save(balance);
     }

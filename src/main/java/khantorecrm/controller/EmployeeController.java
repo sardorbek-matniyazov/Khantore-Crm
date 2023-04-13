@@ -46,6 +46,11 @@ public class EmployeeController {
         return service.update(dto, id).handleResponse();
     }
 
+    @DeleteMapping(value = "{id}")
+    public HttpEntity<?> deleteEmployeeWithId(@PathVariable Long id) {
+        return service.delete(id).handleResponse();
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public HttpEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {

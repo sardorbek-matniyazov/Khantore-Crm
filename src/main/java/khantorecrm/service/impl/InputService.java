@@ -173,12 +173,12 @@ public class InputService implements
     @Override
     public OwnResponse delete(Long id) {
         try {
-            final User currentUser = getCurrentUser();
 
             final Input input = repository.findById(id).orElseThrow(
                     () -> new NotFoundException("Input with id " + id + " not found")
             );
 
+            final User currentUser = getCurrentUser();
             if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(input.getCreatedAt().getTime())) {
                 return OwnResponse.CANT_DELETE;
             }
@@ -195,7 +195,7 @@ public class InputService implements
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
-            return OwnResponse.ERROR.setMessage(e.getMessage());
+            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
         }
         return OwnResponse.DELETED_SUCCESSFULLY;
     }

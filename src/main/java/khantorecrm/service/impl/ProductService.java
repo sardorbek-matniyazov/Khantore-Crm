@@ -2,7 +2,9 @@ package khantorecrm.service.impl;
 
 import khantorecrm.model.ItemForCollection;
 import khantorecrm.model.Product;
+import khantorecrm.model.User;
 import khantorecrm.model.enums.ProductType;
+import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.ProductDto;
 import khantorecrm.payload.dto.ProductItemListDto;
@@ -10,6 +12,7 @@ import khantorecrm.payload.dto.ProductPriceForSellerDto;
 import khantorecrm.repository.*;
 import khantorecrm.service.IProductService;
 import khantorecrm.service.functionality.Creatable;
+import khantorecrm.service.functionality.Deletable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.service.functionality.Updatable;
 import khantorecrm.utils.exceptions.NotFoundException;
@@ -24,11 +27,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static khantorecrm.utils.constants.Statics.getCurrentUser;
+import static khantorecrm.utils.constants.Statics.isNonDeletable;
+
 @Service
 public class ProductService implements
         InstanceReturnable<Product, Long>,
         Creatable<ProductDto>,
         Updatable<ProductDto, Long>,
+        Deletable<Long>,
         IProductService {
 
     private final ProductRepository repository;
@@ -145,5 +152,24 @@ public class ProductService implements
     @Override
     public List<Product> getAllByType(ProductType type) {
         return repository.findAllByType(type);
+    }
+
+    @Override
+    public OwnResponse delete(Long id) {
+        try {
+            final User currentUser = getCurrentUser();
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN)) {
+                return OwnResponse.CANT_DELETE;
+            }
+
+            return repository.findById(id).map(
+                    product -> {
+                        repository.delete(product);
+                        return OwnResponse.DELETED_SUCCESSFULLY;
+                    }
+            ).orElse(OwnResponse.PRODUCT_NOT_FOUND);
+        } catch (Exception e) {
+            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+        }
     }
 }

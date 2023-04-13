@@ -173,7 +173,7 @@ public class ClientService implements
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
-            return OwnResponse.CANT_DELETE;
+            return OwnResponse.CANT_DELETE.setMessage("Client can't be deleted");
         }
     }
 }

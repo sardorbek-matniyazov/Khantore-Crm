@@ -26,6 +26,7 @@ import khantorecrm.repository.ProductItemRepository;
 import khantorecrm.repository.ProductPriceForSellersRepository;
 import khantorecrm.service.IDeliveryService;
 import khantorecrm.service.functionality.Creatable;
+import khantorecrm.service.functionality.Deletable;
 import khantorecrm.service.functionality.InstanceReturnable;
 import khantorecrm.utils.exceptions.NotFoundException;
 import khantorecrm.utils.exceptions.TypesInError;
@@ -41,10 +42,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static khantorecrm.utils.constants.Statics.getCurrentUser;
+import static khantorecrm.utils.constants.Statics.isNonDeletable;
+
 @Service
 public class DeliveryService implements
         InstanceReturnable<Delivery, Long>,
         Creatable<DeliveryDto>,
+        Deletable<Long>,
         IDeliveryService {
     private final DeliveryRepository repository;
     private final ProductItemRepository itemRepository;
@@ -503,5 +508,42 @@ public class DeliveryService implements
     @Override
     public List<ProductPriceForSellerProjection> productPricesByDelivererId(Long id) {
         return priceForSellersRepository.getAllByDelivererId(id);
+    }
+
+    @Override
+    public OwnResponse delete(Long id) {
+        try {
+            final User currentUser = getCurrentUser();
+
+            final Output output = outputRepository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Output not found")
+            );
+
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(output.getCreatedAt().getTime())) {
+                return OwnResponse.CANT_DELETE;
+            }
+            rollbackProductItems(output);
+
+            repository.deleteById(id);
+            return OwnResponse.DELETED_SUCCESSFULLY;
+        } catch (NotFoundException e) {
+            return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
+        } catch (RuntimeException e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage("There is something wrong");
+        } catch (Exception e) {
+            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+        }
+    }
+
+    private void rollbackProductItems(Output output) {
+        output.getProductItems().forEach(
+                item -> {
+                    final ProductItem productItem = itemRepository.findById(item.getId()).orElseThrow(
+                            () -> new NotFoundException("Product item not found")
+                    );
+                    productItem.setItemAmount(productItem.getItemAmount() + item.getItemAmount());
+                    itemRepository.save(productItem);
+                }
+        );
     }
 }

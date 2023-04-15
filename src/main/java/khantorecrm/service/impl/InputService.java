@@ -179,7 +179,7 @@ public class InputService implements
             );
 
             final User currentUser = getCurrentUser();
-            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(input.getCreatedAt().getTime())) {
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && (isNonDeletable(input.getCreatedAt().getTime()) && !input.getCreatedBy().getId().equals(currentUser.getId()))) {
                 return OwnResponse.CANT_DELETE;
             }
 

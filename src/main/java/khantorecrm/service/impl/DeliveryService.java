@@ -519,7 +519,8 @@ public class DeliveryService implements
                     () -> new NotFoundException("Output not found")
             );
 
-            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(output.getCreatedAt().getTime())) {
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN)
+                    && (isNonDeletable(output.getCreatedAt().getTime()) && !output.getCreatedBy().getId().equals(currentUser.getId()))) {
                 return OwnResponse.CANT_DELETE;
             }
             outputRepository.deleteById(id);

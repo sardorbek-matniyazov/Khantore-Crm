@@ -89,7 +89,7 @@ public class EmployeeService implements
                     () -> new NotFoundException("Employee with id " + id + " not found")
             );
 
-            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(employee.getCreatedAt().getTime())) {
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && (isNonDeletable(employee.getCreatedAt().getTime()) && !employee.getCreatedBy().getId().equals(currentUser.getId()))) {
                 return OwnResponse.CANT_DELETE;
             }
             repository.deleteById(id);

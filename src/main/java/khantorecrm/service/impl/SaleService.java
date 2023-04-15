@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static khantorecrm.utils.constants.Statics.getCurrentUser;
+import static khantorecrm.utils.constants.Statics.isNonDeletable;
 
 @Service
 public class SaleService
@@ -214,9 +215,9 @@ final Sale sale = repository.findById(id).orElseThrow(
             );
 
             final User currentUser = getCurrentUser();
-            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && !sale.getCreatedBy().getId().equals(currentUser.getId()))
-                return OwnResponse.CANT_DELETE.setMessage("You can't delete this sale");
-
+            if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && (isNonDeletable(sale.getCreatedAt().getTime()) && !sale.getCreatedBy().getId().equals(currentUser.getId()))) {
+                return OwnResponse.CANT_DELETE.setMessage("Can't delete");
+            }
             final Double wholePrice = sale.getWholePrice();
             final Double debtPrice = sale.getDebtPrice();
             if (!Objects.equals(debtPrice, wholePrice)) {

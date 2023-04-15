@@ -159,7 +159,7 @@ public class ProductService implements
         try {
             final User currentUser = getCurrentUser();
             if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN)) {
-                return OwnResponse.CANT_DELETE;
+                return OwnResponse.CANT_DELETE.setMessage("You don't have permission to delete product");
             }
 
             return repository.findById(id).map(

@@ -169,7 +169,7 @@ public class ProductService implements
                     }
             ).orElse(OwnResponse.PRODUCT_NOT_FOUND);
         } catch (Exception e) {
-            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+            return OwnResponse.CANT_DELETE.setMessage("Can't delete product");
         }
     }
 }

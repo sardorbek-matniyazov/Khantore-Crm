@@ -218,11 +218,12 @@ public class WarehouseService implements
             if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(warehouse.getCreatedAt().getTime())) {
                 return OwnResponse.CANT_DELETE;
             }
+            repository.delete(warehouse);
             return OwnResponse.DELETED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.WAREHOUSE_NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
-            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+            return OwnResponse.CANT_DELETE.setMessage("Can't delete this warehouse");
         }
     }
 }

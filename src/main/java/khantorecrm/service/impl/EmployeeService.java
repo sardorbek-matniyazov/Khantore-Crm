@@ -97,7 +97,7 @@ public class EmployeeService implements
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
-            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+            return OwnResponse.CANT_DELETE.setMessage("Can't delete employee");
         }
     }
 }

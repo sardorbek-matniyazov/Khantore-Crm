@@ -183,6 +183,11 @@ public class InputService implements
                 return OwnResponse.CANT_DELETE;
             }
 
+            if (input.getType().equals(ProductType.INGREDIENT)) {
+                final Balance balance = input.getEmployee().getBalance();
+                balance.setAmount(balance.getAmount() + input.getAmount() * input.getCurrentProductIngPrice());
+                balanceRepository.save(balance);
+            }
             final ProductItem productItem = input.getProductItem();
             productItem.setItemAmount(productItem.getItemAmount() - input.getAmount());
             if (input.getType().equals(ProductType.PRODUCT)) {
@@ -195,7 +200,7 @@ public class InputService implements
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {
-            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+            return OwnResponse.CANT_DELETE.setMessage("Can't delete input");
         }
         return OwnResponse.DELETED_SUCCESSFULLY;
     }

@@ -522,28 +522,28 @@ public class DeliveryService implements
             if (!currentUser.getRole().getRoleName().equals(RoleName.ADMIN) && isNonDeletable(output.getCreatedAt().getTime())) {
                 return OwnResponse.CANT_DELETE;
             }
-            rollbackProductItems(output);
+            outputRepository.deleteById(id);
 
-            repository.deleteById(id);
+//            rollbackProductItems(output);
             return OwnResponse.DELETED_SUCCESSFULLY;
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (RuntimeException e) {
-            return OwnResponse.INPUT_TYPE_ERROR.setMessage("There is something wrong");
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage("Can't delete this output");
         } catch (Exception e) {
-            return OwnResponse.CANT_DELETE.setMessage(e.getMessage());
+            return OwnResponse.CANT_DELETE.setMessage("Cant delete this output");
         }
     }
-
-    private void rollbackProductItems(Output output) {
-        output.getProductItems().forEach(
-                item -> {
-                    final ProductItem productItem = itemRepository.findById(item.getId()).orElseThrow(
-                            () -> new NotFoundException("Product item not found")
-                    );
-                    productItem.setItemAmount(productItem.getItemAmount() + item.getItemAmount());
-                    itemRepository.save(productItem);
-                }
-        );
-    }
+//
+//    private void rollbackProductItems(Output output) {
+//        output.getProductItems().forEach(
+//                item -> {
+//                    final ProductItem productItem = itemRepository.findById(item.getId()).orElseThrow(
+//                            () -> new NotFoundException("Product item not found")
+//                    );
+//                    productItem.setItemAmount(productItem.getItemAmount() + item.getItemAmount());
+//                    itemRepository.save(productItem);
+//                }
+//        );
+//    }
 }

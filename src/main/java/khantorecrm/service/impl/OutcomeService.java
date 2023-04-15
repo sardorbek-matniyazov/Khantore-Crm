@@ -95,7 +95,7 @@ public class OutcomeService
             User creator = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Outcome outcome = byId.get();
             if (isNonDeletable(outcome.getCreatedAt().getTime())) {
-                return OwnResponse.CANT_DELETE;
+                return OwnResponse.CANT_DELETE.setMessage("You can't delete this outcome");
             }
             if (outcome.getCreatedBy().getId().equals(creator.getId())) {
                 if (outcome.getType().equals(OutcomeType.ЗАРПЛАТА)) {

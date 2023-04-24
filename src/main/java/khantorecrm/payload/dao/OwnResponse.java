@@ -36,7 +36,7 @@ public class OwnResponse {
     public static final OwnResponse LOGIN_SUCCESSFULLY = new OwnResponse("Login successfully");
     public static final OwnResponse REJECTED_SUCCESSFULLY = new OwnResponse("Rejected successfully");
     public static final OwnResponse CANT_DELETE = new OwnResponse("Can't delete", HttpStatus.BAD_REQUEST.value(), false);
-    public static final OwnResponse DELETED_SUCCESSFULLY = new OwnResponse("Deleted successfully", HttpStatus.NO_CONTENT.value(), true);
+    public static final OwnResponse DELETED_SUCCESSFULLY = new OwnResponse("Deleted successfully", HttpStatus.ACCEPTED.value(), true);
 
     private String message;
     @JsonIgnore

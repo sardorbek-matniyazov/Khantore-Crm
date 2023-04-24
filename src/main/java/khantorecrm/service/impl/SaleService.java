@@ -222,8 +222,8 @@ public class SaleService
     }
 
     @Override
-    public Double getPaymentSumsByPeriod(Long createdById, String startDate, String endDate) {
-        return paymentRepository.selectPaymentsByPeriod(createdById, getTime(startDate), getTime(endDate), PaymentOrderType.NEW.name());
+    public List<Sale> getPaymentSumsByPeriod(Long createdById, String startDate, String endDate) {
+        return repository.selectPaymentsByPeriod(createdById, getTime(startDate), getTime(endDate));
     }
 
     public void increaseUsersAmountWithKpi(Double amount) {

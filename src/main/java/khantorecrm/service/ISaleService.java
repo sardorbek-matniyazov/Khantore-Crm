@@ -14,5 +14,5 @@ public interface ISaleService {
 
     OwnResponse confirmPayment(PaymentConfirmDto confirmDto);
 
-    Double getPaymentSumsByPeriod(Long createdById, String startDate, String endDate);
+    List<Sale> getPaymentSumsByPeriod(Long createdById, String startDate, String endDate);
 }

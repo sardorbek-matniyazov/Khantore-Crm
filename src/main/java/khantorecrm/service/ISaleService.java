@@ -1,5 +1,6 @@
 package khantorecrm.service;
 
+import khantorecrm.model.Payment;
 import khantorecrm.model.Sale;
 import khantorecrm.payload.dao.OwnResponse;
 import khantorecrm.payload.dto.PaymentConfirmDto;
@@ -14,5 +15,5 @@ public interface ISaleService {
 
     OwnResponse confirmPayment(PaymentConfirmDto confirmDto);
 
-    List<Sale> getPaymentSumsByPeriod(Long createdById, String startDate, String endDate);
+    List<Payment> getPaymentSumsByPeriod(Long createdById, String startDate, String endDate);
 }

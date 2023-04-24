@@ -17,8 +17,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Integer updatePaymentsByPeriod(Long createdById, Timestamp startDate, Timestamp endDate, String orderType);
 
     @Query(
-            value = "select sum(payment_amount) from payment  where created_by_id = ?1 AND payment_order_type = ?4 AND created_at BETWEEN ?2 AND ?3",
+            value = "select * from payment  where created_by_id = ?1 AND payment_order_type = ?4 AND created_at BETWEEN ?2 AND ?3",
             nativeQuery = true
     )
-    Double selectPaymentsByPeriod(Long createdById, Timestamp time, Timestamp time1, String name);
+    List<Payment> selectPaymentsByPeriod(Long createdById, Timestamp time, Timestamp time1, String name);
 }

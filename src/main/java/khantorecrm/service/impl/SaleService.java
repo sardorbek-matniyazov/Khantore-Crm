@@ -9,11 +9,13 @@ import khantorecrm.model.ProductItem;
 import khantorecrm.model.Sale;
 import khantorecrm.model.User;
 import khantorecrm.model.enums.OutputType;
+import khantorecrm.model.enums.PaymentOrderType;
 import khantorecrm.model.enums.PaymentStatus;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.model.enums.ProductType;
 import khantorecrm.model.enums.RoleName;
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dto.PaymentConfirmDto;
 import khantorecrm.payload.dto.ProductItemListDto;
 import khantorecrm.payload.dto.SaleDto;
 import khantorecrm.repository.BalanceRepository;
@@ -33,6 +35,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -40,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static khantorecrm.utils.constants.Statics.getCurrentUser;
+import static khantorecrm.utils.constants.Statics.getTime;
 import static khantorecrm.utils.constants.Statics.isNonDeletable;
 
 @Service
@@ -196,6 +200,32 @@ public class SaleService
         return repository.findAllByClientId(clientId, Sort.by(Sort.Direction.DESC, "id"));
     }
 
+    @Override
+    @Transactional
+    public OwnResponse confirmPayment(PaymentConfirmDto confirmDto) {
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, -100);
+            final Integer aLong = paymentRepository.updatePaymentsByPeriod(
+                    confirmDto.getCreatedById(),
+                    getTime(confirmDto.getStartDate()),
+                    getTime(confirmDto.getEndDate()),
+                    PaymentOrderType.NEW.name()
+            );
+            System.out.println(aLong);
+        } catch (TypesInError e) {
+            return OwnResponse.INPUT_TYPE_ERROR.setMessage(e.getMessage());
+        } catch (Exception e) {
+            return OwnResponse.ERROR.setMessage(e.getMessage());
+        }
+        return OwnResponse.UPDATED_SUCCESSFULLY.setMessage("Qabillandi");
+    }
+
+    @Override
+    public Double getPaymentSumsByPeriod(Long createdById, String startDate, String endDate) {
+        return paymentRepository.selectPaymentsByPeriod(createdById, getTime(startDate), getTime(endDate), PaymentOrderType.NEW.name());
+    }
+
     public void increaseUsersAmountWithKpi(Double amount) {
         final User currentUser = getCurrentUser();
 
@@ -210,7 +240,7 @@ public class SaleService
     @Override
     public OwnResponse delete(Long id) {
         try {
-final Sale sale = repository.findById(id).orElseThrow(
+            final Sale sale = repository.findById(id).orElseThrow(
                     () -> new NotFoundException("Sale with id " + id + " not found")
             );
 
@@ -234,7 +264,7 @@ final Sale sale = repository.findById(id).orElseThrow(
             rollbackProductItems(sale.getOutput().getProductItems());
 
             repository.delete(sale);
-            return OwnResponse.DELETED_SUCCESSFULLY;
+            return OwnResponse.DELETED_SUCCESSFULLY.setMessage("Sale deleted successfully");
         } catch (NotFoundException e) {
             return OwnResponse.NOT_FOUND.setMessage(e.getMessage());
         } catch (Exception e) {

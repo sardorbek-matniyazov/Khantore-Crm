@@ -2,6 +2,7 @@ package khantorecrm.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import khantorecrm.model.base.BaseWithCreatedBy;
+import khantorecrm.model.enums.PaymentOrderType;
 import khantorecrm.model.enums.PaymentStatus;
 import khantorecrm.model.enums.PaymentType;
 import khantorecrm.utils.constants.Constants;
@@ -17,6 +18,9 @@ import javax.persistence.Enumerated;
 import java.util.HashMap;
 import java.util.Map;
 
+import static khantorecrm.model.enums.PaymentOrderType.NEW;
+import static khantorecrm.model.enums.PaymentType.CASH;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity(name = "payment")
@@ -28,11 +32,21 @@ public class Payment extends BaseWithCreatedBy {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_type", length = Constants.MODEL_ENUM_LENGTH)
-    private PaymentType type;
+    private PaymentType type = CASH;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", length = Constants.MODEL_ENUM_LENGTH)
     private PaymentStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_order_type", length = Constants.MODEL_ENUM_LENGTH)
+    private PaymentOrderType orderType = NEW;
+
+    public Payment(Double amount, PaymentType type, PaymentStatus status) {
+        this.amount = amount;
+        this.type = type;
+        this.status = status;
+    }
 
     @JsonValue
     public Map<String, Object> toJson() {

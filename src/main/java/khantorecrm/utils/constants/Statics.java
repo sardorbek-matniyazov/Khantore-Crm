@@ -1,6 +1,7 @@
 package khantorecrm.utils.constants;
 
 import khantorecrm.model.User;
+import khantorecrm.utils.exceptions.TypesInError;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.sql.Timestamp;
@@ -24,14 +25,13 @@ public class Statics {
         return minute > Constants.DELETE_TIME;
     }
 
-    public static Timestamp getTime(String time) {
+    public static Timestamp getTime(String time) throws TypesInError {
         if (time == null) return null;
         try {
             Date date = new SimpleDateFormat("yyyy-MM-dd").parse(time);
             return new Timestamp(date.getTime());
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new TypesInError("Date format is not correct");
         }
-        return null;
     }
 }

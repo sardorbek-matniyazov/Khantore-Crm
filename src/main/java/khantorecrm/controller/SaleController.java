@@ -1,9 +1,11 @@
 package khantorecrm.controller;
 
 import khantorecrm.payload.dao.OwnResponse;
+import khantorecrm.payload.dto.PaymentConfirmDto;
 import khantorecrm.payload.dto.SaleDto;
 import khantorecrm.service.impl.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,19 +32,30 @@ public class SaleController {
         return ResponseEntity.ok(service.getAllInstances());
     }
 
-    @GetMapping(value = "all/{clientId}")
-    public HttpEntity<?> getAllSalesByClientName(@PathVariable Long clientId) {
-        return OwnResponse.ALL_DATA.setData(service.getAllInstancesByClientName(clientId)).handleResponse();
-    }
-
     @PostMapping(value = "sell")
     public HttpEntity<?> sellProducts(@RequestBody @Valid SaleDto dto) {
         return service.sell(dto).handleResponse();
     }
 
+    @GetMapping(value = "payment-sums-period")
+    public HttpEntity<?> getAllSalesByClientName(@Param("createdById") Long createdById,
+                                                 @Param("startDate") String startDate,
+                                                 @Param("endDate") String endDate) {
+        return OwnResponse.ALL_DATA.setData(service.getPaymentSumsByPeriod(
+                createdById,
+                startDate,
+                endDate
+        )).handleResponse();
+    }
+
     @DeleteMapping(value = "delete/{id}")
     public HttpEntity<?> deleteSale(@PathVariable Long id) {
         return service.delete(id).handleResponse();
+    }
+
+    @PostMapping(value = "confirm-payment")
+    public HttpEntity<?> confirmPayment(@RequestBody PaymentConfirmDto confirmDto) {
+        return service.confirmPayment(confirmDto).handleResponse();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

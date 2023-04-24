@@ -56,6 +56,8 @@ public class Payment extends BaseWithCreatedBy {
 
         result.put("amount", this.getAmount());
         result.put("type", this.getType());
+        result.put("status", this.getStatus());
+        result.put("orderType", this.getOrderType());
         return result;
     }
 }
